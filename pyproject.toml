@@ -1,7 +1,8 @@
 [project]
+#! Update all entries in the top half of this file.
 name='CythonProjectTemplate'
 version = '0.1.0'
-description=''
+description='A simple project structure for starting new Cython projects.'
 authors= [ 
     {name = 'Joe P. Renaud', email = 'Joe.P.Renaud@gmail.com'}
     ]
@@ -25,6 +26,7 @@ classifiers = [
 dev = [
 ]
 
+# Note the entries below probably should not be changed unless there is a specific need.
 [build-system]
 requires = [
     'setuptools>=64.0.0',
