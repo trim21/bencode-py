@@ -32,7 +32,7 @@ jobs:
           python -m pip install . -v
 
       - name: Run pytest
-        run: pytest -v Tests/
+        run: pytest -v .
 
   test-39-with-coverage:
     # Use a specific python version (excluded in the tests above) to run coverage tests.
