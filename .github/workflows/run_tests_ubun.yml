@@ -9,36 +9,46 @@ jobs:
     strategy:
       matrix:
         python-version:
+          #! Update with your project's supported versions of python.
+          # Note that we skip 3.9 here as it is used in the coverage tests (next section).
           - "3.8"
-          - "3.9"
+          # - "3.9"
           - "3.10"
           - "3.11"
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install Dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install pytest>=7.4.3 pytest-cov>=4.1.0 cython>=3.0.0
+          python3 -m pip install pytest>=7.4.3 cython>=3.0.0
+
       - name: Install package
         run: |
           python3 -m pip install . -v
 
       - name: Run pytest
-        run: python3 -m pytest -v Tests/
+        #! Update project name
+        run: |
+          cd ..
+          python3 -m pytest -v CythonProjectTemplate/Tests/
 
   test-39-with-coverage:
     name: Test Python 3.9 and Upload Coverage Report
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
+
       - name: Install Dependencies
         run: |
           python3 -m pip install --upgrade pip
@@ -48,7 +58,11 @@ jobs:
           python3 -m pip install . -v
 
       - name: Run pytest
-        run: python3 -m pytest --capture=sys -v --cov=CythonProjectTemplate Tests/
+        #! Update project name
+        run: |
+          cd ..
+          python3 -m pytest --capture=sys -v --cov=CythonProjectTemplate CythonProjectTemplate/Tests/
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:

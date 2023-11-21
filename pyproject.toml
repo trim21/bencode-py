@@ -48,7 +48,7 @@ build_ext = "_build.build_ext"
 find = {}
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "7.4"
 addopts = "-ra -v"
 testpaths = [
     "Tests"
