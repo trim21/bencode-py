@@ -55,7 +55,6 @@ jobs:
         shell: bash -el {0}
         run: |
           brew update
-          brew install node
           brew reinstall llvm libomp
 
       - name: Install Dependencies
