@@ -1,6 +1,12 @@
 # Created by https://www.toptal.com/developers/gitignore/api/c++,python,c,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,python,c,visualstudiocode
 
+### Cython ###
+# Cython recompiles C/C++ files so no need to keep these.
+#! Update: _unless_! you are writing custom C/CPP files in which case you will want to add those manually or remove the below.
+*.c
+*.cpp
+
 ### C ###
 # Prerequisites
 *.d
