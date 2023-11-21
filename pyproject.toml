@@ -18,8 +18,8 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "www.google.com"
-"Bug Tracker" = "www.google.com"
+"Homepage" = "https://github.com/jrenaud90/CythonProjectTemplate"
+"Bug Tracker" = "https://github.com/jrenaud90/CythonProjectTemplate/issues"
 
 [project.optional-dependencies]
 dev = [
