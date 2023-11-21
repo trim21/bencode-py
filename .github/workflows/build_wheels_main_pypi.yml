@@ -61,7 +61,7 @@ jobs:
         shell: bash -el {0}
         run: |
           conda install numpy scipy cython llvm-openmp pytest
-          python -m pip install --upgrade build
+          python3 -m pip install --upgrade build
 
       - name: Install package
         shell: bash -el {0}
@@ -73,7 +73,7 @@ jobs:
           export CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include"
           export CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include"
           export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp -L/usr/local/opt/llvm/lib"
-          python -m build --wheel --outdir ./wheelhouse/
+          python3 -m build --wheel --outdir ./wheelhouse/
 
       - uses: actions/upload-artifact@v3.1.3
         with:
