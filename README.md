@@ -16,3 +16,11 @@ Pull-Requests, Issues, and Feedback are all welcome on the project's [GitHub Pag
 
 ## Developing Your Project
 - Whenever you create a new cython pyx/pxd file make sure to add it to the `cython_extensions.json` file otherwise it will not be compiled when your project is installed.
+
+### Getting Your Project on PyPI
+- Come up with a unique name (search [PyPI](https://pypi.org/) to ensure it is not already taken).
+- Follow the instructions [here](). Since you used this template you can skip down to step 8!
+- After the initial upload you can automate the process.
+    - Get your [PyPI API token](https://pypi.org/help/#apitoken).
+    - Add it to your [secret environment variables](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) on your project's GitHub repository.
+    - Have the pre-built `.github\workflows\build_wheels_main_pypi.yml` do all the hard work when you release a new version on GitHub.

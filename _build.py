@@ -12,6 +12,10 @@ import numpy as np
 num_procs = os.cpu_count()
 num_threads = int(math.floor(num_procs * 0.75))
 
+#! Update comment out the line below if you'd like to use multiple processor threads to compile cython code.
+# Note that it is not recommended to use multiple threads the first time you build a project for PyPI.
+num_threads = 0
+
 install_platform = platform.system()
 
 if install_platform.lower() == 'windows':

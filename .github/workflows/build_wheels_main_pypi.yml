@@ -128,6 +128,6 @@ jobs:
 
       - uses: pypa/gh-action-pypi-publish@v1.8.10
         with:
-          #! Update with your project's PyPI token!
+          #! Update with your project's PyPI API Token Name!
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
