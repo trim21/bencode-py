@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ## Update for your project's python version!
+        #! Update for your project's python version!
         python-version:
           - "3.8"
-          - "3.9"
+          # - "3.9"
           - "3.10"
           - "3.11"
     steps:
@@ -32,6 +32,7 @@ jobs:
         run: pytest -v Tests/
 
   test-39-with-coverage:
+    # Use a specific python version (excluded in the tests above) to run coverage tests.
     name: Test Python 3.9 and Upload Coverage Report
     runs-on: ubuntu-latest
     steps:
@@ -49,7 +50,8 @@ jobs:
           python -m pip install . -v
 
       - name: Run pytest
-        run: pytest --capture=sys -v --cov=CyRK Tests/
+        #! Update project name
+        run: pytest --capture=sys -v --cov=CythonProjectTemplate Tests/
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3.1.4
         with:

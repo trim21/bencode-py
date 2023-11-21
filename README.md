@@ -9,6 +9,7 @@ Pull-Requests, Issues, and Feedback are all welcome on the project's [GitHub Pag
 - Update the `LICENSE.md` to match your project's needs.
 - Update `pyproject.toml` with your project & author information, dependencies, etc.
 - Change the directory `CythonProjectTemplate` to match the name of your package.
+- Search for `"#! Update"` in all files to find critical locations that need to be changed for your specific project.
 - Read through `.github\workflows\build_wheels_main_pypi.yml` and make the necessary changes.
 - `.gitignore` was configured with Cython, Python, C, C++, in mind. Also it has VSCode IDE specific file ignores. You may need to edit for your needs.
 
