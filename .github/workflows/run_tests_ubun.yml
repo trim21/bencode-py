@@ -35,7 +35,8 @@ jobs:
       - name: Run pytest
         #! Update project name
         run: |
-          python3 -m pytest -v Tests/
+          cd ..
+          python3 -m pytest -v CythonProjectTemplate/Tests/
 
   test-39-with-coverage:
     name: Test Python 3.9 and Upload Coverage Report
@@ -59,7 +60,8 @@ jobs:
       - name: Run pytest
         #! Update project name
         run: |
-          python3 -m pytest --capture=sys -v --cov=CythonProjectTemplate Tests/
+          cd ..
+          python3 -m pytest --capture=sys -v --cov=CythonProjectTemplate CythonProjectTemplate/Tests/
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
