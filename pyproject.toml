@@ -1,0 +1,56 @@
+[project]
+name='CythonProjectTemplate'
+version = '0.1.0'
+description=''
+authors= [ 
+    {name = 'Joe P. Renaud', email = 'Joe.P.Renaud@gmail.com'}
+    ]
+requires-python = ">=3.8"
+dependencies = [
+]
+
+license = {file = "LICENSE.md"}
+readme = "README.md"
+keywords = [
+]
+
+classifiers = [
+]
+
+[project.urls]
+"Homepage" = "www.google.com"
+"Bug Tracker" = "www.google.com"
+
+[project.optional-dependencies]
+dev = [
+]
+
+[build-system]
+requires = [
+    'setuptools>=64.0.0',
+    'numpy>=1.22',
+    'cython>=3.0.0',
+    'wheel>=0.38'
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["_build"]
+include-package-data = true
+
+[tool.setuptools.cmdclass]
+build_py = "_build.build_package"
+build_ext = "_build.build_ext"
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -v"
+testpaths = [
+    "Tests"
+]
+
+[tool.cibuildwheel]
+build = "*"

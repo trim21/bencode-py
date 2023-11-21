@@ -1,0 +1,8 @@
+{"types": {
+    "name": "TidalPy.utilities.types_x",
+    "sources": [["TidalPy", "utilities", "types_x.pyx"]],
+    "include_dirs": [["TidalPy", "utilities"]],
+    "compile_args": [],
+    "link_args": []
+  }
+}

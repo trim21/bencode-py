@@ -1,0 +1,135 @@
+# Look for the comments for the things that you will definitely need to update for this GitHub Action to work.
+
+name: Build Wheels for PyPI
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+jobs:
+  make_sdist:
+    name: Make SDist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4.1.1
+      with:
+        submodules: true  # Optional, use if you have submodules
+
+    - name: Build SDist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v3.1.3
+      with:
+        path: dist/*.tar.gz
+
+  build_macos_wheel:
+    name: Build MacOS wheel for Python ${{ matrix.python }}
+    runs-on: macos-latest
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      matrix:
+        ## Update for your project's python version!
+        python:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+    steps:
+      - name: Checkout CyRK
+        uses: actions/checkout@v4.1.1
+
+      - name: Install Anaconda
+        uses: conda-incubator/setup-miniconda@v2.2.0
+        with:
+          activate-environment: cyrk_test
+          auto-update-conda: true
+          python-version: ${{ matrix.python }}
+          auto-activate-base: false
+
+      - name: Conda info
+        shell: bash -el {0}
+        run: conda info
+
+      - name: Install llvm and libomp
+        shell: bash -el {0}
+        run: |
+          brew reinstall llvm libomp
+
+      - name: Install Dependencies
+        shell: bash -el {0}
+        run: |
+          conda install numpy scipy cython llvm-openmp pytest
+          python -m pip install --upgrade build
+
+      - name: Install package
+        shell: bash -el {0}
+        run: |
+          export CC=/usr/bin/clang
+          export CXX=/usr/bin/clang++
+          export PATH="/usr/local/opt/llvm/bin:$PATH"
+          export CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp -I/usr/local/opt/llvm/include"
+          export CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include"
+          export CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include"
+          export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp -L/usr/local/opt/llvm/lib"
+          python -m build --wheel --outdir ./wheelhouse/
+
+      - uses: actions/upload-artifact@v3.1.3
+        with:
+          path: ./wheelhouse/*.whl
+
+  build_other_wheels:
+    name: Build ${{ matrix.platform }} wheels
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          # As of 2023: MacOS does not play nice with cibuildwheel when using openmp and Cython.
+          # That is the reason for the MacOS-specific workflow above.
+          # - macos-12
+          - windows-latest
+          - ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.14.1
+
+      - uses: actions/upload-artifact@v3.1.3
+        with:
+          path: ./wheelhouse/*.whl
+
+  check_dist:
+    name: Check dist
+    needs: [make_sdist, build_macos_wheel, build_other_wheels]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3.0.2
+        with:
+          name: artifact
+          path: dist
+
+      - run: pipx run twine check --strict dist/*
+
+  upload_all:
+    name: Upload wheels to PyPI
+    needs: [build_macos_wheel, build_other_wheels, make_sdist, check_dist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - uses: actions/download-artifact@v3.0.2
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@v1.8.10
+        with:
+          ## Update with your project's PyPI token!
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
