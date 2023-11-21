@@ -1,9 +1,9 @@
 # Cython Project Template
 <div style="text-align: center;">
 <!-- #! Update Project Name and URLs. -->
-<a href="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/push_tests_win.yml"><img src="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/push_tests_win.yml/badge.svg?branch=main" alt="Windows Tests" /></a>
-<a href="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/push_tests_mac.yml"><img src="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/push_tests_mac.yml/badge.svg?branch=main" alt="MacOS Tests" /></a>
-<a href="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/push_tests_ubun.yml"><img src="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/push_tests_ubun.yml/badge.svg?branch=main" alt="Ubuntu Tests" /></a>
+<a href="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/run_tests_win.yml"><img src="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/run_tests_win.yml/badge.svg?branch=main" alt="Windows Tests" /></a>
+<a href="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/run_tests_mac.yml"><img src="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/run_tests_mac.yml/badge.svg?branch=main" alt="MacOS Tests" /></a>
+<a href="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/run_tests_ubun.yml"><img src="https://github.com/jrenaud90/CythonProjectTemplate/actions/workflows/run_tests_ubun.yml/badge.svg?branch=main" alt="Ubuntu Tests" /></a>
 </div>
 
 A simple project file structure to quickly ramp-up a new Cython project.
