@@ -53,6 +53,8 @@ jobs:
       - name: Install llvm and libomp
         shell: bash -el {0}
         run: |
+          brew install python@${{ matrix.python-version }}
+          brew install z3
           brew reinstall llvm libomp
 
       - name: Install Dependencies
