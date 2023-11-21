@@ -39,8 +39,7 @@ jobs:
       - name: install libomp
         shell: bash -el {0}
         run: |
-          brew unlink python@3.9
-          brew unlink python@3.8
+          brew unlink python@3.11
           brew link --force python@${{ matrix.python-version }}
           brew update
           brew reinstall llvm libomp
