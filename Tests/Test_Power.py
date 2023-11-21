@@ -9,5 +9,5 @@ def test_cython_square():
     assert cython_square(2.0) == 4.0
     assert cython_square(-2.0) == 4.0
     assert cython_square(0.) == 0.
-    assert cython_square(100.0) == 1000.
-    assert cython_square(-100.0) == 1000.
+    assert cython_square(100.0) == 10_000.
+    assert cython_square(-100.0) == 10_000.
