@@ -8,6 +8,7 @@ Pull-Requests, Issues, and Feedback are all welcome on the project's [GitHub Pag
 ## Change Right Away
 - Update the `LICENSE.md` to match your project's needs.
 - Update `pyproject.toml` with your project & author information, dependencies, etc.
+- Update `.coveragerc` with your project name.
 - It is recommended you remove all files from `Tests\` and `CythonProjectTemplate\` directories (except the top-level `__init__.py`) after you have reviewed them.
 - Change the directory `CythonProjectTemplate` to match the name of your package.
 - Search for `"#! Update"` in all files to find critical locations that need to be changed for your specific project.
