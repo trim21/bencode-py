@@ -5,7 +5,7 @@ A simple project file structure to quickly ramp-up a new Cython project.
 Let's work to make it as easy as possible for folks to create new Cython-based projects.
 Pull-Requests, Issues, and Feedback are all welcome on the project's [GitHub Page](https://github.com/jrenaud90/CythonProjectTemplate)
 
-## Change right away:
+## Change Right Away
 - Update the `LICENSE.md` to match your project's needs.
 - Update `pyproject.toml` with your project & author information, dependencies, etc.
 - Change the directory `CythonProjectTemplate` to match the name of your package.
