@@ -1,5 +1,6 @@
 from CythonProjectTemplate.power import cython_square
 
+
 def test_cython_square():
     """
     Test the `cython_square` function

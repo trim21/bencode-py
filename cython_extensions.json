@@ -1,7 +1,15 @@
-{"types": {
-    "name": "TidalPy.utilities.types_x",
-    "sources": [["TidalPy", "utilities", "types_x.pyx"]],
-    "include_dirs": [["TidalPy", "utilities"]],
+{
+  "add": {
+    "name": "CythonProjectTemplate.module.add",
+    "sources": [["CythonProjectTemplate", "module", "add.pyx"]],
+    "include_dirs": [["CythonProjectTemplate", "module"]],
+    "compile_args": [],
+    "link_args": []
+  },
+  "power": {
+    "name": "CythonProjectTemplate.power",
+    "sources": [["CythonProjectTemplate", "power.pyx"]],
+    "include_dirs": [["CythonProjectTemplate"]],
     "compile_args": [],
     "link_args": []
   }
