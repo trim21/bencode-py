@@ -35,10 +35,9 @@ jobs:
       - name: Run pytest
         #! Update project name
         run: |
+          cd Tests/
           ls
-          cd ..
-          ls
-          python3 -m pytest -v CythonProjectTemplate/Tests/
+          python3 -m pytest -v .
 
   test-39-with-coverage:
     name: Test Python 3.9 and Upload Coverage Report
