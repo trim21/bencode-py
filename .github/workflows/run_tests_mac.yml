@@ -40,9 +40,6 @@ jobs:
         shell: bash -el {0}
         run: |
           brew update
-          brew uninstall npm
-          brew uninstall node
-          npm uninstall npm -g
           brew install node
           brew reinstall llvm libomp
 
