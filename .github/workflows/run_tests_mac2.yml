@@ -1,0 +1,39 @@
+name: MacOS Tests (2)
+
+on: [push, pull_request, workflow_dispatch]
+
+
+jobs:
+  test-ubuntu:
+    name: Test Project on MacOS
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version:
+          #! Update with your project's supported versions of python.
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pytest>=7.4.3 cython>=3.0.0
+
+      - name: Install package
+        run: |
+          python3 -m pip install . -v
+
+      - name: Run pytest
+        #! Update project name
+        run: |
+          cd ..
+          python3 -m pytest -v CythonProjectTemplate/Tests/
