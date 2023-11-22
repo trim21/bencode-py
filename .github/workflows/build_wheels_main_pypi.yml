@@ -22,63 +22,6 @@ jobs:
       with:
         path: dist/*.tar.gz
 
-  build_macos_wheel:
-    name: Build MacOS wheel for Python ${{ matrix.python }}
-    runs-on: macos-latest
-    strategy:
-      # Ensure that a wheel builder finishes even if another fails
-      fail-fast: false
-      matrix:
-        python:
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v3
-
-      - name: Install Anaconda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: project_test
-          auto-update-conda: true
-          python-version: ${{ matrix.python }}
-          auto-activate-base: false
-
-      - name: Conda info
-        shell: bash -el {0}
-        run: conda info
-
-      - name: Install llvm and libomp
-        shell: bash -el {0}
-        run: |
-          brew install python@${{ matrix.python-version }}
-          brew install z3
-          brew reinstall llvm libomp
-
-      - name: Install Dependencies
-        shell: bash -el {0}
-        run: |
-          conda install numpy scipy cython llvm-openmp pytest
-          python -m pip install --upgrade build
-
-      - name: Install package
-        shell: bash -el {0}
-        run: |
-          export CC=/usr/bin/clang
-          export CXX=/usr/bin/clang++
-          export PATH="/usr/local/opt/llvm/bin:$PATH"
-          export CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp -I/usr/local/opt/llvm/include"
-          export CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include"
-          export CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include"
-          export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp -L/usr/local/opt/llvm/lib"
-          python -m build --wheel --outdir ./wheelhouse/
-
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./wheelhouse/*.whl
-
   build_other_wheels:
     name: Build ${{ matrix.platform }} wheels
     runs-on: ${{ matrix.platform }}
@@ -86,9 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          # As of 2023: MacOS does not play nice with cibuildwheel when using openmp and Cython.
-          # That is the reason for the MacOS-specific workflow above.
-          # - macos-12
+          - macos-latest
           - windows-latest
           - ubuntu-latest
 
@@ -106,7 +47,7 @@ jobs:
 
   check_dist:
     name: Check dist
-    needs: [make_sdist, build_macos_wheel, build_other_wheels]
+    needs: [make_sdist, build_other_wheels]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3.0.2
@@ -118,7 +59,7 @@ jobs:
 
   upload_all:
     name: Upload wheels to PyPI
-    needs: [build_macos_wheel, build_other_wheels, make_sdist, check_dist]
+    needs: [build_other_wheels, make_sdist, check_dist]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
