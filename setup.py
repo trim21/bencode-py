@@ -25,7 +25,7 @@ extensions = [
 
 setup(
     name="bencode2",
-    version="0.0.7",
+    version="0.0.8",
     description="bencode serialize/deserialize library",
     long_description=get_readme(),
     long_description_content_type="text/markdown",
