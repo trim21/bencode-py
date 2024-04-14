@@ -11,7 +11,7 @@ def get_readme():
 
 setup(
     name="bencode2",
-    version="0.0.6",
+    version="0.0.7",
     description="bencode serialize/deserialize library",
     long_description=get_readme(),
     long_description_content_type="text/markdown",
