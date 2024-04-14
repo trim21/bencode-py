@@ -14,6 +14,7 @@ setup(
     version='0.0.1',
     description='bencode serialize/deserialize library',
     long_description=get_readme(),
+    long_description_content_type='text/markdown',
     author='trim21',
     author_email='trim21.me@gmail.com',
     url='https://github.com/trim21/py-bencode',
