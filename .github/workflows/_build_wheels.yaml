@@ -75,7 +75,7 @@ jobs:
 
   merge-wheel-artifact:
     runs-on: ubuntu-latest
-    needs: [ 'build_wheels' ]
+    needs: [ 'build_wheels','make_sdist' ]
     steps:
       - name: Merge Artifacts
         uses: actions/upload-artifact/merge@v4
@@ -85,7 +85,7 @@ jobs:
 
   check_dist:
     name: Check dist
-    needs: [make_sdist, merge-wheel-artifact]
+    needs: [ merge-wheel-artifact ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4.1.4
