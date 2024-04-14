@@ -1,8 +1,8 @@
 # cython: language_level=3
+# cython: linetrace=True
+# distutils: define_macros=CYTHON_TRACE=1
+
 from typing import Any
-
-
-import cython
 
 from ._exceptions import BencodeDecodeError
 

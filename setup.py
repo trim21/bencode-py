@@ -24,6 +24,6 @@ setup(
     include_package_data=True,
     ext_modules=cythonize(
         "bencode2/**/*.pyx",
-        compiler_directives={"language_level": "3"},
+        compiler_directives={"language_level": "3", 'linetrace': 'True'},
     ),
 )
