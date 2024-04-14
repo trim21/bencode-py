@@ -13,12 +13,19 @@ def test_bad_case():
         bdecode(b"i01e")
 
     with pytest.raises(BencodeDecodeError):
+        bdecode(b"iabce")
+
+    with pytest.raises(BencodeDecodeError):
         # empty str
         print(bdecode(b"d0:4:spam3:fooi42ee"))
 
     with pytest.raises(BencodeDecodeError):
         # empty str
         bdecode(b"0:")
+
+    with pytest.raises(BencodeDecodeError):
+        # empty str
+        bdecode(b"1a2:qwer")
 
 
 def test_decode1():

@@ -37,7 +37,12 @@ cdef class Decoder:
     cdef tuple[object, int] __decode_int(self, x: bytes, index: int):
         index += 1
         new_f = x.index(b"e", index)
-        n = int(x[index:new_f])
+        try:
+            n = int(x[index:new_f], 10)
+        except ValueError:
+            raise BencodeDecodeError(
+                f'malformed int {x[index:new_f]}. index {index}'
+            )
 
         if x[index] == c'-':
             if x[index + 1] == c"0":
@@ -66,7 +71,10 @@ cdef class Decoder:
             )
 
         colon = x.index(b":", index)
-        n = int(x[index:colon])
+        try:
+            n = int(x[index:colon])
+        except ValueError:
+            raise BencodeDecodeError(f'malformed str/bytes length {x[index:colon]}, index {index}')
 
         colon += 1
         s = x[colon: colon + n]
