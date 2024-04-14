@@ -55,5 +55,34 @@ class EncodeTestCase(unittest.TestCase):
         pass
 
 
-if __name__ == "__main__":
-    unittest.main()
+data = {
+    "_id": "5973782bdb9a930533b05cb2",
+    "isActive": True,
+    "balance": "$1,446.35",
+    "age": 32,
+    "eyeColor": "green",
+    "name": "Logan Keller",
+    "gender": "male",
+    "company": "ARTIQ",
+    "email": "logankeller@artiq.com",
+    "phone": "+1 (952) 533-2258",
+    "friends": [
+        {
+            "id": 0,
+            "name": "Colon Salazar"
+        },
+        {
+            "id": 1,
+            "name": "French Mcneil"
+        },
+        {
+            "id": 2,
+            "name": "Carol Martin"
+        }
+    ],
+    "favoriteFruit": "banana"
+}
+
+
+def test_encode():
+    bencode2.bencode(data)

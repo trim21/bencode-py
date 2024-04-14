@@ -3,7 +3,7 @@
 from typing import Any
 
 from .decoder import BencodeDecoder
-from .encoder import BencodeEncoder
+from .encoder import encode
 from .exceptions import BencodeDecodeError, BencodeEncodeError
 
 __all__ = (
@@ -12,8 +12,6 @@ __all__ = (
     "bencode",
     "bdecode",
 )
-
-_encoder = BencodeEncoder()
 
 
 def bencode(value: Any) -> bytes:
@@ -25,7 +23,7 @@ def bencode(value: Any) -> bytes:
 
     :return: Bencode formatted string
     """
-    return _encoder.encode(value)
+    return encode(value)
 
 
 _decoder = BencodeDecoder()
