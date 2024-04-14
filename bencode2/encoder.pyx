@@ -1,7 +1,7 @@
 # cython: language_level=3
 
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, Mapping
 
 from cpython.bytes cimport PyBytes_Check
 from cpython.int cimport PyInt_Check
@@ -14,7 +14,7 @@ from cpython.string cimport PyString_Check
 from ._compat import to_binary
 from .exceptions import BencodeEncodeError
 
-cpdef bytes encode(value):
+cpdef bytes encode(value: Any):
     r: list[bytes] = []  # makes more sense for something with lots of appends
 
     __encode(value, r)
@@ -65,7 +65,7 @@ cdef __encode_list(x: list | tuple, r: list[bytes]):
 
     PyList_Append(r, b"e")
 
-cdef __encode_dict(x: dict, r: list[bytes]):
+cdef __encode_dict(x: Mapping, r: list[bytes]):
     PyList_Append(r, b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
