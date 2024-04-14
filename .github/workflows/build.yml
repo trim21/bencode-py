@@ -21,7 +21,7 @@ jobs:
         path: dist/*.tar.gz
 
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -32,6 +32,12 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+
+        exclude:
+          - os: macos-14
+            python-version: '3.8'
+          - os: macos-14
+            python-version: '3.9'
 
     steps:
       - uses: actions/checkout@v4
