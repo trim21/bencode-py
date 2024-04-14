@@ -3,7 +3,7 @@ name: Build Wheels for PyPI
 on:
   push:
     tags:
-      - *
+      - '*'
 
 jobs:
   build:
