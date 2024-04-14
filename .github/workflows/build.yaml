@@ -2,8 +2,8 @@ name: Build Wheels
 
 on:
   push:
-    branches-ignore:
-      - 'renovate/**'
+    branches:
+      - main
     tags-ignore:
       - '*'
 

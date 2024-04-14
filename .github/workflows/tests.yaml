@@ -4,8 +4,8 @@ on:
   pull_request:
   workflow_dispatch:
   push:
-    branches-ignore:
-      - 'renovate/**'
+    branches:
+      - main
     tags-ignore:
       - '*'
 
@@ -35,8 +35,17 @@ jobs:
       - run: pip install -r requirements.txt
 
       - run: python setup.py build_ext --inplace
+        env:
+          COV: '1'
+          CFLAGS: '-DCYTHON_TRACE=1'
 
       - run: pip install . -v
 
       - name: Run pytest
-        run: pytest
+        run: pytest --cov
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: trim21/py-bencode

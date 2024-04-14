@@ -1,8 +1,6 @@
 # cython: language_level=3
+
 from typing import Any
-
-
-import cython
 
 from ._exceptions import BencodeDecodeError
 
