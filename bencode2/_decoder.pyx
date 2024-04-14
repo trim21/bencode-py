@@ -1,6 +1,9 @@
 # cython: language_level=3
 from typing import Any
 
+
+import cython
+
 from ._exceptions import BencodeDecodeError
 
 cdef class Decoder:
@@ -33,7 +36,7 @@ cdef class Decoder:
         raise BencodeDecodeError(
             f"unexpected token {x[index:index + 1]} at index {index}")
 
-    cdef tuple[int, int] __decode_int(self, x: bytes, index: int):
+    cdef tuple[object, int] __decode_int(self, x: bytes, index: int):
         index += 1
         new_f = x.index(b"e", index)
         n = int(x[index:new_f])
