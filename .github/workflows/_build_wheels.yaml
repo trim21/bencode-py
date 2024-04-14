@@ -1,0 +1,82 @@
+name: Reusable workflow example
+
+on:
+  workflow_call:
+
+jobs:
+  make_sdist:
+    name: Make SDist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4.1.1
+      with:
+        submodules: true  # Optional, use if you have submodules
+
+    - name: Build SDist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v4.3.1
+      with:
+        name: 'wheels-sdist'
+        path: dist/*.tar.gz
+
+  build_wheels:
+    name: Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+
+        exclude:
+          - os: macos-14
+            python-version: '3.8'
+          - os: macos-14
+            python-version: '3.9'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip' # caching pip dependencies
+
+      - run: pip install -r requirements.txt
+
+      - run: python setup.py build_ext --inplace
+
+      - run: python setup.py bdist_wheel
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'wheels-${{ matrix.os }}-${{ matrix.python-version }}'
+          path: ./dist/*.whl
+
+  merge-wheel-artifact:
+    runs-on: ubuntu-latest
+    needs: ['build_wheels']
+    steps:
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: wheel
+          pattern: wheels-*
+
+  check_dist:
+    name: Check dist
+    needs: [make_sdist, merge-wheel-artifact]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4.1.4
+        with:
+          name: wheel
+          path: dist
+
+      - run: pipx run twine check --strict dist/*
