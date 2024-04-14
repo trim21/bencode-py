@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/_build_wheels.yml
+    uses: ./.github/workflows/_build_wheels.yaml
 
   upload_all:
     name: Upload wheels to PyPI

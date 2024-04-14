@@ -5,4 +5,4 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/_build_wheels.yml
+    uses: ./.github/workflows/_build_wheels.yaml
