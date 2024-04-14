@@ -20,6 +20,7 @@ def test_bad_case():
         # empty str
         bdecode(b"0:")
 
+
 def test_decode1():
     assert bdecode(b"d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aa1:y1:qe") == {
         b"a": {b"id": b"abcdefghij0123456789"},

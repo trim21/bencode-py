@@ -5,7 +5,7 @@ from Cython.Build import cythonize
 
 
 def get_readme():
-    with open("readme.md", "r", encoding="utf-8") as f:
+    with open("readme.md", encoding="utf-8") as f:
         return f.read()
 
 
