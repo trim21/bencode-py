@@ -11,7 +11,7 @@ def get_readme():
 
 setup(
     name='bencode2',
-    version='0.0.1',
+    version='0.0.2',
     description='bencode serialize/deserialize library',
     long_description=get_readme(),
     long_description_content_type='text/markdown',
@@ -20,6 +20,7 @@ setup(
     url='https://github.com/trim21/py-bencode',
     package_dir={'bencode2': 'bencode2'},
     packages=['bencode2'],
+    package_data={'bencode2': ['py.typed']},
     include_package_data=True,
     ext_modules=cythonize(
         "bencode2/**/*.pyx",
