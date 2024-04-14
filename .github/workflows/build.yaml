@@ -6,6 +6,6 @@ on:
 jobs:
   build:
     concurrency:
-      group: 'main'
+      group: '${{ github.workflow }}-${{ github.ref }}'
       cancel-in-progress: true
     uses: ./.github/workflows/_build_wheels.yaml
