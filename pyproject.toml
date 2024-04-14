@@ -1,58 +1,28 @@
-[project]
-#! Update all entries in the top half of this file.
-name='CythonProjectTemplate'
-version = '0.1.0'
-description='A simple project structure for starting new Cython projects.'
-authors= [ 
-    {name = 'Joe P. Renaud', email = 'Joe.P.Renaud@gmail.com'}
-    ]
-requires-python = ">=3.8"
-dependencies = [
-]
+[tool.poetry]
+name = "bencode2"
+version = "0.0.1"
+description = "Example project for demonstrating proprietary PyPI packages"
+authors = ["Aotu"]
+license = "Proprietary"
+readme = "readme.md"
 
-license = {file = "LICENSE.md"}
-readme = "README.md"
-keywords = [
-]
+# Only include cythonized files in final build
+include = ["bencode2/**/*.so"]  # ignored in VCS, so we need to be explicit
+exclude = ["bencode2/**/*.py"]
 
-classifiers = [
-]
+[tool.poetry.dependencies]
+python = "^3.7"
 
-[project.urls]
-"Homepage" = "https://github.com/jrenaud90/CythonProjectTemplate"
-"Bug Tracker" = "https://github.com/jrenaud90/CythonProjectTemplate/issues"
+[tool.poetry.dev-dependencies]
+Cython = "^0.29.21"
+pytest = '~7'
 
-[project.optional-dependencies]
-dev = [
-]
-
-# Note the entries below probably should not be changed unless there is a specific need.
 [build-system]
-requires = [
-    'setuptools>=64.0.0',
-    'numpy>=1.22',
-    'cython>=3.0.0',
-    'wheel>=0.38'
-]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0", "setuptools~=50.3.2", 'cython==0.29.37']
+build-backend = "poetry.core.masonry.api"
 
-[tool.setuptools]
-py-modules = ["_build"]
-include-package-data = true
-
-[tool.setuptools.cmdclass]
-build_py = "_build.build_package"
-build_ext = "_build.build_ext"
-
-[tool.setuptools.packages]
-find = {}
-
-[tool.pytest.ini_options]
-minversion = "7.4"
-addopts = "-ra -v"
-testpaths = [
-    "Tests"
-]
-
-[tool.cibuildwheel]
-build = "*"
+[tool.poetry.build]
+# The allows us to build C extensions (using Cython). Unstable feature
+# https://github.com/python-poetry/poetry/issues/2740#issuecomment-666551481
+script = "build.py"
+generate-setup-file = false
