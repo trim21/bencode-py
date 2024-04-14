@@ -101,7 +101,7 @@ jobs:
 
   merge-wheel-artifact:
     runs-on: ubuntu-latest
-    needs: ['build_wheels']
+    needs: ['build_wheels_non_linux', 'build_wheels_manylinux']
     steps:
       - name: Merge Artifacts
         uses: actions/upload-artifact/merge@v4
