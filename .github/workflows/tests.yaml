@@ -39,8 +39,6 @@ jobs:
           COV: '1'
           CFLAGS: '-DCYTHON_TRACE=1'
 
-      - run: pip install . -v
-
       - name: Run pytest
         run: pytest --cov
 
