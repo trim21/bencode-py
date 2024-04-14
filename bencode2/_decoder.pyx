@@ -26,11 +26,12 @@ cdef class Decoder:
             return self.__decode_int(x, index)
         if x[index] == c'd':
             return self.__decode_dict(x, index)
-        if c'0' < x[index] <= c'9':
+        if c'0' <= x[index] <= c'9':
             return self.__decode_str(x, index)
 
         raise BencodeDecodeError(
-            f"unexpected token {x[index:index + 1]} at index {index}")
+            f"unexpected token {x[index:index + 1]} at index {index}"
+        )
 
     cdef tuple[object, int] __decode_int(self, x: bytes, index: int):
         index += 1
@@ -63,14 +64,16 @@ cdef class Decoder:
         return r, index + 1
 
     cdef tuple[bytes, int] __decode_str(self, x: bytes, index: int):
-        if x[index] == c'0':
-            raise BencodeDecodeError(
-                f'malformed str/bytes length with leading 0. index {index}'
-            )
-
         colon = x.index(b":", index)
+
+        if x[index] == c'0':
+            if colon != index + 1:
+                raise BencodeDecodeError(
+                    f'malformed str/bytes length with leading 0. index {index}'
+                )
+
         try:
-            n = int(x[index:colon])
+            n = int(x[index:colon], 10)
         except ValueError:
             raise BencodeDecodeError(f'malformed str/bytes length {x[index:colon]}, index {index}')
 

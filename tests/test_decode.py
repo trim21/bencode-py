@@ -5,27 +5,20 @@ import pytest
 from bencode2 import bdecode, BencodeDecodeError
 
 
-def test_bad_case():
+@pytest.mark.parametrize(
+    "raw",
+    [
+        b"i-0e",
+        b"i01e",
+        b"iabce",
+        b"1a2:qwer",  # invalid str length
+        b"01:q",  # invalid str length
+        b"a",
+    ],
+)
+def test_bad_case(raw: bytes):
     with pytest.raises(BencodeDecodeError):
-        bdecode(b"i-0e")
-
-    with pytest.raises(BencodeDecodeError):
-        bdecode(b"i01e")
-
-    with pytest.raises(BencodeDecodeError):
-        bdecode(b"iabce")
-
-    with pytest.raises(BencodeDecodeError):
-        # empty str
-        print(bdecode(b"d0:4:spam3:fooi42ee"))
-
-    with pytest.raises(BencodeDecodeError):
-        # empty str
-        bdecode(b"0:")
-
-    with pytest.raises(BencodeDecodeError):
-        # empty str
-        bdecode(b"1a2:qwer")
+        bdecode(raw)
 
 
 def test_decode1():
@@ -40,6 +33,7 @@ def test_decode1():
 @pytest.mark.parametrize(
     ["raw", "expected"],
     [
+        (b"0:", b""),
         (b"4:spam", b"spam"),
         (b"i-3e", -3),
         (b"i9223372036854775808e", 9223372036854775808),  # longlong int +1
@@ -48,6 +42,7 @@ def test_decode1():
         (b"l4:spam4:eggse", [b"spam", b"eggs"]),
         (b"d3:cow3:moo4:spam4:eggse", {b"cow": b"moo", b"spam": b"eggs"}),
         (b"d4:spaml1:a1:bee", {b"spam": [b"a", b"b"]}),
+        (b"d0:4:spam3:fooi42ee", {b"": b"spam", b"foo": 42}),
     ],
 )
 def test_basic(raw: bytes, expected: Any):

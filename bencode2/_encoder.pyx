@@ -49,15 +49,11 @@ cdef __encode_bool(x: bool, r: list[bytes]):
         __encode_int(0, r)
 
 cdef __encode_bytes(x: bytes, r: list[bytes]):
-    if not x:
-        raise BencodeEncodeError('empty bytes is not allowed in bencoding')
     PyList_Append(r, str(len(x)).encode("utf-8"))
     PyList_Append(r, b":")
     PyList_Append(r, x)
 
 cdef __encode_str(x: str, r: list[bytes]):
-    if not x:
-        raise BencodeEncodeError('empty string is not allowed in bencoding')
     __encode_bytes(x.encode("UTF-8"), r)
 
 cdef __encode_list(x: list | tuple, r: list[bytes]):

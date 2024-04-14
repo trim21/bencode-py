@@ -102,20 +102,12 @@ def test_dict_int_keys():
         bencode2.bencode({1: 2})
 
 
-def test_empty_str_or_bytes():
-    with pytest.raises(BencodeEncodeError):
-        bencode2.bencode("")
-
-    with pytest.raises(BencodeEncodeError):
-        bencode2.bencode({"": 2})
-
-    with pytest.raises(BencodeEncodeError):
-        bencode2.bencode(["", 1])
-
-
 @pytest.mark.parametrize(
     ["raw", "expected"],
     [
+        (["", 1], b"l0:i1ee"),
+        ({"": 2}, b"d0:i2ee"),
+        ("", b"0:"),
         (True, b"i1e"),
         (False, b"i0e"),
         (-3, b"i-3e"),
