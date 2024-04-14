@@ -12,7 +12,7 @@ from cpython.dict cimport PyDict_Check
 from cpython.string cimport PyString_Check
 
 from ._compat import to_binary
-from .exceptions import BencodeEncodeError
+from ._exceptions import BencodeEncodeError
 
 cpdef bytes encode(value: Any):
     r: list[bytes] = []  # makes more sense for something with lots of appends
