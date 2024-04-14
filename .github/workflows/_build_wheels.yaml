@@ -47,8 +47,8 @@ jobs:
       - uses: actions/checkout@v4.1.1
 
       - name: Restore cached Primes
-        id: cache-primes-restore
-        uses: actions/cache/restore@v4
+        id: cache
+        uses: actions/cache@v4
         with:
           path: |
             ~\AppData\Local\pypa\cibuildwheel\Cache
@@ -62,16 +62,10 @@ jobs:
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_BUILD: ${{ matrix.build }}
 
-      - name: Save Primes
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            /home/runner/.cache/cibuildwheel
-          key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
-
       - run: ls ./wheelhouse/
 
       - uses: actions/upload-artifact@v4
+        if: "${{ steps.cache.outputs.cache-hit != 'true' }}"
         with:
           name: 'wheels-${{ runner.os }}-${{ matrix.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
