@@ -68,7 +68,7 @@ jobs:
           name: artifact
           path: dist
 
-      - uses: pypa/gh-action-pypi-publish@v1.8.10
+      - uses: pypa/gh-action-pypi-publish@v1.8.14
         with:
           #! Update with your project's PyPI API Token Name!
           user: __token__
