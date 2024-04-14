@@ -1,7 +1,10 @@
+import hashlib
+from pathlib import Path
 from typing import Any
 
 import pytest
 
+import bencode2
 from bencode2 import bdecode
 
 
@@ -19,6 +22,9 @@ def test_decode1():
     [
         (b"4:spam", b"spam"),
         (b"i-3e", -3),
+        (b"i9223372036854775808e", 9223372036854775808),  # longlong int +1
+        (b"i18446744073709551616e", 18446744073709551616),  # unsigned long long +1
+        (b"i4927586304e", 4927586304),
         (b"l4:spam4:eggse", [b"spam", b"eggs"]),
         (b"d3:cow3:moo4:spam4:eggse", {b"cow": b"moo", b"spam": b"eggs"}),
         (b"d4:spaml1:a1:bee", {b"spam": [b"a", b"b"]}),
