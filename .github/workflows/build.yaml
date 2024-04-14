@@ -2,6 +2,10 @@ name: Build Wheels
 
 on:
   push:
+    branches-ignore:
+      - 'renovate/**'
+    tags-ignore:
+      - '*'
 
 jobs:
   build:
