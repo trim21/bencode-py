@@ -63,30 +63,36 @@ class EncodeTestCase(unittest.TestCase):
         pass
 
 
-data = {
-    "_id": "5973782bdb9a930533b05cb2",
-    "isActive": True,
-    "balance": "$1,446.35",
-    "age": 32,
-    "eyeColor": "green",
-    "name": "Logan Keller",
-    "gender": "male",
-    "company": "ARTIQ",
-    "email": "logankeller@artiq.com",
-    "phone": "+1 (952) 533-2258",
-    "friends": [
-        {"id": 0, "name": "Colon Salazar"},
-        {"id": 1, "name": "French Mcneil"},
-        {"id": 2, "name": "Carol Martin"},
-    ],
-    "favoriteFruit": "banana",
-}
-
-
 def test_encode():
-    bencode2.bencode(data)
+    assert bencode2.bencode(
+        {
+            "_id": "5973782bdb9a930533b05cb2",
+            "isActive": True,
+            "balance": "$1,446.35",
+            "age": 32,
+            "eyeColor": "green",
+            "name": "Logan Keller",
+            "gender": "male",
+            "company": "ARTIQ",
+            "email": "logankeller@artiq.com",
+            "phone": "+1 (952) 533-2258",
+            "friends": [
+                {"id": 0, "name": "Colon Salazar"},
+                {"id": 1, "name": "French Mcneil"},
+                {"id": 2, "name": "Carol Martin"},
+            ],
+            "favoriteFruit": "banana",
+        }
+    ) == (
+        b"d3:_id24:5973782bdb9a930533b05cb23:agei32e7:balance9"
+        b":$1,446.357:company5:ARTIQ5:email21:logankeller@artiq.c"
+        b"om8:eyeColor5:green13:favoriteFruit6:banana7:friendsld2"
+        b":idi0e4:name13:Colon Salazared2:idi1e4:name13:French Mc"
+        b"neiled2:idi2e4:name12:Carol Martinee6:gender4:male8:isA"
+        b"ctivei1e4:name12:Logan Keller5:phone17:+1 (952) 533-2258e"
+    )
 
 
 def test_duplicated_type_keys():
     with pytest.raises(BencodeEncodeError):
-        bencode2.bencode({"string_key": 1, b"string_key": 2})
+        bencode2.bencode({"string_key": 1, b"string_key": 2, "1": 2})
