@@ -1,6 +1,4 @@
 # cython: language_level=3
-# cython: linetrace=True
-# distutils: define_macros=CYTHON_TRACE=1
 
 from collections.abc import Mapping
 from typing import Any, Mapping

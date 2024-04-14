@@ -35,6 +35,8 @@ jobs:
       - run: pip install -r requirements.txt
 
       - run: python setup.py build_ext --inplace
+        env:
+          COV: '1'
 
       - run: pip install . -v
 
