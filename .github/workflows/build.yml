@@ -23,7 +23,7 @@ jobs:
     name: Build ${{ matrix.platform }} wheels
     runs-on: ${{ matrix.platform }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         platform:
           - macos-latest
