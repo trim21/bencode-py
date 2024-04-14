@@ -11,7 +11,6 @@ from cpython.bool cimport PyBool_Check
 from cpython.dict cimport PyDict_Check
 from cpython.string cimport PyString_Check
 
-from ._compat import to_binary
 from ._exceptions import BencodeEncodeError
 
 cpdef bytes encode(value: Any):
@@ -89,3 +88,12 @@ cdef __check_duplicated_keys(s: list[tuple[bytes, Any]]):
                 f'find duplicated keys {last_key} and {current.decode()}'
             )
         last_key = current
+
+cdef to_binary(s: str | bytes):
+    if PyBytes_Check(s):
+        return s
+
+    if PyString_Check(s):
+        return s.encode("utf-8", "strict")
+
+    raise TypeError("expected binary or text (found %s)" % type(s))

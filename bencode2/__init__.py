@@ -2,8 +2,8 @@
 
 from typing import Any
 
-from ._decoder import BencodeDecoder
-from ._encoder import encode
+from ._decoder import Decoder as _Decoder
+from ._encoder import encode as _encode
 from ._exceptions import BencodeDecodeError, BencodeEncodeError
 
 __all__ = (
@@ -15,28 +15,10 @@ __all__ = (
 
 
 def bencode(value: Any) -> bytes:
-    """
-    Encode ``value`` into the bencode format.
-
-    :param value: Value
-    :type value: object
-
-    :return: Bencode formatted string
-    """
-    return encode(value)
+    """Encode value into the bencode format."""
+    return _encode(value)
 
 
-_decoder = BencodeDecoder()
-
-
-def bdecode(value: bytes) -> Any:
-    """
-    Decode bencode formatted byte string ``value``.
-
-    :param value: Bencode formatted string
-    :type value: bytes
-
-    :return: Decoded value
-    :rtype: object
-    """
-    return _decoder.decode(value)
+def bdecode(value: bytes, *, str_key: bool = False) -> Any:
+    """Decode bencode formatted bytes to python value."""
+    return _Decoder(str_key).decode(value)
