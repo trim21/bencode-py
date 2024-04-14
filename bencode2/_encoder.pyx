@@ -21,7 +21,7 @@ cpdef bytes encode(value: Any):
     # Join parts
     return b"".join(r)
 
-cdef __encode(value, r: list[bytes]):
+cdef __encode(value: Any, r: list[bytes]):
     if PyDict_Check(value):
         __encode_dict(value, r)
     elif PyString_Check(value):
@@ -72,7 +72,7 @@ cdef __encode_dict(x: Mapping, r: list[bytes]):
     PyList_Append(r, b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
-    i_list: list[tuple[bytes, Any]] = [(to_binary(k), v) for k, v in x.items()]
+    i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
     i_list.sort(key=lambda kv: kv[0])
     __check_duplicated_keys(i_list)
 
@@ -82,7 +82,7 @@ cdef __encode_dict(x: Mapping, r: list[bytes]):
 
     PyList_Append(r, b"e")
 
-cdef __check_duplicated_keys(s: list[tuple[bytes, Any]]):
+cdef __check_duplicated_keys(s: list[tuple[bytes, object]]):
     if len(s) == 0:
         return
     last_key: bytes = s[0][0]

@@ -1,7 +1,5 @@
 # cython: language_level=3
 
-from typing import Any
-
 from ._exceptions import BencodeDecodeError
 
 cdef class Decoder:
@@ -10,7 +8,7 @@ cdef class Decoder:
     def __init__(self, str_key: bool):
         self.str_key = str_key
 
-    def decode(self, value: bytes)-> Any:
+    def decode(self, value: bytes)-> object:
         try:
             data, length = self.__decode(value, 0)
         except (IndexError, KeyError, TypeError, ValueError) as e:
@@ -21,7 +19,7 @@ cdef class Decoder:
 
         return data
 
-    cdef tuple[Any, int] __decode(self, x: bytes, index: int):
+    cdef tuple[object, int] __decode(self, x: bytes, index: int):
         if x[index] == c'l':
             return self.__decode_list(x, index)
         if x[index] == c'i':
