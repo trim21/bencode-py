@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import Any
 
 from ._compat import to_binary
-from .exceptions import BencodeDecodeError
+from ._exceptions import BencodeDecodeError
 
 
 class BencodeDecoder:
