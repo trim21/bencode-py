@@ -69,11 +69,23 @@ cdef __encode_dict(x: Mapping, r: list[bytes]):
     PyList_Append(r, b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
-    i_list = [(to_binary(k), v) for k, v in x.items()]
+    i_list: list[tuple[bytes, Any]] = [(to_binary(k), v) for k, v in x.items()]
     i_list.sort(key=lambda kv: kv[0])
+    __check_duplicated_keys(i_list)
 
     for k, v in i_list:
         __encode(k, r)
         __encode(v, r)
 
     PyList_Append(r, b"e")
+
+cdef __check_duplicated_keys(s: list[tuple[bytes, Any]]):
+    if len(s) == 0:
+        return
+    last_key: bytes = s[0][0]
+    for current, _ in s[1:]:
+        if last_key == current:
+            raise BencodeEncodeError(
+                f'find duplicated keys {last_key} and {current.decode()}'
+            )
+        last_key = current

@@ -1,6 +1,8 @@
 import collections
 import unittest
 
+import pytest
+
 import bencode2
 from bencode2 import BencodeEncodeError
 
@@ -13,7 +15,9 @@ class EncodeTestCase(unittest.TestCase):
 
     def test_encode_str(self):
         coded = bencode2.bencode("ThisIsAString")
-        self.assertEqual(coded, b"13:ThisIsAString", msg="Failed to encode string from str.")
+        self.assertEqual(
+            coded, b"13:ThisIsAString", msg="Failed to encode string from str."
+        )
 
     def test_encode_int(self):
         coded = bencode2.bencode(42)
@@ -41,7 +45,9 @@ class EncodeTestCase(unittest.TestCase):
         od["ka"] = "va"
         od["kb"] = 2
         coded = bencode2.bencode(od)
-        self.assertEqual(coded, b"d2:ka2:va2:kbi2ee", msg="Failed to encode dictionary from dict.")
+        self.assertEqual(
+            coded, b"d2:ka2:va2:kbi2ee", msg="Failed to encode dictionary from dict."
+        )
 
     def test_encode_complex(self):
         od = collections.OrderedDict()
@@ -49,7 +55,9 @@ class EncodeTestCase(unittest.TestCase):
         od["KeyB"] = {"k": "v"}
         od["KeyC"] = 3
         od["KeyD"] = "AString"
-        expected_result = b"d4:KeyAl9:listitemAd1:k1:vei3ee4:KeyBd1:k1:ve4:KeyCi3e4:KeyD7:AStringe"
+        expected_result = (
+            b"d4:KeyAl9:listitemAd1:k1:vei3ee4:KeyBd1:k1:ve4:KeyCi3e4:KeyD7:AStringe"
+        )
         coded = bencode2.bencode(od)
         self.assertEqual(coded, expected_result, msg="Failed to encode complex object.")
         pass
@@ -67,22 +75,18 @@ data = {
     "email": "logankeller@artiq.com",
     "phone": "+1 (952) 533-2258",
     "friends": [
-        {
-            "id": 0,
-            "name": "Colon Salazar"
-        },
-        {
-            "id": 1,
-            "name": "French Mcneil"
-        },
-        {
-            "id": 2,
-            "name": "Carol Martin"
-        }
+        {"id": 0, "name": "Colon Salazar"},
+        {"id": 1, "name": "French Mcneil"},
+        {"id": 2, "name": "Carol Martin"},
     ],
-    "favoriteFruit": "banana"
+    "favoriteFruit": "banana",
 }
 
 
 def test_encode():
     bencode2.bencode(data)
+
+
+def test_duplicated_type_keys():
+    with pytest.raises(BencodeEncodeError):
+        bencode2.bencode({"string_key": 1, b"string_key": 2})
