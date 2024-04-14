@@ -28,7 +28,7 @@ cdef class Decoder:
             return self.__decode_int(x, index)
         if x[index] == c'd':
             return self.__decode_dict(x, index)
-        if c'0' <= x[index] <= c'9':
+        if c'0' < x[index] <= c'9':
             return self.__decode_str(x, index)
 
         raise BencodeDecodeError(
@@ -41,10 +41,13 @@ cdef class Decoder:
 
         if x[index] == c'-':
             if x[index + 1] == c"0":
-                raise ValueError
+                raise BencodeDecodeError(
+                    f'-0 is not allowed in bencoding. index: {index}'
+                )
         elif x[index] == c'0' and new_f != index + 1:
-            raise ValueError
-
+            raise BencodeDecodeError(
+                f'integer with leading zero is not allowed. index: {index}'
+            )
         return n, new_f + 1
 
     cdef tuple[list, int] __decode_list(self, x: bytes, index: int):
@@ -57,11 +60,13 @@ cdef class Decoder:
         return r, index + 1
 
     cdef tuple[bytes, int] __decode_str(self, x: bytes, index: int):
+        if x[index] == c'0':
+            raise BencodeDecodeError(
+                f'malformed str/bytes length with leading 0. index {index}'
+            )
+
         colon = x.index(b":", index)
         n = int(x[index:colon])
-
-        if x[index] == c'0' and colon != index + 1:
-            raise ValueError
 
         colon += 1
         s = x[colon: colon + n]

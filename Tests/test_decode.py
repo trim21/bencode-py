@@ -1,12 +1,24 @@
-import hashlib
-from pathlib import Path
 from typing import Any
 
 import pytest
 
-import bencode2
-from bencode2 import bdecode
+from bencode2 import bdecode, BencodeDecodeError
 
+
+def test_bad_case():
+    with pytest.raises(BencodeDecodeError):
+        bdecode(b"i-0e")
+
+    with pytest.raises(BencodeDecodeError):
+        bdecode(b"i01e")
+
+    with pytest.raises(BencodeDecodeError):
+        # empty str
+        print(bdecode(b"d0:4:spam3:fooi42ee"))
+
+    with pytest.raises(BencodeDecodeError):
+        # empty str
+        bdecode(b"0:")
 
 def test_decode1():
     assert bdecode(b"d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aa1:y1:qe") == {
