@@ -1,24 +1,27 @@
 import os
-from setuptools import setup
+from setuptools import setup, Extension
 
 from Cython.Build import cythonize
 
 
 def get_readme():
-    """Load README.rst for display on PyPI."""
     with open("readme.md", "r", encoding="utf-8") as f:
         return f.read()
 
 
 if os.environ.get("COV") == "1":
-    print("enable tracing")
+    define_macros = [("CYTHON_TRACE", "1")]
     compiler_directives = {
         "linetrace": "True",
-        "distutils": "define_macros=CYTHON_TRACE=1",
     }
 else:
+    define_macros = None
     compiler_directives = {}
 
+extensions = [
+    # Everything but primes.pyx is included here.
+    Extension("*", ["**/*.pyx"], define_macros=define_macros)
+]
 
 setup(
     name="bencode2",
@@ -34,7 +37,7 @@ setup(
     package_data={"bencode2": ["py.typed"]},
     include_package_data=True,
     ext_modules=cythonize(
-        "bencode2/**/*.pyx",
+        extensions,
         compiler_directives={"language_level": "3", **compiler_directives},
     ),
 )
