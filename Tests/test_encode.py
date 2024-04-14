@@ -1,5 +1,6 @@
 import collections
 import unittest
+from typing import Any
 
 import pytest
 
@@ -96,3 +97,27 @@ def test_encode():
 def test_duplicated_type_keys():
     with pytest.raises(BencodeEncodeError):
         bencode2.bencode({"string_key": 1, b"string_key": 2, "1": 2})
+
+
+def test_dict_int_keys():
+    with pytest.raises(TypeError):
+        bencode2.bencode({1: 2})
+
+
+@pytest.mark.parametrize(
+    ["raw", "expected"],
+    [
+        (True, b"i1e"),
+        (False, b"i0e"),
+        (-3, b"i-3e"),
+        (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
+        (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
+        (4927586304, b"i4927586304e"),
+        ([b"spam", b"eggs"], b"l4:spam4:eggse"),
+        ({b"cow": b"moo", b"spam": b"eggs"}, b"d3:cow3:moo4:spam4:eggse"),
+        ({b"spam": [b"a", b"b"]}, b"d4:spaml1:a1:bee"),
+        ({}, b"de"),
+    ],
+)
+def test_basic(raw: Any, expected: bytes):
+    assert bencode2.bencode(raw) == expected
