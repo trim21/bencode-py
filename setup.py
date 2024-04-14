@@ -11,6 +11,7 @@ def get_readme():
 
 
 if os.environ.get("COV") == '1':
+    print("enable tracing")
     define_macros = [('CYTHON_TRACE', '1')]
     compiler_directives = {'linetrace': 'True'}
 else:

@@ -37,6 +37,7 @@ jobs:
       - run: python setup.py build_ext --inplace
         env:
           COV: '1'
+          CFLAGS: '-DCYTHON_TRACE=1'
 
       - run: pip install . -v
 
