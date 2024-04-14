@@ -17,7 +17,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4.3.1
       with:
-        name: 'wheel-sdist'
+        name: 'wheels-sdist'
         path: dist/*.tar.gz
 
   build_wheels:
@@ -56,7 +56,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ strategy.job-index }}
+          name: 'wheels-${{ matrix.os }}-${{ matrix.python-version }}'
           path: ./dist/*.whl
 
   merge-wheel-artifact:
@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-artifact/merge@v4
         with:
           name: wheel
-          pattern: wheel-*
+          pattern: wheels-*
 
   check_dist:
     name: Check dist
