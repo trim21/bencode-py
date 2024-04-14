@@ -1,5 +1,0 @@
-[run]
-plugins = Cython.Coverage
-source = CythonProjectTemplate
-omit =
-    Tests/*
