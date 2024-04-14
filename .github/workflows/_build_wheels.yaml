@@ -27,8 +27,7 @@ jobs:
           - { os: macos-latest, arch: x86_64, build: "*pp*" } # pypy
           - { os: macos-latest, arch: x86_64, build: "*cp*" } # cpython
           - { os: macos-latest, arch: arm64, build: "*" }
-          - { os: windows-latest, arch: x86, build: "*pp*" }
-          - { os: windows-latest, arch: x86, build: "*cp*" }
+          - { os: windows-latest, arch: x86, build: "*" }
           - { os: windows-latest, arch: AMD64, build: "*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*" }
           - { os: ubuntu-latest, arch: aarch64, build: "*[61]-manylinux*" }
