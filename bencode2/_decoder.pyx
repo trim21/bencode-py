@@ -40,7 +40,7 @@ cdef class Decoder:
         n = int(x[index:new_f])
 
         if x[index] == c'-':
-            if x[index + 1: index + 2] == b"0":
+            if x[index + 1] == c"0":
                 raise ValueError
         elif x[index] == c'0' and new_f != index + 1:
             raise ValueError

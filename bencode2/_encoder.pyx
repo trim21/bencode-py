@@ -1,7 +1,7 @@
 # cython: language_level=3
 
 from collections.abc import Mapping
-from typing import Any, Mapping
+from typing import Any
 
 from cpython.bytes cimport PyBytes_Check
 from cpython.int cimport PyInt_Check
