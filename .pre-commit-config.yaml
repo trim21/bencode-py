@@ -15,17 +15,17 @@ repos:
       - id: check-added-large-files # check for file bigger than 500kb
       - id: debug-statements
       - id: trailing-whitespace
-        exclude: '.*\.torrent'
+        exclude: '.*\.bin'
       - id: mixed-line-ending
         args: [--fix=lf]
-        exclude: '.*\.torrent'
+        exclude: '.*\.bin'
       - id: end-of-file-fixer
-        exclude: '.*\.torrent'
+        exclude: '.*\.bin'
       - id: fix-byte-order-marker
-        exclude: '.*\.torrent'
+        exclude: '.*\.bin'
       - id: fix-encoding-pragma
         args: [--remove]
-        exclude: '.*\.torrent'
+        exclude: '.*\.bin'
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.4.0
