@@ -56,10 +56,24 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: trim21/py-bencode
 
+  bench:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ubuntu
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip' # caching pip dependencies
+
+      - run: pip install -r requirements.txt
+
+      - run: python setup.py build_ext --inplace
+
       - name: Run pytest
-        run: pytest bench.py --benchmark-json=bench.json
-        env:
-          PYTHONPATH: '.'
+        run: python -m pytest bench.py --benchmark-json=bench.json
 
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
