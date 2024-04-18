@@ -15,7 +15,7 @@ torrent_2_data = bdecode(torrent_2_raw)
 
 
 def decode(b: bytes):
-    return bdecode(b"i10e")
+    return bdecode(b)
 
 
 def test_bdecode_1(benchmark):
@@ -30,7 +30,7 @@ def encode(data):
     return bencode(data)
 
 
-def test_bencode_2(benchmark):
+def test_bencode_1(benchmark):
     benchmark(encode, torrent_1_data)
 
 
