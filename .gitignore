@@ -132,6 +132,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+.benchmarks/
+bench.json
 
 # Translations
 *.mo

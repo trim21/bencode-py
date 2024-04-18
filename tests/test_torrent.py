@@ -6,7 +6,7 @@ import bencode2
 
 def test_get_torrent_info_hash():
     with Path(__file__).joinpath(
-        "../fixtures/ubuntu-22.04.2-desktop-amd64.iso.torrent"
+        "../fixtures/ubuntu-22.04.2-desktop-amd64.iso.torrent.bin"
     ).resolve().open("rb") as f:
         data = bencode2.bdecode(f.read(), str_key=True)
 
