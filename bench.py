@@ -1,20 +1,38 @@
-import time
+import pathlib
+
+from bencode2 import bencode
+from bencode2 import bdecode
+
+root = pathlib.Path(__file__).parent
+
+torrent_1_raw = root.joinpath("tests/fixtures/56507.torrent").read_bytes()
+torrent_1_data = bdecode(torrent_1_raw)
+
+torrent_2_raw = root.joinpath(
+    "tests/fixtures/ubuntu-22.04.2-desktop-amd64.iso.torrent"
+).read_bytes()
+torrent_2_data = bdecode(torrent_2_raw)
 
 
-def something(duration=0.000001):
-    """
-    Function that needs some serious benchmarking.
-    """
-    time.sleep(duration)
-    # You may return anything you want, like the result of a computation
-    return 123
+def decode(b: bytes):
+    return bdecode(b"i10e")
 
 
-def test_my_stuff(benchmark):
-    # benchmark something
-    result = benchmark(something)
+def test_bdecode_1(benchmark):
+    benchmark(decode, torrent_1_raw)
 
-    # Extra code, to verify that the run completed correctly.
-    # Sometimes you may want to check the result, fast functions
-    # are no good if they return incorrect results :-)
-    assert result == 123
+
+def test_bdecode_2(benchmark):
+    benchmark(decode, torrent_2_raw)
+
+
+def encode(data):
+    return bencode(data)
+
+
+def test_bencode_2(benchmark):
+    benchmark(encode, torrent_1_data)
+
+
+def test_bencode_2(benchmark):
+    benchmark(encode, torrent_2_data)
