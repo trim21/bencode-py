@@ -40,7 +40,7 @@ jobs:
           CFLAGS: '-DCYTHON_TRACE=1'
 
       - name: Run pytest
-        run: pytest --cov
+        run: pytest --cov tests
         env:
           PYTHONPATH: '.'
 
@@ -49,3 +49,20 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: trim21/py-bencode
+
+      - name: Run pytest
+        run: pytest bench.py --benchmark-json=bench.json
+        env:
+          PYTHONPATH: '.'
+
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Python Benchmark with pytest-benchmark
+          tool: 'pytest'
+          output-file-path: bench.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          alert-threshold: '200%'
+          comment-on-alert: true
+          fail-on-alert: true
