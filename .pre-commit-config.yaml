@@ -2,7 +2,7 @@ default_stages: [commit]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.6.0
     hooks:
       - id: check-case-conflict
       - id: check-ast
@@ -15,12 +15,17 @@ repos:
       - id: check-added-large-files # check for file bigger than 500kb
       - id: debug-statements
       - id: trailing-whitespace
+        exclude: '.*\.torrent'
       - id: mixed-line-ending
         args: [--fix=lf]
+        exclude: '.*\.torrent'
       - id: end-of-file-fixer
+        exclude: '.*\.torrent'
       - id: fix-byte-order-marker
+        exclude: '.*\.torrent'
       - id: fix-encoding-pragma
         args: [--remove]
+        exclude: '.*\.torrent'
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.4.0
