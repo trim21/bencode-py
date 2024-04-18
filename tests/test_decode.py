@@ -43,6 +43,7 @@ def test_decode1():
         (b"d3:cow3:moo4:spam4:eggse", {b"cow": b"moo", b"spam": b"eggs"}),
         (b"d4:spaml1:a1:bee", {b"spam": [b"a", b"b"]}),
         (b"d0:4:spam3:fooi42ee", {b"": b"spam", b"foo": 42}),
+        (b"d4:spam0:3:fooi42ee", {b"spam": b"", b"foo": 42}),
     ],
 )
 def test_basic(raw: bytes, expected: Any):
