@@ -8,6 +8,28 @@ import bencode2
 from bencode2 import BencodeEncodeError
 
 
+@pytest.mark.parametrize(
+    ["raw", "expected"],
+    [
+        ("", b"0:"),
+        (True, b"i1e"),
+        (False, b"i0e"),
+        (-3, b"i-3e"),
+        (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
+        (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
+        (4927586304, b"i4927586304e"),
+        ([b"spam", b"eggs"], b"l4:spam4:eggse"),
+        ({b"cow": b"moo", b"spam": b"eggs"}, b"d3:cow3:moo4:spam4:eggse"),
+        ({b"spam": [b"a", b"b"]}, b"d4:spaml1:a1:bee"),
+        ({}, b"de"),
+        (["", 1], b"l0:i1ee"),
+        ({"": 2}, b"d0:i2ee"),
+    ],
+)
+def test_basic(raw: Any, expected: bytes):
+    assert bencode2.bencode(raw) == expected
+
+
 class EncodeTestCase(unittest.TestCase):
     def test_exception_when_strict(self):
         invalid_obj = None
@@ -100,25 +122,3 @@ def test_duplicated_type_keys():
 def test_dict_int_keys():
     with pytest.raises(TypeError):
         bencode2.bencode({1: 2})
-
-
-@pytest.mark.parametrize(
-    ["raw", "expected"],
-    [
-        (["", 1], b"l0:i1ee"),
-        ({"": 2}, b"d0:i2ee"),
-        ("", b"0:"),
-        (True, b"i1e"),
-        (False, b"i0e"),
-        (-3, b"i-3e"),
-        (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
-        (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
-        (4927586304, b"i4927586304e"),
-        ([b"spam", b"eggs"], b"l4:spam4:eggse"),
-        ({b"cow": b"moo", b"spam": b"eggs"}, b"d3:cow3:moo4:spam4:eggse"),
-        ({b"spam": [b"a", b"b"]}, b"d4:spaml1:a1:bee"),
-        ({}, b"de"),
-    ],
-)
-def test_basic(raw: Any, expected: bytes):
-    assert bencode2.bencode(raw) == expected

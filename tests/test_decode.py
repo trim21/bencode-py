@@ -6,31 +6,6 @@ from bencode2 import bdecode, BencodeDecodeError
 
 
 @pytest.mark.parametrize(
-    "raw",
-    [
-        b"i-0e",
-        b"i01e",
-        b"iabce",
-        b"1a2:qwer",  # invalid str length
-        b"01:q",  # invalid str length
-        b"a",
-    ],
-)
-def test_bad_case(raw: bytes):
-    with pytest.raises(BencodeDecodeError):
-        bdecode(raw)
-
-
-def test_decode1():
-    assert bdecode(b"d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aa1:y1:qe") == {
-        b"a": {b"id": b"abcdefghij0123456789"},
-        b"q": b"ping",
-        b"t": b"aa",
-        b"y": b"q",
-    }
-
-
-@pytest.mark.parametrize(
     ["raw", "expected"],
     [
         (b"0:", b""),
@@ -50,6 +25,15 @@ def test_basic(raw: bytes, expected: Any):
     assert bdecode(raw) == expected
 
 
+def test_decode1():
+    assert bdecode(b"d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aa1:y1:qe") == {
+        b"a": {b"id": b"abcdefghij0123456789"},
+        b"q": b"ping",
+        b"t": b"aa",
+        b"y": b"q",
+    }
+
+
 @pytest.mark.parametrize(
     ["raw", "expected"],
     [
@@ -58,4 +42,20 @@ def test_basic(raw: bytes, expected: Any):
     ],
 )
 def test_dict_str_key(raw: bytes, expected: Any):
-    assert bdecode(raw, str_key=True) == expected
+    assert bdecode(raw) == expected
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        b"i-0e",
+        b"i01e",
+        b"iabce",
+        b"1a2:qwer",  # invalid str length
+        b"01:q",  # invalid str length
+        b"a",
+    ],
+)
+def test_bad_case(raw: bytes):
+    with pytest.raises(BencodeDecodeError):
+        bdecode(raw)

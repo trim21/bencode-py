@@ -2,6 +2,7 @@ import pathlib
 import sys
 
 import pytest
+import bencodepy
 
 from bencode2 import bencode
 from bencode2 import bdecode
@@ -9,12 +10,12 @@ from bencode2 import bdecode
 root = pathlib.Path(__file__).parent
 
 torrent_1_raw = root.joinpath("tests/fixtures/56507.torrent.bin").read_bytes()
-torrent_1_data = bdecode(torrent_1_raw)
+torrent_1_data = bencodepy.bdecode(torrent_1_raw)
 
 torrent_2_raw = root.joinpath(
     "tests/fixtures/ubuntu-22.04.2-desktop-amd64.iso.torrent.bin"
 ).read_bytes()
-torrent_2_data = bdecode(torrent_2_raw)
+torrent_2_data = bencodepy.bdecode(torrent_2_raw)
 
 os = sys.platform
 py_ver = "{}{}".format(*sys.version_info[:2])

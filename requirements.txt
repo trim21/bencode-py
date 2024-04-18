@@ -1,8 +1,6 @@
 # testing
 pytest==8.1.1
-pytest-cov==5.0.0
 pytest-benchmark==4.0.0
 # build
-setuptools
-wheel
-cython==3.0.10
+maturin>=1,<2
+bencode-py==4.0.0

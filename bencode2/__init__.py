@@ -1,24 +1,19 @@
-# cython: language_level=3
-
 from typing import Any
 
-from ._decoder import Decoder as _Decoder
-from ._encoder import encode as _encode
-from ._exceptions import BencodeDecodeError, BencodeEncodeError
+from .bencode2 import encode, BencodeEncodeError, decode, BencodeDecodeError
 
-__all__ = (
-    "BencodeDecodeError",
-    "BencodeEncodeError",
+
+def bencode(obj: Any) -> bytes:
+    return encode(obj)
+
+
+def bdecode(obj: bytes, *, str_key: bool = False) -> Any:
+    return decode(obj, str_key=str_key)
+
+
+__all__ = [
     "bencode",
+    "BencodeEncodeError",
     "bdecode",
-)
-
-
-def bencode(value: Any) -> bytes:
-    """Encode value into the bencode format."""
-    return _encode(value)
-
-
-def bdecode(value: bytes, *, str_key: bool = False) -> Any:
-    """Decode bencode formatted bytes to python value."""
-    return _Decoder(str_key).decode(value)
+    "BencodeDecodeError",
+]
