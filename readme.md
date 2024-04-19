@@ -16,3 +16,7 @@ assert bencode2.bdecode(b"d4:spaml1:a1:bee", str_key=True) == {"spam": [b"a", b"
 
 assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 ```
+
+## notice
+
+This package is not available in pypy and is slower than [bencode-py](https://pypi.org/project/bencode.py/) in pypy.
