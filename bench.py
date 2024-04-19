@@ -1,4 +1,7 @@
 import pathlib
+import sys
+
+import pytest
 
 from bencode2 import bencode
 from bencode2 import bdecode
@@ -13,26 +16,37 @@ torrent_2_raw = root.joinpath(
 ).read_bytes()
 torrent_2_data = bdecode(torrent_2_raw)
 
+os = sys.platform
+py_ver = "{}{}".format(*sys.version_info[:2])
+
+
+def mark(fn):
+    return pytest.mark.parametrize(["os", "ver"], [(os, py_ver)])(fn)
+
 
 def decode(b: bytes):
     return bdecode(b)
-
-
-def test_bdecode_1(benchmark):
-    benchmark(decode, torrent_1_raw)
-
-
-def test_bdecode_2(benchmark):
-    benchmark(decode, torrent_2_raw)
 
 
 def encode(data):
     return bencode(data)
 
 
-def test_bencode_1(benchmark):
+@mark
+def test_decode_1(benchmark, os, ver):
+    benchmark(decode, torrent_1_raw)
+
+
+@mark
+def test_decode_2(benchmark, os, ver):
+    benchmark(decode, torrent_2_raw)
+
+
+@mark
+def test_encode_1(benchmark, os, ver):
     benchmark(encode, torrent_1_data)
 
 
-def test_bencode_2(benchmark):
+@mark
+def test_encode_2(benchmark, os, ver):
     benchmark(encode, torrent_2_data)

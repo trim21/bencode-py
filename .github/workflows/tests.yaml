@@ -18,6 +18,7 @@ permissions:
 jobs:
   test:
     strategy:
+      max-parallel: 5
       matrix:
         os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
         python-version:
@@ -57,20 +58,30 @@ jobs:
           slug: trim21/py-bencode
 
   bench:
-    runs-on: 'ubuntu-latest'
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+        os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
 
+    runs-on: '${{ matrix.os }}'
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ubuntu
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.python-version }}
           cache: 'pip' # caching pip dependencies
 
       - run: pip install -r requirements.txt
 
-      - run: python setup.py build_ext --inplace
+      - run: python setup.py build_ext --force --inplace
 
       - name: Run pytest
         run: python -m pytest bench.py --benchmark-json=bench.json

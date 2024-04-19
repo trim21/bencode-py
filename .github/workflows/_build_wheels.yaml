@@ -22,6 +22,7 @@ jobs:
     name: Build wheels
     runs-on: ${{ matrix.os }}
     strategy:
+      max-parallel: 4
       matrix:
         include:
           - { os: macos-latest, arch: x86_64, build: "*pp*" } # pypy
