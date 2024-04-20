@@ -1,4 +1,6 @@
-# A bencode serialize/deserialize library based on mypyc
+# A bencode serialize/deserialize library
+
+This library is compiled with mypy on cpython, and pure python on pypy.
 
 ## install
 
