@@ -23,25 +23,14 @@ repos:
         exclude: '.*\.bin'
       - id: fix-byte-order-marker
         exclude: '.*\.bin'
-      - id: fix-encoding-pragma
-        args: [--remove]
-        exclude: '.*\.bin'
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.4.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.4.1
     hooks:
-      - id: pyupgrade
-        args: [--py310-plus]
-
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.1.1
-    hooks:
-      - id: autoflake
-        args:
-          - --in-place
-          - --remove-unused-variables
-          - --remove-all-unused-imports
-          - --expand-star-imports
+      # Run the linter.
+      - id: ruff
+        args: [ --fix ]
 
   - repo: https://github.com/psf/black
     rev: 23.3.0
