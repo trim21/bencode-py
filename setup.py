@@ -29,7 +29,7 @@ setup(
     long_description_content_type="text/markdown",
     author="trim21",
     author_email="trim21.me@gmail.com",
-    url="https://github.com/trim21/py-bencode",
+    url="https://github.com/trim21/bencode-py",
     python_requires=">=3.8",
     package_dir={"bencode2": "bencode2"},
     packages=["bencode2"],
