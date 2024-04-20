@@ -1,7 +1,8 @@
+import glob
 import os
-from setuptools import setup, Extension
+import platform
 
-from Cython.Build import cythonize
+from setuptools import setup
 
 
 def get_readme():
@@ -9,19 +10,16 @@ def get_readme():
         return f.read()
 
 
-if os.environ.get("COV") == "1":
-    define_macros = [("CYTHON_TRACE", "1")]
-    compiler_directives = {
-        "linetrace": "True",
-    }
-else:
-    define_macros = None
-    compiler_directives = {}
+if (
+    platform.python_implementation() == "CPython"
+    and os.environ.get("BENCODE2_NO_MYPYC") != "1"
+):
+    # only use mypyc with cpython.
+    from mypyc.build import mypycify
 
-extensions = [
-    # Everything but primes.pyx is included here.
-    Extension("*", ["**/*.pyx"], define_macros=define_macros)
-]
+    ext_modules = mypycify(glob.glob("bencode2/*.py"))
+else:
+    ext_modules = None
 
 setup(
     name="bencode2",
@@ -37,8 +35,5 @@ setup(
     packages=["bencode2"],
     package_data={"bencode2": ["py.typed"]},
     include_package_data=True,
-    ext_modules=cythonize(
-        extensions,
-        compiler_directives={"language_level": "3", **compiler_directives},
-    ),
+    ext_modules=ext_modules,
 )

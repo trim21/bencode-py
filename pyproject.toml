@@ -1,5 +1,6 @@
 [build-system]
-requires = ["setuptools", "wheel", "Cython==3.0.10"]
-
-#[tool.coverage.run]
-#plugins = ['Cython.Coverage']
+requires = [
+    "setuptools",
+    "wheel",
+    'mypy[mypyc]==1.9.0; implementation_name =="cpython"',
+]
