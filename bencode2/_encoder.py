@@ -51,7 +51,7 @@ def __encode_bytes(x: bytes, r: list[bytes]):
 
 
 def __encode_str(x: str, r: list[bytes]):
-    __encode_bytes(x.encode("UTF-8"), r)
+    __encode_bytes(x.encode(), r)
 
 
 def __encode_list(x: list[Any], r: list[bytes]):
@@ -104,6 +104,6 @@ def to_binary(s: str | bytes):
         return s
 
     if isinstance(s, str):
-        return s.encode("utf-8", "strict")
+        return s.encode()
 
     raise TypeError("expected binary or text (found %s)" % type(s))

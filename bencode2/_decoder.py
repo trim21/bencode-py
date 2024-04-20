@@ -120,7 +120,7 @@ class Decoder:
         r: dict[str, Any] = {}
         while x[index] != char_e:
             k, index = self.__decode_bytes(x, index)
-            kk = k.decode(encoding="utf-8", errors="strict")
+            kk = k.decode()
             r[kk], index = self.__decode(x, index)
 
         return r, index + 1
