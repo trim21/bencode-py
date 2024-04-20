@@ -19,6 +19,10 @@ jobs:
           name: wheel
           path: dist
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - run: pipx run twine upload dist/* --disable-progress-bar --verbose
         env:
           TWINE_USERNAME: '__token__'
