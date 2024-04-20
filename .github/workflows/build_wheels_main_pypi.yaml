@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - run: pipx run twine upload dist/* --disable-progress-bar --verbose
+      - run: pipx run twine upload dist/* --disable-progress-bar
         env:
           TWINE_USERNAME: '__token__'
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
