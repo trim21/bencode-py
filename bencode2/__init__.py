@@ -1,10 +1,9 @@
-# cython: language_level=3
-
 from typing import Any
 
 from ._decoder import Decoder as _Decoder
 from ._encoder import encode as _encode
 from ._exceptions import BencodeDecodeError, BencodeEncodeError
+
 
 __all__ = (
     "BencodeDecodeError",

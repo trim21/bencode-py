@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Any
 
 from ._exceptions import BencodeEncodeError
@@ -35,7 +34,7 @@ def __encode(value: Any, r: list[bytes]):
 
 
 def __encode_int(x: int, r: list[bytes]):
-    r.extend((b"i", str(x).encode("utf-8"), b"e"))
+    r.extend((b"i", str(x).encode(), b"e"))
 
 
 def __encode_bool(x: bool, r: list[bytes]):
@@ -46,7 +45,7 @@ def __encode_bool(x: bool, r: list[bytes]):
 
 
 def __encode_bytes(x: bytes, r: list[bytes]):
-    r.append(str(len(x)).encode("utf-8"))
+    r.append(str(len(x)).encode())
     r.append(b":")
     r.append(x)
 
@@ -73,7 +72,7 @@ def __encode_tuple(x: tuple[Any, ...], r: list[bytes]):
     r.append(b"e")
 
 
-def __encode_dict(x: Mapping, r: list[bytes]):
+def __encode_dict(x: dict, r: list[bytes]):
     r.append(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable

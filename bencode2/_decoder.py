@@ -1,16 +1,32 @@
-from __future__ import annotations
-
-from typing import Any, Final
+from typing import Any
 
 from ._exceptions import BencodeDecodeError
 
-char_l: Final[int] = 108  # b"l"[0]
-char_i: Final[int] = 105  # b"i"[0]
-char_e: Final[int] = 101  # b"e"[0]
-char_d: Final[int] = 100  # b"d"[0]
-char_0: Final[int] = 48  # b"0"[0]
-char_9: Final[int] = 57  # b"9"[0]
-char_dash: Final[int] = 45  # b"-"[0]
+
+char_l = b"l"[0]
+char_i = b"i"[0]
+char_e = b"e"[0]
+char_d = b"d"[0]
+char_0 = b"0"[0]
+char_9 = b"9"[0]
+char_dash = b"-"[0]
+
+
+def atoi(b: bytes) -> int:
+    sign: int = 1
+    offset: int = 0
+
+    if b[0] == char_dash:
+        sign = -1
+        offset = 1
+
+    total: int = 0
+    for c in b[offset:]:
+        if not (char_0 <= c <= char_9):
+            raise ValueError
+        total = total * 10 + (c - char_0)
+
+    return total * sign
 
 
 class Decoder:
@@ -36,7 +52,10 @@ class Decoder:
         if x[index] == char_i:
             return self.__decode_int(x, index)
         if x[index] == char_d:
-            return self.__decode_dict(x, index)
+            if self.str_key:
+                return self.__decode_str_dict(x, index)
+            else:
+                return self.__decode_bytes_dict(x, index)
         if char_0 <= x[index] <= char_9:
             return self.__decode_bytes(x, index)
 
@@ -48,7 +67,7 @@ class Decoder:
         index += 1
         new_f = x.index(b"e", index)
         try:
-            n = int(x[index:new_f], 10)
+            n = atoi(x[index:new_f])
         except ValueError:
             raise BencodeDecodeError(f"malformed int {x[index:new_f]!r}. index {index}")
 
@@ -82,7 +101,7 @@ class Decoder:
                 )
 
         try:
-            n = int(x[index:colon], 10)
+            n = atoi(x[index:colon])
         except ValueError:
             raise BencodeDecodeError(
                 f"malformed str/bytes length {x[index:colon]!r}, index {index}"
@@ -93,23 +112,23 @@ class Decoder:
 
         return s, colon + n
 
-    def __decode_dict(self, x: bytes, index: int) -> tuple[dict, int]:
+    def __decode_str_dict(self, x: bytes, index: int) -> tuple[dict, int]:
         index += 1
 
-        d: dict
+        r: dict[str, Any] = {}
+        while x[index] != char_e:
+            k, index = self.__decode_bytes(x, index)
+            kk = k.decode(encoding="utf-8", errors="strict")
+            r[kk], index = self.__decode(x, index)
 
-        if self.str_key:
-            r: dict[str, Any] = {}
-            while x[index] != char_e:
-                k, index = self.__decode_bytes(x, index)
-                kk = k.decode(encoding="utf-8", errors="strict")
-                r[kk], index = self.__decode(x, index)
-            d = r
-        else:
-            rr: dict[bytes, Any] = {}
-            while x[index] != char_e:
-                k, index = self.__decode_bytes(x, index)
-                rr[k], index = self.__decode(x, index)
-            d = rr
+        return r, index + 1
 
-        return d, index + 1
+    def __decode_bytes_dict(self, x: bytes, index: int) -> tuple[dict, int]:
+        index += 1
+
+        r: dict[bytes, Any] = {}
+        while x[index] != char_e:
+            k, index = self.__decode_bytes(x, index)
+            r[k], index = self.__decode(x, index)
+
+        return r, index + 1
