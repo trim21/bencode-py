@@ -24,7 +24,7 @@ else:
 setup(
     name="bencode2",
     version="0.0.13",
-    description="bencode serialize/deserialize library",
+    description="A fast and correct bencode serialize/deserialize library",
     long_description=get_readme(),
     long_description_content_type="text/markdown",
     author="trim21",

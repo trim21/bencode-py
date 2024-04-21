@@ -1,4 +1,4 @@
-# A bencode serialize/deserialize library
+# A fast and correct bencode serialize/deserialize library
 
 This library is compiled with mypy on cpython, and pure python on pypy.
 
