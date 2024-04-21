@@ -4,3 +4,19 @@ requires = [
     "wheel",
     'mypy[mypyc]==1.9.0; implementation_name =="cpython"',
 ]
+
+[tool.black]
+target-version = ['py38']
+line-length = 88
+
+[tool.ruff]
+target-version = 'py38'
+line-length = 88
+
+[tool.ruff.lint]
+extend-select = ['UP', 'I', 'E', "W", 'FA', 'ANN']
+ignore = ['ANN101', 'ANN401']
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ['ANN']
+"setup.py" = ['ANN']

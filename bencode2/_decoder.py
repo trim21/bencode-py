@@ -1,20 +1,20 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Final
 
 from ._exceptions import BencodeDecodeError
 
+char_l: Final = 108  # ord("l")
+char_i: Final = 105  # ord("i")
+char_e: Final = 101  # ord("e")
+char_d: Final = 100  # ord("d")
+char_0: Final = 48  # ord("0")
+char_9: Final = 57  # ord("9")
+char_dash: Final = 45  # ord( # "-")
+char_colon: Final = 58  # ord( # ":")
 
-char_l = b"l"[0]
-char_i = b"i"[0]
-char_e = b"e"[0]
-char_d = b"d"[0]
-char_0 = b"0"[0]
-char_9 = b"9"[0]
-char_dash = b"-"[0]
 
-
-def atoi(b: bytes) -> int:
+def atoi(b: memoryview) -> int:
     sign: int = 1
     offset: int = 0
 
@@ -33,104 +33,133 @@ def atoi(b: bytes) -> int:
 
 class Decoder:
     str_key: bool
+    value: bytes
+    mw: memoryview
+    index: int
 
-    def __init__(self, str_key: bool):
+    __slots__ = ("str_key", "value", "mw", "index")
+
+    def __init__(self, value: bytes, str_key: bool) -> None:
         self.str_key = str_key
+        self.value = value
+        self.mw = memoryview(value)
+        self.index = 0
 
-    def decode(self, value: bytes) -> object:
+    def decode(self) -> object:
         try:
-            data, length = self.__decode(value, 0)
+            data = self.__decode()
         except (IndexError, KeyError, TypeError, ValueError) as e:
             raise BencodeDecodeError(f"not a valid bencode bytes: {e}") from e
 
-        if length != len(value):
+        if self.index != len(self.value):
             raise BencodeDecodeError("invalid bencode value (data after valid prefix)")
 
         return data
 
-    def __decode(self, x: bytes, index: int) -> tuple[Any, int]:
-        if x[index] == char_l:
-            return self.__decode_list(x, index)
-        if x[index] == char_i:
-            return self.__decode_int(x, index)
-        if x[index] == char_d:
-            if self.str_key:
-                return self.__decode_str_dict(x, index)
-            else:
-                return self.__decode_bytes_dict(x, index)
-        if char_0 <= x[index] <= char_9:
-            return self.__decode_bytes(x, index)
+    def __index(self, b: int) -> int:
+        i = self.index
+        for c in self.mw[i:]:
+            if c == b:
+                return i
+            i += 1
+        raise IndexError(f"expected char {chr(b)} not found")
+
+    def __decode(self) -> object:
+        if self.value[self.index] == char_l:
+            return self.__decode_list()
+        if self.value[self.index] == char_i:
+            return self.__decode_int()
+        if self.value[self.index] == char_d:
+            return self.__decode_dict()
+        if char_0 <= self.value[self.index] <= char_9:
+            return self.__decode_bytes()
 
         raise BencodeDecodeError(
-            f"unexpected token {x[index:index + 1]!r} at index {index}"
+            f"unexpected token {self.value[self.index:self.index + 1]!r}. "
+            f"index {self.index}"
         )
 
-    def __decode_int(self, x: bytes, index: int) -> tuple[int, int]:
-        index += 1
-        new_f = x.index(b"e", index)
+    def __decode_int(self) -> int:
+        self.index += 1
+        new_f = self.__index(char_e)
         try:
-            n = atoi(x[index:new_f])
+            n = atoi(self.mw[self.index : new_f])
         except ValueError:
-            raise BencodeDecodeError(f"malformed int {x[index:new_f]!r}. index {index}")
-
-        if x[index] == char_dash:
-            if x[index + 1] == char_0:
-                raise BencodeDecodeError(
-                    f"-0 is not allowed in bencoding. index: {index}"
-                )
-        elif x[index] == char_0 and new_f != index + 1:
             raise BencodeDecodeError(
-                f"integer with leading zero is not allowed. index: {index}"
+                f"malformed int {self.value[self.index:new_f]!r}. index {self.index}"
             )
-        return n, new_f + 1
 
-    def __decode_list(self, x: bytes, index: int) -> tuple[list, int]:
-        r, index = [], index + 1
+        if self.value[self.index] == char_dash:
+            if self.value[self.index + 1] == char_0:
+                raise BencodeDecodeError(
+                    f"-0 is not allowed in bencoding. index: {self.index}"
+                )
+        elif self.value[self.index] == char_0 and new_f != self.index + 1:
+            raise BencodeDecodeError(
+                f"integer with leading zero is not allowed. index: {self.index}"
+            )
+        self.index = new_f + 1
+        return n
 
-        while x[index] != char_e:
-            v, index = self.__decode(x, index)
+    def __decode_list(self) -> list:
+        r: list = []
+        self.index += 1
+
+        while self.value[self.index] != char_e:
+            v = self.__decode()
             r.append(v)
 
-        return r, index + 1
+        self.index += 1
+        return r
 
-    def __decode_bytes(self, x: bytes, index: int) -> tuple[bytes, int]:
-        colon = x.index(b":", index)
+    def __decode_bytes(self) -> bytes:
+        # colon = self.value.index(b":", self.index)
+        colon = self.__index(b":"[0])
 
-        if x[index] == char_0:
-            if colon != index + 1:
+        if self.value[self.index] == char_0:
+            if colon != self.index + 1:
                 raise BencodeDecodeError(
-                    f"malformed str/bytes length with leading 0. index {index}"
+                    f"malformed str/bytes length with leading 0. index {self.index}"
                 )
 
         try:
-            n = atoi(x[index:colon])
+            n = atoi(self.mw[self.index : colon])
         except ValueError:
             raise BencodeDecodeError(
-                f"malformed str/bytes length {x[index:colon]!r}, index {index}"
+                f"malformed str/bytes length {self.value[self.index:colon]!r}."
+                f" index {self.index}"
             )
 
         colon += 1
-        s = x[colon : colon + n]
+        s = self.value[colon : colon + n]
 
-        return s, colon + n
+        self.index = colon + n
 
-    def __decode_str_dict(self, x: bytes, index: int) -> tuple[dict, int]:
-        index += 1
+        return s
 
-        r: dict[str, Any] = {}
-        while x[index] != char_e:
-            k, index = self.__decode_bytes(x, index)
-            kk = k.decode()
-            r[kk], index = self.__decode(x, index)
+    def __decode_dict(self) -> dict:
+        start_index = self.index
+        self.index += 1
 
-        return r, index + 1
+        items: list[tuple[bytes, Any]] = []
+        while self.value[self.index] != char_e:
+            k = self.__decode_bytes()
+            v = self.__decode()
+            items.append((k, v))
 
-    def __decode_bytes_dict(self, x: bytes, index: int) -> tuple[dict, int]:
-        index += 1
+        _check_sorted(items, start_index)
 
-        r: dict[bytes, Any] = {}
-        while x[index] != char_e:
-            k, index = self.__decode_bytes(x, index)
-            r[k], index = self.__decode(x, index)
+        self.index += 1
 
-        return r, index + 1
+        if self.str_key:
+            return {key.decode(): value for key, value in items}
+
+        return dict(items)
+
+
+def _check_sorted(s: list[tuple[bytes, Any]], idx: int) -> None:
+    i = 1
+    while i < len(s):
+        if s[i][0] < s[i - 1][0]:
+            raise BencodeDecodeError(f"directory keys is not sorted, index {idx}")
+        i += 1

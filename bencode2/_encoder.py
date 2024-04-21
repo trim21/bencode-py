@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Any
 
 from ._exceptions import BencodeEncodeError
@@ -14,7 +15,7 @@ def encode(value: Any) -> bytes:
     return b"".join(r)
 
 
-def __encode(value: Any, r: list[bytes]):
+def __encode(value: Any, r: list[bytes]) -> None:
     if isinstance(value, dict):
         __encode_dict(value, r)
     elif isinstance(value, str):
@@ -33,28 +34,26 @@ def __encode(value: Any, r: list[bytes]):
         raise BencodeEncodeError(f"type '{type(value)}' not supported")
 
 
-def __encode_int(x: int, r: list[bytes]):
+def __encode_int(x: int, r: list[bytes]) -> None:
     r.extend((b"i", str(x).encode(), b"e"))
 
 
-def __encode_bool(x: bool, r: list[bytes]):
+def __encode_bool(x: bool, r: list[bytes]) -> None:
     if x:
         __encode_int(1, r)
     else:
         __encode_int(0, r)
 
 
-def __encode_bytes(x: bytes, r: list[bytes]):
-    r.append(str(len(x)).encode())
-    r.append(b":")
-    r.append(x)
+def __encode_bytes(x: bytes, r: list[bytes]) -> None:
+    r.extend((str(len(x)).encode(), b":", x))
 
 
-def __encode_str(x: str, r: list[bytes]):
-    __encode_bytes(x.encode(), r)
+def __encode_str(x: str, r: list[bytes]) -> None:
+    __encode_bytes(x.encode("UTF-8"), r)
 
 
-def __encode_list(x: list[Any], r: list[bytes]):
+def __encode_list(x: list[Any], r: list[bytes]) -> None:
     r.append(b"l")
 
     for i in x:
@@ -63,7 +62,7 @@ def __encode_list(x: list[Any], r: list[bytes]):
     r.append(b"e")
 
 
-def __encode_tuple(x: tuple[Any, ...], r: list[bytes]):
+def __encode_tuple(x: tuple[Any, ...], r: list[bytes]) -> None:
     r.append(b"l")
 
     for i in x:
@@ -72,7 +71,7 @@ def __encode_tuple(x: tuple[Any, ...], r: list[bytes]):
     r.append(b"e")
 
 
-def __encode_dict(x: dict, r: list[bytes]):
+def __encode_dict(x: Mapping, r: list[bytes]) -> None:
     r.append(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
@@ -87,7 +86,7 @@ def __encode_dict(x: dict, r: list[bytes]):
     r.append(b"e")
 
 
-def __check_duplicated_keys(s: list[tuple[bytes, object]]):
+def __check_duplicated_keys(s: list[tuple[bytes, object]]) -> None:
     if len(s) == 0:
         return
     last_key: bytes = s[0][0]
@@ -99,11 +98,11 @@ def __check_duplicated_keys(s: list[tuple[bytes, object]]):
         last_key = current
 
 
-def to_binary(s: str | bytes):
+def to_binary(s: str | bytes) -> bytes:
     if isinstance(s, bytes):
         return s
 
     if isinstance(s, str):
-        return s.encode()
+        return s.encode("utf-8", "strict")
 
     raise TypeError("expected binary or text (found %s)" % type(s))

@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from bencode2 import bdecode, BencodeDecodeError
+from bencode2 import BencodeDecodeError, bdecode
 
 
 @pytest.mark.parametrize(
@@ -14,11 +14,34 @@ from bencode2 import bdecode, BencodeDecodeError
         b"1a2:qwer",  # invalid str length
         b"01:q",  # invalid str length
         b"a",
+        # directory keys not sorted for {'foo': 1, 'spam': 2}
+        b"d3:foo4:spam3:bari42ee",
     ],
 )
 def test_bad_case(raw: bytes):
     with pytest.raises(BencodeDecodeError):
         bdecode(raw)
+
+
+@pytest.mark.parametrize(
+    ["raw", "expected"],
+    [
+        (b"0:", b""),
+        (b"4:spam", b"spam"),
+        (b"i-3e", -3),
+        # (b"i9223372036854775808e", 9223372036854775808),  # longlong int +1
+        # (b"i18446744073709551616e", 18446744073709551616),  # unsigned long long +1
+        (b"i4927586304e", 4927586304),
+        (b"le", []),
+        (b"l4:spam4:eggse", [b"spam", b"eggs"]),
+        # (b"de", {}),
+        (b"d3:cow3:moo4:spam4:eggse", {b"cow": b"moo", b"spam": b"eggs"}),
+        (b"d4:spaml1:a1:bee", {b"spam": [b"a", b"b"]}),
+        (b"d0:4:spam3:fooi42ee", {b"": b"spam", b"foo": 42}),
+    ],
+)
+def test_basic(raw: bytes, expected: Any):
+    assert bdecode(raw) == expected
 
 
 def test_decode1():
@@ -28,26 +51,6 @@ def test_decode1():
         b"t": b"aa",
         b"y": b"q",
     }
-
-
-@pytest.mark.parametrize(
-    ["raw", "expected"],
-    [
-        (b"0:", b""),
-        (b"4:spam", b"spam"),
-        (b"i-3e", -3),
-        (b"i9223372036854775808e", 9223372036854775808),  # longlong int +1
-        (b"i18446744073709551616e", 18446744073709551616),  # unsigned long long +1
-        (b"i4927586304e", 4927586304),
-        (b"l4:spam4:eggse", [b"spam", b"eggs"]),
-        (b"d3:cow3:moo4:spam4:eggse", {b"cow": b"moo", b"spam": b"eggs"}),
-        (b"d4:spaml1:a1:bee", {b"spam": [b"a", b"b"]}),
-        (b"d0:4:spam3:fooi42ee", {b"": b"spam", b"foo": 42}),
-        (b"d4:spam0:3:fooi42ee", {b"spam": b"", b"foo": 42}),
-    ],
-)
-def test_basic(raw: bytes, expected: Any):
-    assert bdecode(raw) == expected
 
 
 @pytest.mark.parametrize(

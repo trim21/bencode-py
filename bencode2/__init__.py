@@ -4,7 +4,6 @@ from ._decoder import Decoder as _Decoder
 from ._encoder import encode as _encode
 from ._exceptions import BencodeDecodeError, BencodeEncodeError
 
-
 __all__ = (
     "BencodeDecodeError",
     "BencodeEncodeError",
@@ -20,4 +19,4 @@ def bencode(value: Any) -> bytes:
 
 def bdecode(value: bytes, *, str_key: bool = False) -> Any:
     """Decode bencode formatted bytes to python value."""
-    return _Decoder(str_key).decode(value)
+    return _Decoder(value, str_key).decode()
