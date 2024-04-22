@@ -8,7 +8,7 @@ jobs:
     name: Make SDist
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.1.1
+    - uses: actions/checkout@v4.1.3
 
     - name: Build SDist
       run: pipx run build --sdist
@@ -22,7 +22,7 @@ jobs:
     name: Build wheels
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.3
 
       - uses: actions/setup-python@v5
         with:
@@ -66,7 +66,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
         if: matrix.os == 'ubuntu-latest'
 
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.3
 
       - name: Restore cached Primes
         id: cache
