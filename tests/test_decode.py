@@ -12,6 +12,7 @@ from bencode2 import BencodeDecodeError, bdecode
         b"i01e",
         b"iabce",
         b"1a2:qwer",  # invalid str length
+        b"i123",  # invalid int
         b"01:q",  # invalid str length
         b"10:q",  # str length too big
         b"a",
