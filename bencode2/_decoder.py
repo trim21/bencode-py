@@ -10,8 +10,8 @@ char_e: Final = 101  # ord("e")
 char_d: Final = 100  # ord("d")
 char_0: Final = 48  # ord("0")
 char_9: Final = 57  # ord("9")
-char_dash: Final = 45  # ord( # "-")
-char_colon: Final = 58  # ord( # ":")
+char_dash: Final = 45  # ord("-")
+char_colon: Final = 58  # ord(":")
 
 
 def atoi(b: memoryview) -> int:

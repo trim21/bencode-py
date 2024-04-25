@@ -13,6 +13,7 @@ from bencode2 import BencodeDecodeError, bdecode
         b"iabce",
         b"1a2:qwer",  # invalid str length
         b"01:q",  # invalid str length
+        b"10:q",  # str length too big
         b"a",
         # directory keys not sorted for {'foo': 1, 'spam': 2}
         b"d3:foo4:spam3:bari42ee",
