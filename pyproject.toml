@@ -2,7 +2,7 @@
 requires = [
     "setuptools",
     "wheel",
-    'mypy[mypyc]==1.9.0; implementation_name =="cpython"',
+    'mypy[mypyc]==1.10.0; implementation_name =="cpython"',
 ]
 
 [tool.black]
