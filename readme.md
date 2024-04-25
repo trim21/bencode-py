@@ -1,7 +1,6 @@
 # A fast and correct bencode serialize/deserialize library
 
 [![PyPI](https://img.shields.io/pypi/v/bencode2)](https://pypi.org/project/bencode2/)
-[![Documentation Status](https://readthedocs.org/projects/bencode2/badge/)](https://bencode2.readthedocs.io/)
 [![tests](https://github.com/trim21/bencode-py/actions/workflows/tests.yaml/badge.svg)](https://github.com/trim21/bencode-py/actions/workflows/tests.yaml)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bencode2)](https://pypi.org/project/bencode2/)
 [![Codecov branch](https://img.shields.io/codecov/c/github/Trim21/bencode-py/main)](https://codecov.io/gh/Trim21/bencode-py/branch/main)
