@@ -52,16 +52,6 @@ jobs:
           - { os: windows-latest, arch: x86, build: "*" }
           - { os: windows-latest, arch: AMD64, build: "*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[61]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[72]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[83]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[94]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[61]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[72]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[83]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[94]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-musllinux*" }
     steps:
       - uses: docker/setup-qemu-action@v3
         if: matrix.os == 'ubuntu-latest'
