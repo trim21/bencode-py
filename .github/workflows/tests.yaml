@@ -10,39 +10,6 @@ on:
       - "*"
 
 jobs:
-  test-cp-py:
-    strategy:
-      max-parallel: 5
-      matrix:
-        os: [ "ubuntu-latest", "macos-12", "macos-13", "macos-14", "windows-latest" ]
-        python-version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-
-    runs-on: "${{ matrix.os }}"
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: "pip" # caching pip dependencies
-
-      - run: pip install -r requirements.txt
-
-      - name: Run pytest
-        run: python -m pytest --cov
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   test-cp:
     strategy:
       max-parallel: 5
@@ -68,8 +35,6 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: mypyc bencode2
-
       - name: Run pytest
         run: python -m pytest --cov
 
@@ -77,6 +42,9 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - run: mypyc bencode2
+      - run: python -m pytest --cov
 
   test-py:
     strategy:
