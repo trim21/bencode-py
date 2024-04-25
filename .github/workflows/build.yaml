@@ -1,4 +1,4 @@
-name: Build Wheels
+name: build wheels
 
 on:
   pull_request:
