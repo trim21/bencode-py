@@ -105,4 +105,4 @@ def to_binary(s: str | bytes) -> bytes:
     if isinstance(s, str):
         return s.encode("utf-8", "strict")
 
-    raise TypeError("expected binary or text (found %s)" % type(s))
+    raise TypeError(f"expected binary or text (found {type(s)})")
