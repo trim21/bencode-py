@@ -25,3 +25,11 @@ ignore = ['ANN101', 'ANN401']
 source = [
     "bencode2",
 ]
+
+[tool.mypy]
+python_version = "3.8"
+disallow_untyped_defs = true
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_configs = true
+show_error_codes = true
