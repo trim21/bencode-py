@@ -19,4 +19,6 @@ def bencode(value: Any) -> bytes:
 
 def bdecode(value: bytes, *, str_key: bool = False) -> Any:
     """Decode bencode formatted bytes to python value."""
+    if not isinstance(value, bytes):
+        raise TypeError("only support decoding bytes")
     return _Decoder(value, str_key).decode()
