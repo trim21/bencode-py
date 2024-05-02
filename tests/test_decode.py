@@ -5,6 +5,14 @@ import pytest
 from bencode2 import BencodeDecodeError, bdecode
 
 
+def test_non_bytes_input():
+    with pytest.raises(TypeError):
+        bdecode("s")  # type: ignore
+
+    with pytest.raises(TypeError):
+        bdecode(1)  # type: ignore
+
+
 @pytest.mark.parametrize(
     "raw",
     [
