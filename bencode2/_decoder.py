@@ -114,7 +114,7 @@ class Decoder:
 
     def __decode_bytes(self) -> bytes:
         # colon = self.value.index(b":", self.index)
-        colon = self.__index(b":"[0])
+        colon = self.__index(char_colon)
 
         if self.value[self.index] == char_0:
             if colon != self.index + 1:
