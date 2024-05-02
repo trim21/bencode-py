@@ -59,7 +59,6 @@ jobs:
       matrix:
         os: [ "macos-12", "macos-13", "macos-14", "windows-latest", "ubuntu-latest" ]
         python-version:
-          - 'pypy3.8'
           - 'pypy3.9'
           - 'pypy3.10'
 
