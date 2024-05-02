@@ -1,3 +1,0 @@
-global-include *.pxd
-global-include *.pyx
-global-include *.pyi

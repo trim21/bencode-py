@@ -1,9 +1,63 @@
 [build-system]
-requires = [
-    "setuptools",
-    "wheel",
-    'mypy[mypyc]==1.10.0; implementation_name =="cpython"',
+requires = ["hatchling>=1.20.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bencode2"
+version = "0.0.16"
+description = "A fast and correct bencode serialize/deserialize library"
+license = { text = "MIT" }
+requires-python = ">=3.8,<4.0"
+authors = [
+    { name = "trim21", email = "trim21me@gmail.com" },
 ]
+readme = 'readme.md'
+keywords = [
+    "bencode",
+    "bittorrent",
+    "bit-torrent",
+    "serialize",
+    "deserialize",
+    'p2p',
+]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/trim21/bencode-py"
+Repository = "https://github.com/trim21/bencode-py"
+Issues = "https://github.com/trim21/bencode-py/issues"
+
+[project.optional-dependencies]
+dev = [
+    'pytest ==8.2.0',
+    'pytest-cov == 5.0.0',
+    'mypy[mypyc]==1.10.0; platform_python_implementation == "CPython"',
+]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["bencode2"]
+
+[tool.hatch.build.targets.wheel.hooks.mypyc]
+enable-by-default = false
+dependencies = [
+    "hatch-mypyc>=0.16.0",
+    'mypy[mypyc]==1.10.0; platform_python_implementation == "CPython"',
+]
+
+[tool.cibuildwheel.linux.environment]
+HATCH_BUILD_HOOKS_ENABLE = "1"
 
 [tool.black]
 target-version = ['py38']
