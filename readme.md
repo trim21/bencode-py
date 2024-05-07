@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/bencode2)](https://pypi.org/project/bencode2/)
 [![tests](https://github.com/trim21/bencode-py/actions/workflows/tests.yaml/badge.svg)](https://github.com/trim21/bencode-py/actions/workflows/tests.yaml)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/bencode2)](https://pypi.org/project/bencode2/)
+[![PyPI - Python Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fpypi.org%2Fpypi%2Fbencode2%2Fjson&query=info.requires_python&label=python)](https://pypi.org/project/bencode2/)
 [![Codecov branch](https://img.shields.io/codecov/c/github/Trim21/bencode-py/main)](https://codecov.io/gh/Trim21/bencode-py/branch/main)
 
 This library is compiled with mypy on cpython, and pure python on pypy.
