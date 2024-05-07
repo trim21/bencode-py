@@ -6,7 +6,7 @@ repos:
     hooks:
       - id: pip-compile
         files: ^(pyproject\.toml|requirements\.txt)$
-        args: [ '--all-extras', 'pyproject.toml', '-o=requirements.txt', '--newline=LF' ]
+        args: [ '--all-extras', 'pyproject.toml', '-o', 'requirements.txt', '--newline', 'LF' ]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
