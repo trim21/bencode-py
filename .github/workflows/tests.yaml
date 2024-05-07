@@ -40,7 +40,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - run: pip install -e '.[testing]'
+      - run: pip install -e '.[testing, mypy]'
 
       - name: Run pytest
         run: python -m pytest --cov
