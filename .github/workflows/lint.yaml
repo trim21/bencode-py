@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - run: pip install -r requirements.txt --no-deps
+      - run: pip install -e '.[mypy]'
 
       - uses: liskin/gh-problem-matcher-wrap@v3
         with:
