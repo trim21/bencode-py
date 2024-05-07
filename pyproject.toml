@@ -56,7 +56,7 @@ dependencies = [
     'mypy[mypyc]==1.10.0; platform_python_implementation == "CPython"',
 ]
 
-[tool.cibuildwheel.linux.environment]
+[tool.cibuildwheel.environment]
 HATCH_BUILD_HOOKS_ENABLE = "1"
 
 [tool.black]
