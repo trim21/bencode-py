@@ -17,6 +17,7 @@ jobs:
   test-cp:
     strategy:
       max-parallel: 5
+      fail-fast: false
       matrix:
         os: [ "macos-12", "macos-13", "macos-14", "windows-latest", "ubuntu-latest" ]
         python-version:
@@ -53,7 +54,7 @@ jobs:
       - run: mypyc src/
       - run: python -m pytest --cov
 
-  test-py:
+  test-pp:
     strategy:
       max-parallel: 5
       matrix:
