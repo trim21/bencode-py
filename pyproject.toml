@@ -82,7 +82,7 @@ ignore = ['ANN101', 'ANN401']
 
 [tool.coverage.run]
 source = [
-    "bencode2",
+    "src",
 ]
 
 [tool.mypy]
