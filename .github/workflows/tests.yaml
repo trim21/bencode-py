@@ -50,7 +50,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - run: mypyc bencode2
+      - run: mypyc src/
       - run: python -m pytest --cov
 
   test-py:

@@ -71,7 +71,7 @@ def __encode_tuple(x: tuple[Any, ...], r: list[bytes]) -> None:
     r.append(b"e")
 
 
-def __encode_dict(x: Mapping, r: list[bytes]) -> None:
+def __encode_dict(x: Mapping[str | bytes, Any], r: list[bytes]) -> None:
     r.append(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable

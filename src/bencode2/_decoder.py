@@ -101,8 +101,8 @@ class Decoder:
         self.index = new_f + 1
         return n
 
-    def __decode_list(self) -> list:
-        r: list = []
+    def __decode_list(self) -> list[Any]:
+        r: list[Any] = []
         self.index += 1
 
         while self.value[self.index] != char_e:
@@ -137,7 +137,7 @@ class Decoder:
 
         return s
 
-    def __decode_dict(self) -> dict:
+    def __decode_dict(self) -> dict[str | bytes, Any]:
         start_index = self.index
         self.index += 1
 
