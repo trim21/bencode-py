@@ -26,7 +26,7 @@ jobs:
           linters: mypy
 
       - name: mypy
-        run: mypy --show-column-numbers bencode2
+        run: mypy --show-column-numbers src/
 
   pre-commit:
     runs-on: ubuntu-latest

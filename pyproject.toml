@@ -45,10 +45,11 @@ Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
 [tool.hatch.build.targets.sdist]
-exclude = ["/tests"]
+sources = ["src/"]
+include = ['src/']
 
 [tool.hatch.build.targets.wheel]
-packages = ["bencode2"]
+packages = ["src/bencode2"]
 
 [tool.hatch.build.targets.wheel.hooks.mypyc]
 enable-by-default = false
@@ -68,6 +69,8 @@ line-length = 88
 [tool.ruff]
 target-version = 'py38'
 line-length = 88
+
+src = ['src', 'tests']
 
 [tool.ruff.lint]
 extend-select = ['UP', 'I', 'E', "W", 'FA', 'ANN']
@@ -89,3 +92,6 @@ ignore_missing_imports = true
 warn_return_any = false
 warn_unused_configs = true
 show_error_codes = true
+
+[tool.pytest.ini_options]
+pythonpath = ['src']
