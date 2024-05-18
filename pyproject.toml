@@ -33,6 +33,7 @@ classifiers = [
 testing = [
     'pytest==8.2.0',
     'pytest-cov==5.0.0',
+    "pytest-github-actions-annotate-failures==0.2.0",
 ]
 
 mypy = [
