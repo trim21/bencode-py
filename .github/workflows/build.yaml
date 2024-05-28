@@ -4,9 +4,9 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - master
     tags-ignore:
-      - '*'
+      - 'v*'
 
 jobs:
   build:
@@ -14,3 +14,15 @@ jobs:
       group: '${{ github.workflow }}-${{ github.ref }}'
       cancel-in-progress: true
     uses: ./.github/workflows/_build_wheels.yaml
+
+  twine-check:
+    name: Check dist
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel
+          path: dist
+
+      - run: pipx run twine check --strict dist/*

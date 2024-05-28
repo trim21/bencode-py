@@ -3,27 +3,23 @@ name: release
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 jobs:
   build:
     uses: ./.github/workflows/_build_wheels.yaml
 
-  upload_all:
+  pypi:
     name: Upload wheels to PyPI
     needs: [build]
     runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: wheel
           path: dist
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - run: pipx run twine upload dist/* --disable-progress-bar
-        env:
-          TWINE_USERNAME: '__token__'
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      - uses: pypa/gh-action-pypi-publish@v1.8.14
