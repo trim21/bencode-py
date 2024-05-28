@@ -12,12 +12,12 @@ __all__ = (
 )
 
 
-def bencode(value: Any) -> bytes:
+def bencode(value: Any, /) -> bytes:
     """Encode value into the bencode format."""
     return _encode(value)
 
 
-def bdecode(value: bytes, *, str_key: bool = False) -> Any:
+def bdecode(value: bytes, /, *, str_key: bool = False) -> Any:
     """Decode bencode formatted bytes to python value."""
     if not isinstance(value, bytes):
         raise TypeError("only support decoding bytes")
