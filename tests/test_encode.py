@@ -4,47 +4,46 @@ from typing import Any
 
 import pytest
 
-import bencode2
-from bencode2 import BencodeEncodeError
+from bencode2 import BencodeEncodeError, bencode
 
 
 class EncodeTestCase(unittest.TestCase):
     def test_exception_when_strict(self):
         invalid_obj = None
-        with self.assertRaises(BencodeEncodeError):
-            bencode2.bencode(invalid_obj)
+        with self.assertRaises(TypeError):
+            bencode(invalid_obj)
 
     def test_encode_str(self):
-        coded = bencode2.bencode("ThisIsAString")
+        coded = bencode("ThisIsAString")
         self.assertEqual(
             coded, b"13:ThisIsAString", msg="Failed to encode string from str."
         )
 
     def test_encode_int(self):
-        coded = bencode2.bencode(42)
+        coded = bencode(42)
         self.assertEqual(coded, b"i42e", msg="Failed to encode integer from int.")
 
     def test_encode_bytes(self):
         b = b"TheseAreSomeBytes"
-        coded = bencode2.bencode(b)
+        coded = bencode(b)
         s = bytes(str(len(b)), "utf-8")
         self.assertEqual(coded, s + b":" + b, msg="Failed to encode string from bytes.")
 
     def test_encode_list(self):
         s = ["a", "b", 3]
-        coded = bencode2.bencode(s)
+        coded = bencode(s)
         self.assertEqual(coded, b"l1:a1:bi3ee", msg="Failed to encode list from list.")
 
     def test_encode_tuple(self):
         t = ("a", "b", 3)
-        coded = bencode2.bencode(t)
+        coded = bencode(t)
         self.assertEqual(coded, b"l1:a1:bi3ee", msg="Failed to encode list from tuple.")
 
     def test_encode_dict(self):
         od = collections.OrderedDict()
         od["ka"] = "va"
         od["kb"] = 2
-        coded = bencode2.bencode(od)
+        coded = bencode(od)
         self.assertEqual(
             coded, b"d2:ka2:va2:kbi2ee", msg="Failed to encode dictionary from dict."
         )
@@ -58,12 +57,12 @@ class EncodeTestCase(unittest.TestCase):
         expected_result = (
             b"d4:KeyAl9:listitemAd1:k1:vei3ee4:KeyBd1:k1:ve4:KeyCi3e4:KeyD7:AStringe"
         )
-        coded = bencode2.bencode(od)
+        coded = bencode(od)
         self.assertEqual(coded, expected_result, msg="Failed to encode complex object.")
 
 
 def test_encode():
-    assert bencode2.bencode(
+    assert bencode(
         {
             "_id": "5973782bdb9a930533b05cb2",
             "isActive": True,
@@ -94,12 +93,12 @@ def test_encode():
 
 def test_duplicated_type_keys():
     with pytest.raises(BencodeEncodeError):
-        bencode2.bencode({"string_key": 1, b"string_key": 2, "1": 2})
+        bencode({"string_key": 1, b"string_key": 2, "1": 2})
 
 
 def test_dict_int_keys():
     with pytest.raises(TypeError):
-        bencode2.bencode({1: 2})
+        bencode({1: 2})
 
 
 @pytest.mark.parametrize(
@@ -121,4 +120,19 @@ def test_dict_int_keys():
     ],
 )
 def test_basic(raw: Any, expected: bytes):
-    assert bencode2.bencode(raw) == expected
+    assert bencode(raw) == expected
+
+
+def test_recursive_object():
+    a = 1
+    assert bencode([a, a, a, a])
+    b = "test str"
+    assert bencode([b, b, b, b])
+    assert bencode({b: b})
+
+    bencode([[1, 2, 3]] * 3)
+
+    d = {}
+    d["a"] = d
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(d)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from types import MappingProxyType
 from typing import Any
 
 from ._exceptions import BencodeEncodeError
@@ -9,29 +10,55 @@ from ._exceptions import BencodeEncodeError
 def encode(value: Any) -> bytes:
     r: list[bytes] = []  # makes more sense for something with lots of appends
 
-    __encode(value, r)
+    __encode(value, r, set())
 
     # Join parts
     return b"".join(r)
 
 
-def __encode(value: Any, r: list[bytes]) -> None:
+def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
+    if isinstance(value, str):
+        return __encode_str(value, r)
+    if isinstance(value, bytes):
+        return __encode_bytes(value, r)
+    if isinstance(value, bool):
+        return __encode_bool(value, r)
+    if isinstance(value, int):
+        return __encode_int(value, r)
     if isinstance(value, dict):
-        __encode_dict(value, r)
-    elif isinstance(value, str):
-        __encode_str(value, r)
-    elif isinstance(value, list):
-        __encode_list(value, r)
-    elif isinstance(value, tuple):
-        __encode_tuple(value, r)
-    elif isinstance(value, bytes):
-        __encode_bytes(value, r)
-    elif isinstance(value, bool):
-        __encode_bool(value, r)
-    elif isinstance(value, int):
-        __encode_int(value, r)
-    else:
-        raise BencodeEncodeError(f"type '{type(value)}' not supported")
+        i = id(value)
+        if i in seen:
+            raise BencodeEncodeError(f"circular reference found {value!r}")
+        seen.add(i)
+        __encode_dict(value, r, seen)
+        seen.remove(i)
+        return
+    if isinstance(value, MappingProxyType):
+        i = id(value)
+        if i in seen:
+            raise BencodeEncodeError(f"circular reference found {value!r}")
+        seen.add(i)
+        __encode_dict(value, r, seen)
+        seen.remove(i)
+        return
+    if isinstance(value, list):
+        i = id(value)
+        if i in seen:
+            raise BencodeEncodeError(f"circular reference found {value!r}")
+        seen.add(i)
+        __encode_list(value, r, seen)
+        seen.remove(i)
+        return
+    if isinstance(value, tuple):
+        i = id(value)
+        if i in seen:
+            raise BencodeEncodeError(f"circular reference found {value!r}")
+        seen.add(i)
+        __encode_tuple(value, r, seen)
+        seen.remove(i)
+        return
+
+    raise TypeError(f"type '{type(value)!r}' not supported")
 
 
 def __encode_int(x: int, r: list[bytes]) -> None:
@@ -40,9 +67,9 @@ def __encode_int(x: int, r: list[bytes]) -> None:
 
 def __encode_bool(x: bool, r: list[bytes]) -> None:
     if x:
-        __encode_int(1, r)
+        r.append(b"i1e")
     else:
-        __encode_int(0, r)
+        r.append(b"i0e")
 
 
 def __encode_bytes(x: bytes, r: list[bytes]) -> None:
@@ -53,25 +80,25 @@ def __encode_str(x: str, r: list[bytes]) -> None:
     __encode_bytes(x.encode("UTF-8"), r)
 
 
-def __encode_list(x: list[Any], r: list[bytes]) -> None:
+def __encode_list(x: list[Any], r: list[bytes], seen: set[int]) -> None:
     r.append(b"l")
 
     for i in x:
-        __encode(i, r)
+        __encode(i, r, seen)
 
     r.append(b"e")
 
 
-def __encode_tuple(x: tuple[Any, ...], r: list[bytes]) -> None:
+def __encode_tuple(x: tuple[Any, ...], r: list[bytes], seen: set[int]) -> None:
     r.append(b"l")
 
     for i in x:
-        __encode(i, r)
+        __encode(i, r, seen)
 
     r.append(b"e")
 
 
-def __encode_dict(x: Mapping[str | bytes, Any], r: list[bytes]) -> None:
+def __encode_dict(x: Mapping[str | bytes, Any], r: list[bytes], seen: set[int]) -> None:
     r.append(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
@@ -80,8 +107,8 @@ def __encode_dict(x: Mapping[str | bytes, Any], r: list[bytes]) -> None:
     __check_duplicated_keys(i_list)
 
     for k, v in i_list:
-        __encode(k, r)
-        __encode(v, r)
+        __encode(k, r, seen)
+        __encode(v, r, seen)
 
     r.append(b"e")
 
