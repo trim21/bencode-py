@@ -22,7 +22,11 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
     if isinstance(value, bytes):
         return __encode_bytes(value, r)
     if isinstance(value, bool):
-        return __encode_bool(value, r)
+        if value is True:
+            r.append(b"i1e")
+        else:
+            r.append(b"i0e")
+        return
     if isinstance(value, int):
         return __encode_int(value, r)
     if isinstance(value, dict):
@@ -58,18 +62,15 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
         seen.remove(i)
         return
 
+    if isinstance(value, bytearray):
+        __encode_bytes(bytes(value), r)
+        return
+
     raise TypeError(f"type '{type(value)!r}' not supported")
 
 
 def __encode_int(x: int, r: list[bytes]) -> None:
     r.extend((b"i", str(x).encode(), b"e"))
-
-
-def __encode_bool(x: bool, r: list[bytes]) -> None:
-    if x:
-        r.append(b"i1e")
-    else:
-        r.append(b"i0e")
 
 
 def __encode_bytes(x: bytes, r: list[bytes]) -> None:
