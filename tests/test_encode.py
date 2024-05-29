@@ -1,4 +1,5 @@
 import collections
+import types
 import unittest
 from typing import Any
 
@@ -113,10 +114,17 @@ def test_dict_int_keys():
         (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
         (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
         (4927586304, b"i4927586304e"),
+        (bytearray([1, 2, 3]), b"3:\x01\x02\x03"),
         ([b"spam", b"eggs"], b"l4:spam4:eggse"),
         ({b"cow": b"moo", b"spam": b"eggs"}, b"d3:cow3:moo4:spam4:eggse"),
         ({b"spam": [b"a", b"b"]}, b"d4:spaml1:a1:bee"),
         ({}, b"de"),
+        (
+            types.MappingProxyType({b"cow": b"moo", b"spam": b"eggs"}),
+            b"d3:cow3:moo4:spam4:eggse",
+        ),
+        (types.MappingProxyType({b"spam": [b"a", b"b"]}), b"d4:spaml1:a1:bee"),
+        (types.MappingProxyType({}), b"de"),
     ],
 )
 def test_basic(raw: Any, expected: bytes):
@@ -136,3 +144,14 @@ def test_recursive_object():
     d["a"] = d
     with pytest.raises(BencodeEncodeError, match="circular reference found"):
         assert bencode(d)
+
+    a = []
+    a.append(a)
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(a)
+
+    a = {}
+    b = (a,)
+    a["b"] = b
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(a)

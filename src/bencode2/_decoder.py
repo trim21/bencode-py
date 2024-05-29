@@ -48,10 +48,12 @@ class Decoder:
     def decode(self) -> object:
         try:
             data = self.__decode()
-        except (IndexError, KeyError, TypeError, ValueError) as e:
-            raise BencodeDecodeError(f"not a valid bencode bytes: {e}") from e
+        except IndexError:
+            raise BencodeDecodeError(
+                f"invalid bencode, buffer overflow at index {self.index}"
+            )
 
-        if self.index != len(self.value):
+        if self.index != len(self.value):  # pragma: no cover
             raise BencodeDecodeError("invalid bencode value (data after valid prefix)")
 
         return data
@@ -62,7 +64,7 @@ class Decoder:
             if c == b:
                 return i
             i += 1
-        raise IndexError(f"expected char {chr(b)} not found")
+        return -1
 
     def __decode(self) -> object:
         if self.value[self.index] == char_l:
@@ -82,6 +84,11 @@ class Decoder:
     def __decode_int(self) -> int:
         self.index += 1
         new_f = self.__index(char_e)
+        if new_f == -1:
+            raise BencodeDecodeError(
+                f"invalid int, failed to found end. index {self.index}"
+            )
+
         try:
             n = atoi(self.mw[self.index : new_f])
         except ValueError:
@@ -115,6 +122,10 @@ class Decoder:
     def __decode_bytes(self) -> bytes:
         # colon = self.value.index(b":", self.index)
         colon = self.__index(char_colon)
+        if colon == -1:
+            raise BencodeDecodeError(
+                f"invalid bytes, failed to find bytes length. index {self.index}"
+            )
 
         if self.value[self.index] == char_0:
             if colon != self.index + 1:
@@ -131,6 +142,12 @@ class Decoder:
             )
 
         colon += 1
+
+        if colon + n > len(self.value):
+            raise BencodeDecodeError(
+                f"malformed str/bytes length, buffer overflow. index {self.index}"
+            )
+
         s = self.value[colon : colon + n]
 
         self.index = colon + n
@@ -147,6 +164,9 @@ class Decoder:
             v = self.__decode()
             items.append((k, v))
 
+        if not items:
+            return {}
+
         _check_sorted(items, start_index)
 
         self.index += 1
@@ -162,4 +182,6 @@ def _check_sorted(s: list[tuple[bytes, Any]], idx: int) -> None:
     while i < len(s):
         if s[i][0] < s[i - 1][0]:
             raise BencodeDecodeError(f"directory keys is not sorted, index {idx}")
+        if s[i][0] == s[i - 1][0]:
+            raise BencodeDecodeError(f"found duplicated keys in directory, index {idx}")
         i += 1

@@ -16,6 +16,8 @@ def test_non_bytes_input():
 @pytest.mark.parametrize(
     "raw",
     [
+        b"1",
+        b"1:",
         b"i-0e",
         b"i01e",
         b"iabce",
@@ -26,6 +28,7 @@ def test_non_bytes_input():
         b"a",
         # directory keys not sorted for {'foo': 1, 'spam': 2}
         b"d3:foo4:spam3:bari42ee",
+        b"d4:spaml1:a1:be",
     ],
 )
 def test_bad_case(raw: bytes):

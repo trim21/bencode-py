@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Any
 
@@ -37,14 +36,6 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
         __encode_dict(value, r, seen)
         seen.remove(i)
         return
-    if isinstance(value, MappingProxyType):
-        i = id(value)
-        if i in seen:
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-        __encode_dict(value, r, seen)
-        seen.remove(i)
-        return
     if isinstance(value, list):
         i = id(value)
         if i in seen:
@@ -59,6 +50,15 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
         __encode_tuple(value, r, seen)
+        seen.remove(i)
+        return
+
+    if isinstance(value, MappingProxyType):
+        i = id(value)
+        if i in seen:
+            raise BencodeEncodeError(f"circular reference found {value!r}")
+        seen.add(i)
+        __encode_mapping_proxy(value, r, seen)
         seen.remove(i)
         return
 
@@ -99,11 +99,32 @@ def __encode_tuple(x: tuple[Any, ...], r: list[bytes], seen: set[int]) -> None:
     r.append(b"e")
 
 
-def __encode_dict(x: Mapping[str | bytes, Any], r: list[bytes], seen: set[int]) -> None:
+def __encode_mapping_proxy(
+    x: MappingProxyType[Any, Any], r: list[bytes], seen: set[int]
+) -> None:
     r.append(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
     i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
+    if not i_list:
+        return r.append(b"e")
+    i_list.sort(key=lambda kv: kv[0])
+    __check_duplicated_keys(i_list)
+
+    for k, v in i_list:
+        __encode(k, r, seen)
+        __encode(v, r, seen)
+
+    r.append(b"e")
+
+
+def __encode_dict(x: dict[Any, Any], r: list[bytes], seen: set[int]) -> None:
+    r.append(b"d")
+
+    # force all keys to bytes, because str and bytes are incomparable
+    i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
+    if not i_list:
+        return r.append(b"e")
     i_list.sort(key=lambda kv: kv[0])
     __check_duplicated_keys(i_list)
 
@@ -115,8 +136,6 @@ def __encode_dict(x: Mapping[str | bytes, Any], r: list[bytes], seen: set[int]) 
 
 
 def __check_duplicated_keys(s: list[tuple[bytes, object]]) -> None:
-    if len(s) == 0:
-        return
     last_key: bytes = s[0][0]
     for current, _ in s[1:]:
         if last_key == current:
