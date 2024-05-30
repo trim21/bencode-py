@@ -31,6 +31,8 @@ def test_non_bytes_input():
         b"d4:spaml1:a1:be",
         b"d3:keyi1e3:keyi2ee",  # duplicated keys
         b"l",
+        b"lee",
+        b"dee",
     ],
 )
 def test_bad_case(raw: bytes):
