@@ -53,13 +53,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build SDist
-      run: pipx run build
+    - run: pipx run build
 
     - uses: actions/upload-artifact@v4
       with:
         name: 'wheels-dist'
-        path: dist/*.tar.gz
+        path: dist/*
 
   merge-wheel-artifact:
     runs-on: ubuntu-latest
