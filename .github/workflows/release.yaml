@@ -13,15 +13,13 @@ jobs:
     name: Upload wheels to PyPI
     needs: [build]
     runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: wheel
           path: dist
 
-      - uses: pypa/gh-action-pypi-publish@v1.8.14
-        with:
-          verbose: true
+      - run: pipx run twine upload dist/* --disable-progress-bar
+        env:
+          TWINE_USERNAME: '__token__'
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
