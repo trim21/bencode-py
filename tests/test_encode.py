@@ -100,6 +100,8 @@ def test_duplicated_type_keys():
 def test_dict_int_keys():
     with pytest.raises(TypeError):
         bencode({1: 2})
+    with pytest.raises(TypeError):
+        bencode(0.0)
 
 
 @pytest.mark.parametrize(
@@ -111,6 +113,7 @@ def test_dict_int_keys():
         (True, b"i1e"),
         (False, b"i0e"),
         (-3, b"i-3e"),
+        (-0, b"i0e"),
         (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
         (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
         (4927586304, b"i4927586304e"),

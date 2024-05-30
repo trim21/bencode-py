@@ -48,6 +48,7 @@ def test_bad_case(raw: bytes):
         # (b"i18446744073709551616e", 18446744073709551616),  # unsigned long long +1
         (b"i4927586304e", 4927586304),
         (b"le", []),
+        (b"de", {}),
         (b"l4:spam4:eggse", [b"spam", b"eggs"]),
         # (b"de", {}),
         (b"d3:cow3:moo4:spam4:eggse", {b"cow": b"moo", b"spam": b"eggs"}),

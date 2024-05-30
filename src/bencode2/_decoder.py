@@ -165,6 +165,7 @@ class Decoder:
             items.append((k, v))
 
         if not items:
+            self.index += 1
             return {}
 
         _check_sorted(items, start_index)

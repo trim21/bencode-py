@@ -28,8 +28,9 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
         return
     if isinstance(value, int):
         return __encode_int(value, r)
+
+    i = id(value)
     if isinstance(value, dict):
-        i = id(value)
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
@@ -37,7 +38,6 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
         seen.remove(i)
         return
     if isinstance(value, list):
-        i = id(value)
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
@@ -45,7 +45,6 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
         seen.remove(i)
         return
     if isinstance(value, tuple):
-        i = id(value)
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
@@ -54,7 +53,6 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
         return
 
     if isinstance(value, MappingProxyType):
-        i = id(value)
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
@@ -66,7 +64,7 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
         __encode_bytes(bytes(value), r)
         return
 
-    raise TypeError(f"type '{type(value)!r}' not supported")
+    raise TypeError(f"type '{type(value)!r}' not supported by bencode")
 
 
 def __encode_int(x: int, r: list[bytes]) -> None:
@@ -112,7 +110,7 @@ def __encode_mapping_proxy(
     __check_duplicated_keys(i_list)
 
     for k, v in i_list:
-        __encode(k, r, seen)
+        __encode_bytes(k, r)
         __encode(v, r, seen)
 
     r.append(b"e")
@@ -129,7 +127,7 @@ def __encode_dict(x: dict[Any, Any], r: list[bytes], seen: set[int]) -> None:
     __check_duplicated_keys(i_list)
 
     for k, v in i_list:
-        __encode(k, r, seen)
+        __encode_bytes(k, r)
         __encode(v, r, seen)
 
     r.append(b"e")
