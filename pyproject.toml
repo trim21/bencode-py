@@ -62,6 +62,9 @@ compile_args = [
     "-O3",
 ]
 
+[tool.cibuildwheel]
+before-build = "python cleanup.py"
+
 [tool.cibuildwheel.environment]
 HATCH_BUILD_HOOKS_ENABLE = "1"
 
