@@ -36,9 +36,9 @@ testing = [
     "pytest-github-actions-annotate-failures==0.2.0",
 ]
 
-cython = [
-    'cython'
-]
+mypy = ['mypy']
+
+cython = ['cython']
 
 [project.urls]
 Homepage = "https://github.com/trim21/bencode-py"
