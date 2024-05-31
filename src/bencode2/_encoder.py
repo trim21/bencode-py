@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+from collections import OrderedDict
 from types import MappingProxyType
 from typing import Any
 
@@ -31,6 +32,14 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         return __encode_int(value, r)
 
     i = id(value)
+    if isinstance(value, OrderedDict):
+        if i in seen:
+            raise BencodeEncodeError(f"circular reference found {value!r}")
+        seen.add(i)
+        __encode_mapping(value, r, seen)
+        seen.remove(i)
+        return
+
     if isinstance(value, dict):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
@@ -105,6 +114,24 @@ def __encode_tuple(x: tuple[Any, ...], r: io.BytesIO, seen: set[int]) -> None:
 def __encode_mapping_proxy(
     x: MappingProxyType[Any, Any], r: io.BytesIO, seen: set[int]
 ) -> None:
+    r.write(b"d")
+
+    # force all keys to bytes, because str and bytes are incomparable
+    i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
+    if not i_list:
+        r.write(b"e")
+        return
+    i_list.sort(key=lambda kv: kv[0])
+    __check_duplicated_keys(i_list)
+
+    for k, v in i_list:
+        __encode_bytes(k, r)
+        __encode(v, r, seen)
+
+    r.write(b"e")
+
+
+def __encode_mapping(x: OrderedDict[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
     r.write(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable

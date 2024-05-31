@@ -50,7 +50,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - run: cythonize -a -i src/ -3
+      - run: cythonize -i src/ -3
 
       - run: python -m pytest
 
