@@ -3,7 +3,9 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Any
 
-from ._exceptions import BencodeEncodeError
+
+class BencodeEncodeError(Exception):
+    """Bencode encode error."""
 
 
 def encode(value: Any) -> bytes:

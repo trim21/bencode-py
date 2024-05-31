@@ -1,8 +1,9 @@
 from typing import Any
 
+from ._decoder import BencodeDecodeError
 from ._decoder import Decoder as _Decoder
+from ._encoder import BencodeEncodeError
 from ._encoder import encode as _encode
-from ._exceptions import BencodeDecodeError, BencodeEncodeError
 
 __all__ = (
     "BencodeDecodeError",

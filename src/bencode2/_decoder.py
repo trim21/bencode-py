@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from ._exceptions import BencodeDecodeError
-
 char_l: Final = 108  # ord("l")
 char_i: Final = 105  # ord("i")
 char_e: Final = 101  # ord("e")
@@ -29,6 +27,10 @@ def atoi(b: memoryview) -> int:
         total = total * 10 + (c - char_0)
 
     return total * sign
+
+
+class BencodeDecodeError(Exception):
+    """Bencode decode error."""
 
 
 class Decoder:
