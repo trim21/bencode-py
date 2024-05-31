@@ -128,6 +128,7 @@ def test_dict_int_keys():
         ),
         (types.MappingProxyType({b"spam": [b"a", b"b"]}), b"d4:spaml1:a1:bee"),
         (types.MappingProxyType({}), b"de"),
+        (collections.OrderedDict(), b"de"),
     ],
 )
 def test_basic(raw: Any, expected: bytes):
