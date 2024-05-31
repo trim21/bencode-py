@@ -5,7 +5,7 @@
 [![PyPI - Python Version](https://img.shields.io/badge/python-%3E%3D3.8%2C%3C4.0-blue)](https://pypi.org/project/bencode2/)
 [![Codecov branch](https://img.shields.io/codecov/c/github/Trim21/bencode-py/main)](https://codecov.io/gh/Trim21/bencode-py/branch/master)
 
-This library is compiled with mypy on cpython, and pure python on pypy.
+This library is compiled with cython on CPython, and pure python on PYPY.
 
 ## install
 
