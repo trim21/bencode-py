@@ -126,7 +126,7 @@ class Decoder:
         colon = self.__index(char_colon)
         if colon == -1:
             raise BencodeDecodeError(
-                f"invalid bytes, failed to find bytes length. index {self.index}"
+                f"invalid bytes, failed find expected char ':'. index {self.index}"
             )
 
         if self.value[self.index] == char_0:
