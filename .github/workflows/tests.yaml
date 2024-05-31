@@ -41,7 +41,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - run: pip install -e '.[testing, mypy]'
+      - run: pip install -e '.[testing, cython]'
 
       - run: python -m pytest --cov
 
@@ -50,8 +50,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - run: mypyc bencode2
-        working-directory: src
+      - run: cythonize -a -i src/ -3
 
       - run: python -m pytest
 
