@@ -41,7 +41,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - run: pip install -e '.[testing]'
+      - run: pip install -e '.[testing, cython]'
 
       - run: python -m pytest --cov
 
@@ -49,10 +49,6 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - run: pip install setuptools
-      - run: pip install https://github.com/trim21/cython/archive/refs/heads/3.0.x.zip
-      - run: cythonize -i src/ -3
 
       - run: python -m pytest
 

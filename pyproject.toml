@@ -38,7 +38,7 @@ testing = [
 
 mypy = ['mypy']
 
-cython = ['cython']
+cython = ['cython', 'setuptools']
 
 [project.urls]
 Homepage = "https://github.com/trim21/bencode-py"
