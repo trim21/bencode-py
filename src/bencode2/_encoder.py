@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 from types import MappingProxyType
 from typing import Any
 
@@ -9,25 +10,23 @@ class BencodeEncodeError(Exception):
 
 
 def encode(value: Any) -> bytes:
-    r: list[bytes] = []  # makes more sense for something with lots of appends
-
-    __encode(value, r, set())
-
-    # Join parts
-    return b"".join(r)
+    with io.BytesIO() as r:
+        __encode(value, r, set())
+        return r.getvalue()
 
 
-def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
+def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
     if isinstance(value, str):
         return __encode_str(value, r)
     if isinstance(value, bytes):
         return __encode_bytes(value, r)
     if isinstance(value, bool):
         if value is True:
-            r.append(b"i1e")
+            r.write(b"i1e")
         else:
-            r.append(b"i0e")
+            r.write(b"i0e")
         return
+
     if isinstance(value, int):
         return __encode_int(value, r)
 
@@ -69,45 +68,50 @@ def __encode(value: Any, r: list[bytes], seen: set[int]) -> None:
     raise TypeError(f"type '{type(value)!r}' not supported by bencode")
 
 
-def __encode_int(x: int, r: list[bytes]) -> None:
-    r.extend((b"i", str(x).encode(), b"e"))
+def __encode_int(x: int, r: io.BytesIO) -> None:
+    r.write(b"i")
+    r.write(str(x).encode())
+    r.write(b"e")
 
 
-def __encode_bytes(x: bytes, r: list[bytes]) -> None:
-    r.extend((str(len(x)).encode(), b":", x))
+def __encode_bytes(x: bytes, r: io.BytesIO) -> None:
+    r.write(str(len(x)).encode())
+    r.write(b":")
+    r.write(x)
 
 
-def __encode_str(x: str, r: list[bytes]) -> None:
+def __encode_str(x: str, r: io.BytesIO) -> None:
     __encode_bytes(x.encode("UTF-8"), r)
 
 
-def __encode_list(x: list[Any], r: list[bytes], seen: set[int]) -> None:
-    r.append(b"l")
+def __encode_list(x: list[Any], r: io.BytesIO, seen: set[int]) -> None:
+    r.write(b"l")
 
     for i in x:
         __encode(i, r, seen)
 
-    r.append(b"e")
+    r.write(b"e")
 
 
-def __encode_tuple(x: tuple[Any, ...], r: list[bytes], seen: set[int]) -> None:
-    r.append(b"l")
+def __encode_tuple(x: tuple[Any, ...], r: io.BytesIO, seen: set[int]) -> None:
+    r.write(b"l")
 
     for i in x:
         __encode(i, r, seen)
 
-    r.append(b"e")
+    r.write(b"e")
 
 
 def __encode_mapping_proxy(
-    x: MappingProxyType[Any, Any], r: list[bytes], seen: set[int]
+    x: MappingProxyType[Any, Any], r: io.BytesIO, seen: set[int]
 ) -> None:
-    r.append(b"d")
+    r.write(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
     i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
     if not i_list:
-        return r.append(b"e")
+        r.write(b"e")
+        return
     i_list.sort(key=lambda kv: kv[0])
     __check_duplicated_keys(i_list)
 
@@ -115,16 +119,17 @@ def __encode_mapping_proxy(
         __encode_bytes(k, r)
         __encode(v, r, seen)
 
-    r.append(b"e")
+    r.write(b"e")
 
 
-def __encode_dict(x: dict[Any, Any], r: list[bytes], seen: set[int]) -> None:
-    r.append(b"d")
+def __encode_dict(x: dict[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
+    r.write(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
     i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
     if not i_list:
-        return r.append(b"e")
+        r.write(b"e")
+        return
     i_list.sort(key=lambda kv: kv[0])
     __check_duplicated_keys(i_list)
 
@@ -132,7 +137,7 @@ def __encode_dict(x: dict[Any, Any], r: list[bytes], seen: set[int]) -> None:
         __encode_bytes(k, r)
         __encode(v, r, seen)
 
-    r.append(b"e")
+    r.write(b"e")
 
 
 def __check_duplicated_keys(s: list[tuple[bytes, object]]) -> None:
