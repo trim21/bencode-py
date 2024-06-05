@@ -58,9 +58,6 @@ dependencies = ["hatch-cython"]
 
 [tool.hatch.build.targets.wheel.hooks.cython.options]
 directives = { boundscheck = true, nonecheck = false, language_level = 3, binding = true }
-compile_args = [
-    "-O3",
-]
 
 [tool.cibuildwheel]
 before-build = "python cleanup.py"
