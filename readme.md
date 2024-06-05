@@ -5,7 +5,20 @@
 [![PyPI - Python Version](https://img.shields.io/badge/python-%3E%3D3.8%2C%3C4.0-blue)](https://pypi.org/project/bencode2/)
 [![Codecov branch](https://img.shields.io/codecov/c/github/Trim21/bencode-py/main)](https://codecov.io/gh/Trim21/bencode-py/branch/master)
 
-This library is compiled with cython on CPython, and pure python on PyPy.
+## introduction
+
+Why yet another bencode package in python?
+
+because I need a bencode library:
+
+1. Correct, which mean it should fully validate its inputs,
+   and won't try decode bencode bytes to `str` by default.
+   Bencode doesn't have a utf-8 str type, only bytes,
+   so many decoder try to decode bytes to str and fallback to bytes,
+   **this package won't, it parse bencode bytes value as python bytes.**
+2. Fast enough, that's why this package is compiled with cython.
+3. even cross implement, what's why
+   this package sill have a pure wheel `bencode2-${version}-py3-none-any.whl` pypi.
 
 ## install
 
