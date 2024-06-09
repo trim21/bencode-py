@@ -67,7 +67,7 @@ jobs:
           cache: "pip"
 
       - run: pip install -U pip
-      - run: pip install 'bencode2[testing]' --find-link ./dist/
+      - run: pip install 'bencode2[testing]' --find-links ./dist/
 
       - run: pytest
 
