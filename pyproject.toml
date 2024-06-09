@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bencode2"
-version = "0.1.1"
+version = "0.1.1.dev0"
 description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
 requires-python = ">=3.8,<4.0"
@@ -96,6 +96,3 @@ ignore_missing_imports = true
 warn_return_any = false
 warn_unused_configs = true
 show_error_codes = true
-
-[tool.pytest.ini_options]
-pythonpath = ['src']

@@ -14,12 +14,74 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build:
+    uses: ./.github/workflows/_build_wheels.yaml
+
+  twine-check:
+    name: Check dist
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel
+          path: dist
+
+      - run: pipx run twine check --strict dist/*
+
+  test-cp-build:
+    needs: [ build ]
+    strategy:
+      max-parallel: 5
+      fail-fast: false
+      matrix:
+        os:
+          - "windows-latest"
+          - "ubuntu-22.04"
+          - "macos-13"
+          - "macos-14"
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+        exclude:
+          - { os: macos-14, python-version: '3.8' }
+          - { os: macos-14, python-version: '3.9' }
+
+    runs-on: "${{ matrix.os }}"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel
+          path: dist
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - run: pip install -U pip
+      - run: pip install bencode2 --no-index --find-links ./dist/
+      - run: pip install -r requirements.txt
+
+      - run: pytest --assert-pkg-compiled=true
+
   test-cp:
     strategy:
       max-parallel: 5
       fail-fast: false
       matrix:
-        os: [ "windows-latest", "ubuntu-latest", "macos-12", "macos-13", "macos-14" ]
+        os:
+          - "windows-latest"
+          - "ubuntu-22.04"
+          - "macos-13"
+          - "macos-14"
         python-version:
           - "3.8"
           - "3.9"
@@ -41,22 +103,25 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - run: pip install -e '.[testing, cython]'
+      - run: pip install -e .
+      - run: pip install -r requirements.txt
 
-      - run: python -m pytest --cov
+      - run: python -m pytest --cov --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - run: python -m pytest
-
   test-pp:
     strategy:
       max-parallel: 5
       matrix:
-        os: [ "macos-12", "macos-13", "macos-14", "windows-latest", "ubuntu-latest" ]
+        os:
+          - "windows-latest"
+          - "ubuntu-22.04"
+          - "macos-13"
+          - "macos-14"
         python-version:
           - 'pypy3.9'
           - 'pypy3.10'
@@ -71,10 +136,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: pip install -e '.[testing]'
+      - run: pip install -e .
+      - run: pip install -r requirements.txt
 
       - name: Run pytest
-        run: python -m pytest --cov
+        run: python -m pytest --cov --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
