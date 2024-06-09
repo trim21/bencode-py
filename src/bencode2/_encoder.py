@@ -19,21 +19,25 @@ def encode(value: Any) -> bytes:
 
 
 def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
-    if isinstance(value, str):
-        return __encode_str(value, r)
+    # yes I know maybe I should use `isinstance(value, ...)` here.
+    # but this is how cython check type.
+    if type(value) == str:  # noqa: E721
+        return __encode_bytes(value.encode("UTF-8"), r)
+    if type(value) == int:  # noqa: E721
+        r.write(b"i")
+        r.write(str(value).encode())
+        r.write(b"e")
+        return
+
     if isinstance(value, bytes):
         return __encode_bytes(value, r)
+
     if isinstance(value, bool):
         if value is True:
             r.write(b"i1e")
         else:
             r.write(b"i0e")
         return
-
-    # yes I know maybe I should use `isinstance(value, int)` here.
-    # but this is how cython check type.
-    if type(value) == int:  # noqa: E721
-        return __encode_int(value, r)
 
     i = id(value)
     if isinstance(value, OrderedDict):
@@ -102,10 +106,6 @@ def __encode_bytes(x: bytes, r: io.BytesIO) -> None:
     r.write(str(len(x)).encode())
     r.write(b":")
     r.write(x)
-
-
-def __encode_str(x: str, r: io.BytesIO) -> None:
-    __encode_bytes(x.encode("UTF-8"), r)
 
 
 def __encode_list(x: list[Any], r: io.BytesIO, seen: set[int]) -> None:
@@ -195,7 +195,7 @@ def __encode_dataclass(x: Any, r: io.BytesIO, seen: set[int]) -> None:
     # no need to check duplicated keys, dataclasses will check this.
 
     for k in ks:
-        __encode_str(k, r)
+        __encode_bytes(k.encode(), r)
         __encode(getattr(x, k), r, seen)
 
     r.write(b"e")
