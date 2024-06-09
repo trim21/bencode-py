@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import collections
+import dataclasses
 import types
 import unittest
 from typing import Any
@@ -159,3 +162,20 @@ def test_recursive_object():
     a["b"] = b
     with pytest.raises(BencodeEncodeError, match="circular reference found"):
         assert bencode(a)
+
+
+def test_dataclasses():
+    @dataclasses.dataclass
+    class Obj:
+        b: int
+        a: str
+        d: bool
+        c: list[dict]
+
+    o = Obj(b=1, a="1", d=True, c=[{}, {"a": 1}])
+
+    assert (
+        bencode(o)
+        == bencode(dataclasses.asdict(o))
+        == b"d1:a1:11:bi1e1:clded1:ai1eee1:di1ee"
+    )

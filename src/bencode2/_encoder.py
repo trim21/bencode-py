@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 from collections import OrderedDict
+from dataclasses import fields, is_dataclass
 from types import MappingProxyType
 from typing import Any
 
@@ -72,6 +73,14 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
 
     if isinstance(value, bytearray):
         __encode_bytes(bytes(value), r)
+        return
+
+    if is_dataclass(value) and not isinstance(value, type):
+        if i in seen:
+            raise BencodeEncodeError(f"circular reference found {value!r}")
+        seen.add(i)
+        __encode_dataclass(value, r, seen)
+        seen.remove(i)
         return
 
     raise TypeError(f"type '{type(value)!r}' not supported by bencode")
@@ -163,6 +172,25 @@ def __encode_dict(x: dict[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
     for k, v in i_list:
         __encode_bytes(k, r)
         __encode(v, r, seen)
+
+    r.write(b"e")
+
+
+def __encode_dataclass(x: Any, r: io.BytesIO, seen: set[int]) -> None:
+    keys = fields(x)
+    if not keys:
+        r.write(b"de")
+        return
+
+    r.write(b"d")
+
+    ks = sorted([k.name for k in keys])
+
+    # no need to check duplicated keys, dataclasses will check this.
+
+    for k in ks:
+        __encode_str(k, r)
+        __encode(getattr(x, k), r, seen)
 
     r.write(b"e")
 
