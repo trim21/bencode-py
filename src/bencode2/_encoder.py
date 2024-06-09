@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import enum
 import io
 import sys
 from collections import OrderedDict
@@ -88,14 +87,6 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
     raise TypeError(f"type '{type(value)!r}' not supported by bencode")
 
 
-# there is a behavior change of `enum.IntEnum` in python 3.11
-#
-# class EnumInt(enum.IntEnum):
-#     v = "1"
-#
-#
-# str(EnumInt.v) is `Enum.v` in python 3.10 and `1` in python 3.11
-
 if sys.version_info >= (3, 11):
 
     def __encode_int(x: int, r: io.BytesIO) -> None:
@@ -104,16 +95,18 @@ if sys.version_info >= (3, 11):
         r.write(b"e")
 
 else:
+    # we don't actually support `enum.Enum`
+    # there is a behavior change of `enum.IntEnum` in python 3.11
+    #
+    # class EnumInt(enum.IntEnum):
+    #     v = "1"
+    #
+    #
+    # str(EnumInt.v) is `Enum.v` in python 3.10 and `1` in python 3.11
 
     def __encode_int(x: int, r: io.BytesIO) -> None:
-        if isinstance(x, enum.IntEnum):
-            r.write(b"i")
-            r.write(str(x.value).encode())
-            r.write(b"e")
-            return
-
         r.write(b"i")
-        r.write(str(x).encode())
+        r.write(str(int(x)).encode())
         r.write(b"e")
 
 
