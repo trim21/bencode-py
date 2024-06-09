@@ -93,7 +93,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         return
 
     if isinstance(value, enum.Enum):
-        return __encode(value, value.value)
+        return __encode(value, value.value, seen)
 
     raise TypeError(f"type '{type(value)!r}' not supported by bencode")
 
