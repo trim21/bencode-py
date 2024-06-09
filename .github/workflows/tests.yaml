@@ -67,7 +67,8 @@ jobs:
           cache: "pip"
 
       - run: pip install -U pip
-      - run: pip install 'bencode2[testing]' --find-links ./dist/
+      - run: pip install bencode2 --no-index --find-links ./dist/
+      - run: pip install -r requirements.txt
 
       - run: pytest
 
@@ -102,7 +103,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - run: pip install -e '.[testing, cython]'
+      - run: pip install -e .
+      - run: pip install -r requirements.txt
 
       - run: python -m pytest --cov
 
@@ -134,7 +136,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: pip install -e '.[testing]'
+      - run: pip install -e .
+      - run: pip install -r requirements.txt
 
       - name: Run pytest
         run: python -m pytest --cov
