@@ -162,6 +162,23 @@ def test_recursive_object():
     a["b"] = b
     with pytest.raises(BencodeEncodeError, match="circular reference found"):
         assert bencode(a)
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(b)
+
+    a = collections.OrderedDict()
+    b = (a,)
+    a["b"] = b
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(a)
+
+    d = {}
+    p = types.MappingProxyType(d)
+    d["p"] = d
+
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(d)
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(p)
 
 
 def test_dataclasses():
@@ -179,3 +196,32 @@ def test_dataclasses():
         == bencode(dataclasses.asdict(o))
         == b"d1:a1:11:bi1e1:clded1:ai1eee1:di1ee"
     )
+
+    @dataclasses.dataclass
+    class C: ...
+
+    c = C()
+
+    assert bencode(c) == b"de"
+
+    @dataclasses.dataclass
+    class L:
+        a: Any
+
+    a = {}
+
+    l1 = L(a=a)
+
+    a["l"] = a
+
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(a)
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(l1)
+
+    l2 = L(a=a)
+
+    l2.a = l2
+
+    with pytest.raises(BencodeEncodeError, match="circular reference found"):
+        assert bencode(l2)

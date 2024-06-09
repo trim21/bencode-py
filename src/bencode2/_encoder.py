@@ -64,7 +64,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         return
 
     if isinstance(value, MappingProxyType):
-        if i in seen:
+        if i in seen:  # not sure is this possible?
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
         __encode_mapping_proxy(value, r, seen)
