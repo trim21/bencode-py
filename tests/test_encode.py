@@ -3,7 +3,6 @@ from __future__ import annotations
 import collections
 import dataclasses
 import enum
-import re
 import sys
 import types
 import unittest
@@ -237,13 +236,7 @@ def test_enum():
     class EnumInt(enum.IntEnum):
         v = "1"
 
-    with pytest.raises(
-        TypeError, match=re.compile(r"type '<enum .*>' not supported by bencode")
-    ):
-        assert bencode(Enum.v) == b"1:a"
-    # with pytest.raises(
-    #     TypeError, match=re.compile(r"type '<enum .*>' not supported by bencode")
-    # ):
+    assert bencode(Enum.v) == b"1:a"
     assert bencode(EnumInt.v) == b"i1e"
 
 
@@ -252,7 +245,4 @@ def test_str_enum():
     class EnumStr(enum.StrEnum):
         v = "s"
 
-    # with pytest.raises(
-    #     TypeError, match=re.compile(r"type '<enum .*>' not supported by bencode")
-    # ):
     assert bencode(EnumStr.v) == b"1:s"
