@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 
 from ._decoder import BencodeDecodeError
@@ -5,11 +6,14 @@ from ._decoder import Decoder as _Decoder
 from ._encoder import BencodeEncodeError
 from ._encoder import encode as _encode
 
+COMPILED = Path(__file__).suffix in (".pyd", ".so")
+
 __all__ = (
     "BencodeDecodeError",
     "BencodeEncodeError",
     "bencode",
     "bdecode",
+    "COMPILED",
 )
 
 
