@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import enum
 import io
 from collections import OrderedDict
 from dataclasses import fields, is_dataclass
@@ -18,19 +19,27 @@ def encode(value: Any) -> bytes:
 
 
 def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
-    if isinstance(value, str):
-        return __encode_str(value, r)
-    if isinstance(value, bytes):
-        return __encode_bytes(value, r)
-    if isinstance(value, bool):
-        if value is True:
-            r.write(b"i1e")
-        else:
-            r.write(b"i0e")
+    # yes I know maybe I should use `isinstance(value, ...)` here.
+    # but this is how cython check type.
+    if type(value) == str:  # noqa: E721
+        return __encode_bytes(value.encode("UTF-8"), r)
+
+    # check bool before int
+    if value is True:
+        r.write(b"i1e")
+        return
+    elif value is False:
+        r.write(b"i0e")
         return
 
-    if isinstance(value, int):
-        return __encode_int(value, r)
+    if type(value) == int:  # noqa: E721
+        r.write(b"i")
+        r.write(str(value).encode())
+        r.write(b"e")
+        return
+
+    if isinstance(value, bytes):
+        return __encode_bytes(value, r)
 
     i = id(value)
     if isinstance(value, OrderedDict):
@@ -83,23 +92,16 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         seen.remove(i)
         return
 
+    if isinstance(value, enum.Enum):
+        return __encode(value.value, r, seen)
+
     raise TypeError(f"type '{type(value)!r}' not supported by bencode")
-
-
-def __encode_int(x: int, r: io.BytesIO) -> None:
-    r.write(b"i")
-    r.write(str(x).encode())
-    r.write(b"e")
 
 
 def __encode_bytes(x: bytes, r: io.BytesIO) -> None:
     r.write(str(len(x)).encode())
     r.write(b":")
     r.write(x)
-
-
-def __encode_str(x: str, r: io.BytesIO) -> None:
-    __encode_bytes(x.encode("UTF-8"), r)
 
 
 def __encode_list(x: list[Any], r: io.BytesIO, seen: set[int]) -> None:
@@ -189,7 +191,7 @@ def __encode_dataclass(x: Any, r: io.BytesIO, seen: set[int]) -> None:
     # no need to check duplicated keys, dataclasses will check this.
 
     for k in ks:
-        __encode_str(k, r)
+        __encode_bytes(k.encode(), r)
         __encode(getattr(x, k), r, seen)
 
     r.write(b"e")

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import collections
 import dataclasses
+import enum
+import sys
 import types
 import unittest
 from typing import Any
@@ -225,3 +227,22 @@ def test_dataclasses():
 
     with pytest.raises(BencodeEncodeError, match="circular reference found"):
         assert bencode(l2)
+
+
+def test_enum():
+    class Enum(enum.Enum):
+        v = "a"
+
+    class EnumInt(enum.IntEnum):
+        v = "1"
+
+    assert bencode(Enum.v) == b"1:a"
+    assert bencode(EnumInt.v) == b"i1e"
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="enum.StrEnum need py>=3.11")
+def test_str_enum():
+    class EnumStr(enum.StrEnum):
+        v = "s"
+
+    assert bencode(EnumStr.v) == b"1:s"
