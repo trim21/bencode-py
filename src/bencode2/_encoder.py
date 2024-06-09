@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import enum
 import io
 from collections import OrderedDict
 from dataclasses import fields, is_dataclass
@@ -19,6 +20,8 @@ def encode(value: Any) -> bytes:
 
 def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
     if isinstance(value, str):
+        if isinstance(value, enum.Enum):
+            return __encode_str(value.value, r)
         return __encode_str(value, r)
     if isinstance(value, bytes):
         return __encode_bytes(value, r)
@@ -30,6 +33,8 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         return
 
     if isinstance(value, int):
+        if isinstance(value, enum.Enum):
+            return __encode_int(value.value, r)
         return __encode_int(value, r)
 
     i = id(value)
@@ -82,6 +87,9 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         __encode_dataclass(value, r, seen)
         seen.remove(i)
         return
+
+    if isinstance(value, enum.Enum):
+        return __encode(value.value, r, seen)
 
     raise TypeError(f"type '{type(value)!r}' not supported by bencode")
 
