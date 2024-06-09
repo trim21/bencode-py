@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import dataclasses
 import enum
+import re
 import sys
 import types
 import unittest
@@ -230,19 +231,28 @@ def test_dataclasses():
 
 
 def test_enum():
-    class E1(enum.Enum):
+    class Enum(enum.Enum):
         v = "a"
 
-    class E2(enum.IntEnum):
+    class EnumInt(enum.IntEnum):
         v = "1"
 
-    assert bencode(E1.v) == b"1:a"
-    assert bencode(E2.v) == b"i1e"
+    with pytest.raises(
+        TypeError, match=re.compile(r"type '<enum .*>' not supported by bencode")
+    ):
+        assert bencode(Enum.v) == b"1:a"
+    # with pytest.raises(
+    #     TypeError, match=re.compile(r"type '<enum .*>' not supported by bencode")
+    # ):
+    assert bencode(EnumInt.v) == b"i1e"
 
 
 @pytest.mark.skipif(sys.version_info < (3, 11), reason="enum.StrEnum need py>=3.11")
 def test_str_enum():
-    class E(enum.StrEnum):
+    class EnumStr(enum.StrEnum):
         v = "s"
 
-    assert bencode(E.v) == b"1:s"
+    # with pytest.raises(
+    #     TypeError, match=re.compile(r"type '<enum .*>' not supported by bencode")
+    # ):
+    assert bencode(EnumStr.v) == b"1:s"
