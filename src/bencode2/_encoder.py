@@ -98,12 +98,6 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
     raise TypeError(f"type '{type(value)!r}' not supported by bencode")
 
 
-def __encode_int(x: int, r: io.BytesIO) -> None:
-    r.write(b"i")
-    r.write(str(x).encode())
-    r.write(b"e")
-
-
 def __encode_bytes(x: bytes, r: io.BytesIO) -> None:
     r.write(str(len(x)).encode())
     r.write(b":")
