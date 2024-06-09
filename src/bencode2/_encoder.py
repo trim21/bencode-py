@@ -23,6 +23,15 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
     # but this is how cython check type.
     if type(value) == str:  # noqa: E721
         return __encode_bytes(value.encode("UTF-8"), r)
+
+    # check bool before int
+    if value is True:
+        r.write(b"i1e")
+        return
+    elif value is False:
+        r.write(b"i0e")
+        return
+
     if type(value) == int:  # noqa: E721
         r.write(b"i")
         r.write(str(value).encode())
@@ -31,13 +40,6 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
 
     if isinstance(value, bytes):
         return __encode_bytes(value, r)
-
-    if isinstance(value, bool):
-        if value is True:
-            r.write(b"i1e")
-        else:
-            r.write(b"i0e")
-        return
 
     i = id(value)
     if isinstance(value, OrderedDict):
