@@ -96,6 +96,3 @@ ignore_missing_imports = true
 warn_return_any = false
 warn_unused_configs = true
 show_error_codes = true
-
-[tool.pytest.ini_options]
-pythonpath = ['src']
