@@ -70,7 +70,7 @@ jobs:
       - run: pip install bencode2 --no-index --find-links ./dist/
       - run: pip install -r requirements.txt
 
-      - run: pytest
+      - run: pytest --assert-pkg-compiled=true
 
   test-cp:
     strategy:
@@ -106,7 +106,7 @@ jobs:
       - run: pip install -e .
       - run: pip install -r requirements.txt
 
-      - run: python -m pytest --cov
+      - run: python -m pytest --cov --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
@@ -140,7 +140,7 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Run pytest
-        run: python -m pytest --cov
+        run: python -m pytest --cov --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
