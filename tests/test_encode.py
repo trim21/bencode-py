@@ -248,7 +248,6 @@ def test_str_enum():
     assert bencode(EnumStr.v) == b"1:s"
 
 
-@pytest.mark.skipif(sys.version_info < (3, 11), reason="TypedDict need py>=3.11")
 def test_TypedDict():
     from typing import TypedDict
 
