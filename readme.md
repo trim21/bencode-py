@@ -44,8 +44,11 @@ assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 
 bencode have 4 native types, integer, string, array and directory.
 
-this package will decode integer to `int`, string to `bytes`, array to `list` and
+This package will decode integer to `int`, array to `list` and
 directory to `dict`.
+
+Because bencode string is not defined as utf-8 string, and will contain raw bytes
+bencode2 will decode bencode string to python `bytes`.
 
 ### Encoding
 
