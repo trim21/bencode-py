@@ -6,7 +6,7 @@ import enum
 import sys
 import types
 import unittest
-from typing import Any
+from typing import Any, NamedTuple
 
 import pytest
 
@@ -246,3 +246,19 @@ def test_str_enum():
         v = "s"
 
     assert bencode(EnumStr.v) == b"1:s"
+
+
+def test_TypedDict():
+    from typing import TypedDict
+
+    class D(TypedDict):
+        v: str
+
+    assert bencode(D(v="s")) == b"d1:v1:se"
+
+
+def test_NamedTuple():
+    class UserNamedTuple(NamedTuple):
+        v: str
+
+    assert bencode(UserNamedTuple(v="s")) == b"l1:se"

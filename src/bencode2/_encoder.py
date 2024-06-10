@@ -5,23 +5,22 @@ import io
 from collections import OrderedDict
 from dataclasses import fields, is_dataclass
 from types import MappingProxyType
-from typing import Any
+from typing import Any, Mapping
 
 
 class BencodeEncodeError(Exception):
     """Bencode encode error."""
 
 
-def encode(value: Any) -> bytes:
+def bencode(value: Any, /) -> bytes:
+    """Encode value into the bencode format."""
     with io.BytesIO() as r:
         __encode(value, r, set())
         return r.getvalue()
 
 
 def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
-    # yes I know maybe I should use `isinstance(value, ...)` here.
-    # but this is how cython check type.
-    if type(value) == str:  # noqa: E721
+    if isinstance(value, str):
         return __encode_bytes(value.encode("UTF-8"), r)
 
     # check bool before int
@@ -32,7 +31,8 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         r.write(b"i0e")
         return
 
-    if type(value) == int:  # noqa: E721
+    # avoid enum.IntEnum
+    if type(value) == int:
         r.write(b"i")
         r.write(str(value).encode())
         r.write(b"e")
@@ -42,7 +42,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         return __encode_bytes(value, r)
 
     i = id(value)
-    if isinstance(value, OrderedDict):
+    if isinstance(value, (dict, OrderedDict, MappingProxyType)):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
@@ -50,33 +50,16 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         seen.remove(i)
         return
 
-    if isinstance(value, dict):
+    if isinstance(value, (list, tuple)):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
-        __encode_dict(value, r, seen)
-        seen.remove(i)
-        return
-    if isinstance(value, list):
-        if i in seen:
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-        __encode_list(value, r, seen)
-        seen.remove(i)
-        return
-    if isinstance(value, tuple):
-        if i in seen:
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-        __encode_tuple(value, r, seen)
-        seen.remove(i)
-        return
 
-    if isinstance(value, MappingProxyType):
-        if i in seen:  # not sure is this possible?
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-        __encode_mapping_proxy(value, r, seen)
+        r.write(b"l")
+        for item in value:
+            __encode(item, r, seen)
+        r.write(b"e")
+
         seen.remove(i)
         return
 
@@ -104,63 +87,7 @@ def __encode_bytes(x: bytes, r: io.BytesIO) -> None:
     r.write(x)
 
 
-def __encode_list(x: list[Any], r: io.BytesIO, seen: set[int]) -> None:
-    r.write(b"l")
-
-    for i in x:
-        __encode(i, r, seen)
-
-    r.write(b"e")
-
-
-def __encode_tuple(x: tuple[Any, ...], r: io.BytesIO, seen: set[int]) -> None:
-    r.write(b"l")
-
-    for i in x:
-        __encode(i, r, seen)
-
-    r.write(b"e")
-
-
-def __encode_mapping_proxy(
-    x: MappingProxyType[Any, Any], r: io.BytesIO, seen: set[int]
-) -> None:
-    r.write(b"d")
-
-    # force all keys to bytes, because str and bytes are incomparable
-    i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
-    if not i_list:
-        r.write(b"e")
-        return
-    i_list.sort(key=lambda kv: kv[0])
-    __check_duplicated_keys(i_list)
-
-    for k, v in i_list:
-        __encode_bytes(k, r)
-        __encode(v, r, seen)
-
-    r.write(b"e")
-
-
-def __encode_mapping(x: OrderedDict[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
-    r.write(b"d")
-
-    # force all keys to bytes, because str and bytes are incomparable
-    i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
-    if not i_list:
-        r.write(b"e")
-        return
-    i_list.sort(key=lambda kv: kv[0])
-    __check_duplicated_keys(i_list)
-
-    for k, v in i_list:
-        __encode_bytes(k, r)
-        __encode(v, r, seen)
-
-    r.write(b"e")
-
-
-def __encode_dict(x: dict[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
+def __encode_mapping(x: Mapping[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
     r.write(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
