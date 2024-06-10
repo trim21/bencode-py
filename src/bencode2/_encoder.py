@@ -49,7 +49,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
-        __encode_dict(value, r, seen)
+        __encode_mapping(value, r, seen)
         seen.remove(i)
         return
 
@@ -114,24 +114,6 @@ def __encode_bytes(x: bytes, r: io.BytesIO) -> None:
 
 
 def __encode_mapping(x: Mapping[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
-    r.write(b"d")
-
-    # force all keys to bytes, because str and bytes are incomparable
-    i_list: list[tuple[bytes, object]] = [(to_binary(k), v) for k, v in x.items()]
-    if not i_list:
-        r.write(b"e")
-        return
-    i_list.sort(key=lambda kv: kv[0])
-    __check_duplicated_keys(i_list)
-
-    for k, v in i_list:
-        __encode_bytes(k, r)
-        __encode(v, r, seen)
-
-    r.write(b"e")
-
-
-def __encode_dict(x: dict[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
     r.write(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
