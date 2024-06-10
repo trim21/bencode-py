@@ -42,9 +42,6 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         return __encode_bytes(value, r)
 
     i = id(value)
-    # trust me, I know what I'm doing when using or not using `type(value) == T`
-    # this is how cython check type when calling `__encode_dict`
-    # also avoid matching OrderDict.
     if isinstance(value, (dict, OrderedDict, MappingProxyType)):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
@@ -53,21 +50,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         seen.remove(i)
         return
 
-    if isinstance(value, list):
-        if i in seen:
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-
-        r.write(b"l")
-        for item in value:
-            __encode(item, r, seen)
-        r.write(b"e")
-
-        seen.remove(i)
-        return
-
-    # instance will match NamedTuple
-    if isinstance(value, tuple):
+    if isinstance(value, (list, tuple)):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
