@@ -259,7 +259,7 @@ def test_TypedDict():
 
 
 def test_NamedTuple():
-    class T(NamedTuple):
+    class UserNamedTuple(NamedTuple):
         v: str
 
-    assert bencode(T(v="s")) == b"l1:se"
+    assert bencode(UserNamedTuple(v="s")) == b"l1:se"

@@ -3,8 +3,7 @@ from typing import Any
 
 from ._decoder import BencodeDecodeError
 from ._decoder import Decoder as _Decoder
-from ._encoder import BencodeEncodeError
-from ._encoder import encode as _encode
+from ._encoder import BencodeEncodeError, bencode
 
 COMPILED = Path(__file__).suffix in (".pyd", ".so")
 
@@ -15,11 +14,6 @@ __all__ = (
     "bdecode",
     "COMPILED",
 )
-
-
-def bencode(value: Any, /) -> bytes:
-    """Encode value into the bencode format."""
-    return _encode(value)
 
 
 def bdecode(value: bytes, /, *, str_key: bool = False) -> Any:

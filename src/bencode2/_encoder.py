@@ -12,15 +12,14 @@ class BencodeEncodeError(Exception):
     """Bencode encode error."""
 
 
-def encode(value: Any) -> bytes:
+def bencode(value: Any, /) -> bytes:
+    """Encode value into the bencode format."""
     with io.BytesIO() as r:
         __encode(value, r, set())
         return r.getvalue()
 
 
 def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
-    # trust me, I know what I'm doing when using or not using `type(value) == T`
-    # this is how cython check type.
     if isinstance(value, str):
         return __encode_bytes(value.encode("UTF-8"), r)
 
@@ -32,6 +31,8 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         r.write(b"i0e")
         return
 
+    # trust me, I know what I'm doing when using or not using `type(value) == T`
+    # this is how cython check type.
     if type(value) == int:
         r.write(b"i")
         r.write(str(value).encode())
@@ -50,7 +51,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         seen.remove(i)
         return
 
-    if isinstance(value, dict):
+    if type(value) == dict:
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
@@ -62,15 +63,26 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
-        __encode_list(value, r, seen)
+
+        r.write(b"l")
+        for item in value:
+            __encode(item, r, seen)
+        r.write(b"e")
+
         seen.remove(i)
         return
 
+    # instance will match NamedTuple
     if isinstance(value, tuple):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
-        __encode_tuple(value, r, seen)
+
+        r.write(b"l")
+        for item in value:
+            __encode(item, r, seen)
+        r.write(b"e")
+
         seen.remove(i)
         return
 
