@@ -29,17 +29,6 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 
-[project.optional-dependencies]
-testing = [
-    'pytest==8.2.2',
-    'pytest-cov==5.0.0',
-    "pytest-github-actions-annotate-failures==0.2.0",
-]
-
-mypy = ['mypy']
-
-cython = ['cython', 'setuptools']
-
 [project.urls]
 Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
