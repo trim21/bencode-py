@@ -45,7 +45,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
     # trust me, I know what I'm doing when using or not using `type(value) == T`
     # this is how cython check type when calling `__encode_dict`
     # also avoid matching OrderDict.
-    if type(value) == dict:
+    if isinstance(value, (dict, OrderedDict, MappingProxyType)):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
@@ -77,15 +77,6 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
             __encode(item, r, seen)
         r.write(b"e")
 
-        seen.remove(i)
-        return
-
-    # these types are rare used, so put them behind common types.
-    if isinstance(value, (OrderedDict, MappingProxyType)):
-        if i in seen:
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-        __encode_mapping(value, r, seen)
         seen.remove(i)
         return
 
