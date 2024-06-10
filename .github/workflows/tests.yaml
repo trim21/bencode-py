@@ -60,6 +60,7 @@ jobs:
         with:
           pattern: wheels-*
           path: dist
+          merge-multiple: true
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
