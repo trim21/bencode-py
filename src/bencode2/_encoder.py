@@ -58,6 +58,12 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         __encode_bytes(bytes(value), r)
         return
 
+    if isinstance(value, memoryview):
+        r.write(str(len(value)).encode())
+        r.write(b":")
+        r.write(value)
+        return
+
     if is_dataclass(value) and not isinstance(value, type):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")

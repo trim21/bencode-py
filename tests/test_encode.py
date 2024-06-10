@@ -123,6 +123,7 @@ def test_dict_int_keys():
         (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
         (4927586304, b"i4927586304e"),
         (bytearray([1, 2, 3]), b"3:\x01\x02\x03"),
+        (memoryview(b"\x01\x02\x03"), b"3:\x01\x02\x03"),
         ([b"spam", b"eggs"], b"l4:spam4:eggse"),
         ({b"cow": b"moo", b"spam": b"eggs"}, b"d3:cow3:moo4:spam4:eggse"),
         ({b"spam": [b"a", b"b"]}, b"d4:spaml1:a1:bee"),

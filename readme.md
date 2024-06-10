@@ -31,7 +31,6 @@ pip install bencode2
 ```python
 import bencode2
 
-
 assert bencode2.bdecode(b"d4:spaml1:a1:bee") == {b"spam": [b"a", b"b"]}
 
 # If you want to decode dict with str keys:
@@ -40,3 +39,25 @@ assert bencode2.bdecode(b"d4:spaml1:a1:bee", str_key=True) == {"spam": [b"a", b"
 
 assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 ```
+
+### Decoding
+
+bencode have 4 native types, integer, string, array and directory.
+
+this package will decode integer to `int`, string to `bytes`, array to `list` and
+directory to `dict`.
+
+### Encoding
+
+Many python types are supported.
+
+|            python type            | bencode type |
+|:---------------------------------:|:------------:|
+|              `bool`               | integer 0/1  |
+|       `int`, `enum.IntEnum`       |   integer    |
+|       `str`, `enum.StrEnum`       |    string    |
+| `bytes`, `bytearray`,`memoryview` |    string    |
+|   `list`, `tuple`, `NamedTuple`   |    array     |
+|       `dict`, `OrderedDict`       |  directory   |
+|       `types.MaapingProxy`        |  directory   |
+|            dataclasses            |  directory   |
