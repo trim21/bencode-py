@@ -110,24 +110,6 @@ def __encode_bytes(x: bytes, r: io.BytesIO) -> None:
     r.write(x)
 
 
-def __encode_list(x: list[Any], r: io.BytesIO, seen: set[int]) -> None:
-    r.write(b"l")
-
-    for i in x:
-        __encode(i, r, seen)
-
-    r.write(b"e")
-
-
-def __encode_tuple(x: tuple[Any, ...], r: io.BytesIO, seen: set[int]) -> None:
-    r.write(b"l")
-
-    for i in x:
-        __encode(i, r, seen)
-
-    r.write(b"e")
-
-
 def __encode_mapping_proxy(
     x: MappingProxyType[Any, Any], r: io.BytesIO, seen: set[int]
 ) -> None:
