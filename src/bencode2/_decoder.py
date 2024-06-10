@@ -60,14 +60,6 @@ class Decoder:
 
         return data
 
-    def __index(self, b: int) -> int:
-        i = self.index
-        for c in self.mw[i:]:
-            if c == b:
-                return i
-            i += 1
-        return -1
-
     def __decode(self) -> object:
         if self.value[self.index] == char_l:
             return self.__decode_list()
@@ -85,17 +77,18 @@ class Decoder:
 
     def __decode_int(self) -> int:
         self.index += 1
-        new_f = self.__index(char_e)
-        if new_f == -1:
+        try:
+            index_end = self.value.index(char_e, self.index)
+        except ValueError:
             raise BencodeDecodeError(
                 f"invalid int, failed to found end. index {self.index}"
             )
 
         try:
-            n = atoi(self.mw[self.index : new_f])
+            n = atoi(self.mw[self.index : index_end])
         except ValueError:
             raise BencodeDecodeError(
-                f"malformed int {self.value[self.index:new_f]!r}. index {self.index}"
+                f"malformed int {self.value[self.index:index_end]!r}. index {self.index}"
             )
 
         if self.value[self.index] == char_dash:
@@ -103,11 +96,11 @@ class Decoder:
                 raise BencodeDecodeError(
                     f"-0 is not allowed in bencoding. index: {self.index}"
                 )
-        elif self.value[self.index] == char_0 and new_f != self.index + 1:
+        elif self.value[self.index] == char_0 and index_end != self.index + 1:
             raise BencodeDecodeError(
                 f"integer with leading zero is not allowed. index: {self.index}"
             )
-        self.index = new_f + 1
+        self.index = index_end + 1
         return n
 
     def __decode_list(self) -> list[Any]:
@@ -122,37 +115,37 @@ class Decoder:
         return r
 
     def __decode_bytes(self) -> bytes:
-        # colon = self.value.index(b":", self.index)
-        colon = self.__index(char_colon)
-        if colon == -1:
+        try:
+            index_colon = self.value.index(char_colon, self.index)
+        except ValueError:
             raise BencodeDecodeError(
                 f"invalid bytes, failed find expected char ':'. index {self.index}"
             )
 
         if self.value[self.index] == char_0:
-            if colon != self.index + 1:
+            if index_colon != self.index + 1:
                 raise BencodeDecodeError(
                     f"malformed str/bytes length with leading 0. index {self.index}"
                 )
 
         try:
-            n = atoi(self.mw[self.index : colon])
+            n = atoi(self.mw[self.index : index_colon])
         except ValueError:
             raise BencodeDecodeError(
-                f"malformed str/bytes length {self.value[self.index:colon]!r}."
+                f"malformed str/bytes length {self.value[self.index:index_colon]!r}."
                 f" index {self.index}"
             )
 
-        colon += 1
+        index_colon += 1
 
-        if colon + n > len(self.value):
+        if index_colon + n > len(self.value):
             raise BencodeDecodeError(
                 f"malformed str/bytes length, buffer overflow. index {self.index}"
             )
 
-        s = self.value[colon : colon + n]
+        s = self.value[index_colon : index_colon + n]
 
-        self.index = colon + n
+        self.index = index_colon + n
 
         return s
 
