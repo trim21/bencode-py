@@ -5,7 +5,7 @@ import io
 from collections import OrderedDict
 from dataclasses import fields, is_dataclass
 from types import MappingProxyType
-from typing import Any
+from typing import Any, Mapping
 
 
 class BencodeEncodeError(Exception):
@@ -19,9 +19,9 @@ def encode(value: Any) -> bytes:
 
 
 def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
-    # yes I know maybe I should use `isinstance(value, ...)` here.
-    # but this is how cython check type.
-    if type(value) == str:  # noqa: E721
+    # trust me, I know what I'm doing when using or not using `type(value) == T`
+    # this is how cython check type.
+    if isinstance(value, str):
         return __encode_bytes(value.encode("UTF-8"), r)
 
     # check bool before int
@@ -32,7 +32,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         r.write(b"i0e")
         return
 
-    if type(value) == int:  # noqa: E721
+    if type(value) == int:
         r.write(b"i")
         r.write(str(value).encode())
         r.write(b"e")
@@ -42,7 +42,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         return __encode_bytes(value, r)
 
     i = id(value)
-    if isinstance(value, OrderedDict):
+    if isinstance(value, (OrderedDict, MappingProxyType)):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
@@ -57,6 +57,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         __encode_dict(value, r, seen)
         seen.remove(i)
         return
+
     if isinstance(value, list):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
@@ -64,19 +65,12 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         __encode_list(value, r, seen)
         seen.remove(i)
         return
+
     if isinstance(value, tuple):
         if i in seen:
             raise BencodeEncodeError(f"circular reference found {value!r}")
         seen.add(i)
         __encode_tuple(value, r, seen)
-        seen.remove(i)
-        return
-
-    if isinstance(value, MappingProxyType):
-        if i in seen:  # not sure is this possible?
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-        __encode_mapping_proxy(value, r, seen)
         seen.remove(i)
         return
 
@@ -142,7 +136,7 @@ def __encode_mapping_proxy(
     r.write(b"e")
 
 
-def __encode_mapping(x: OrderedDict[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
+def __encode_mapping(x: Mapping[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
     r.write(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
