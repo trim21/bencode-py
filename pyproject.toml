@@ -54,7 +54,7 @@ packages = ["src/bencode2"]
 
 [tool.hatch.build.targets.wheel.hooks.cython]
 enable-by-default = false
-dependencies = ["hatch-cython"]
+dependencies = ["hatch-cython<1"]
 
 [tool.hatch.build.targets.wheel.hooks.cython.options]
 directives = { boundscheck = true, nonecheck = false, language_level = 3, binding = true }

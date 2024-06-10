@@ -18,6 +18,7 @@ jobs:
         with:
           pattern: wheels-*
           path: dist
+          merge-multiple: true
 
       - run: pipx run twine upload dist/* --disable-progress-bar
         env:
