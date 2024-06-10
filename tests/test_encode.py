@@ -233,10 +233,12 @@ def test_enum():
     class Enum(enum.Enum):
         v = "a"
 
+    with pytest.raises(TypeError):
+        bencode(Enum.v)
+
     class EnumInt(enum.IntEnum):
         v = "1"
 
-    assert bencode(Enum.v) == b"1:a"
     assert bencode(EnumInt.v) == b"i1e"
 
 
