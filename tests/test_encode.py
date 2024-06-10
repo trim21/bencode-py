@@ -237,10 +237,20 @@ def test_enum():
     with pytest.raises(TypeError):
         bencode(Enum.v)
 
+    class StrEnum(str, enum.Enum):
+        v = "a"
+
+    assert bencode(StrEnum.v) == b"1:a"
+
     class EnumInt(enum.IntEnum):
         v = "1"
 
     assert bencode(EnumInt.v) == b"i1e"
+
+    class IntEnum(int, enum.Enum):
+        v = "1"
+
+    assert bencode(IntEnum.v) == b"i1e"
 
 
 @pytest.mark.skipif(sys.version_info < (3, 11), reason="enum.StrEnum need py>=3.11")
