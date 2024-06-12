@@ -143,12 +143,12 @@ class Decoder:
 
             n = n * 10 + (c - char_0)
 
-        index_colon += 1
-
-        if index_colon + n > self.size:
+        if index_colon + n >= self.size:
             raise BencodeDecodeError(
                 f"malformed str/bytes length, buffer overflow. index {self.index}"
             )
+
+        index_colon += 1
 
         s = self.value[index_colon : index_colon + n]
 
