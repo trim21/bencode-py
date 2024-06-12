@@ -58,14 +58,14 @@ class Decoder:
         return data
 
     def __decode(self) -> object:
-        if self.value[self.index] == char_l:
-            return self.__decode_list()
+        if char_0 <= self.value[self.index] <= char_9:
+            return self.__decode_bytes()
         if self.value[self.index] == char_i:
             return self.__decode_int()
         if self.value[self.index] == char_d:
             return self.__decode_dict()
-        if char_0 <= self.value[self.index] <= char_9:
-            return self.__decode_bytes()
+        if self.value[self.index] == char_l:
+            return self.__decode_list()
 
         raise BencodeDecodeError(
             f"unexpected token {self.value[self.index:self.index + 1]!r}. "
