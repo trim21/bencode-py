@@ -30,6 +30,8 @@ def test_non_bytes_input():
         b"d3:foo4:spam3:bari42ee",
         b"d4:spaml1:a1:be",
         b"d3:keyi1e3:keyi2ee",  # duplicated keys
+        b"d-3:keyi1e3:keai2ee",  # duplicated keys
+        b"di1ei1e3:keai2ee",  # duplicated keys
         b"l",
         b"lee",
         b"dee",

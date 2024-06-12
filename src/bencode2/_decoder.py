@@ -38,24 +38,21 @@ class Decoder:
     value: bytes
     mw: memoryview
     index: int
+    size: int
 
-    __slots__ = ("str_key", "value", "mw", "index")
+    __slots__ = ("str_key", "value", "mw", "index", "size")
 
     def __init__(self, value: bytes, str_key: bool) -> None:
         self.str_key = str_key
         self.value = value
+        self.size = len(value)
         self.mw = memoryview(value)
         self.index = 0
 
     def decode(self) -> object:
-        try:
-            data = self.__decode()
-        except IndexError:
-            raise BencodeDecodeError(
-                f"invalid bencode, buffer overflow at index {self.index}"
-            )
+        data = self.__decode()
 
-        if self.index != len(self.value):  # pragma: no cover
+        if self.index != self.size:  # pragma: no cover
             raise BencodeDecodeError("invalid bencode value (data after valid prefix)")
 
         return data
@@ -107,7 +104,15 @@ class Decoder:
         r: list[Any] = []
         self.index += 1
 
-        while self.value[self.index] != char_e:
+        while True:
+            if self.index >= self.size:
+                raise BencodeDecodeError(
+                    f"buffer overflow when decoding array, index {self.index}"
+                )
+
+            if self.value[self.index] == char_e:
+                break
+
             v = self.__decode()
             r.append(v)
 
@@ -128,17 +133,19 @@ class Decoder:
                     f"malformed str/bytes length with leading 0. index {self.index}"
                 )
 
-        try:
-            n = atoi(self.mw[self.index : index_colon])
-        except ValueError:
-            raise BencodeDecodeError(
-                f"malformed str/bytes length {self.value[self.index:index_colon]!r}."
-                f" index {self.index}"
-            )
+        n: int = 0
+        for c in self.value[self.index : index_colon]:
+            if not (char_0 <= c <= char_9):
+                raise BencodeDecodeError(
+                    f"malformed str/bytes length {self.value[self.index:index_colon]!r}."
+                    f" index {self.index}"
+                )
+
+            n = n * 10 + (c - char_0)
 
         index_colon += 1
 
-        if index_colon + n > len(self.value):
+        if index_colon + n > self.size:
             raise BencodeDecodeError(
                 f"malformed str/bytes length, buffer overflow. index {self.index}"
             )
@@ -154,7 +161,18 @@ class Decoder:
         self.index += 1
 
         items: list[tuple[bytes, Any]] = []
-        while self.value[self.index] != char_e:
+
+        while True:
+            if self.index >= self.size:
+                raise BencodeDecodeError(
+                    f"buffer overflow when decoding bytes, index {self.index}"
+                )
+            if self.value[self.index] == char_e:
+                break
+            if not (char_0 <= self.value[self.index] <= char_9):
+                raise BencodeDecodeError(
+                    f"directory only allow str as keys, found unexpected char '{self.value[self.index]:c}', index {self.index}"
+                )
             k = self.__decode_bytes()
             v = self.__decode()
             items.append((k, v))
