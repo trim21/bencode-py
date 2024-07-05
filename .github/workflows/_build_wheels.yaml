@@ -42,7 +42,7 @@ jobs:
           restore-keys: |
             cibuildwheel-${{ runner.os }}-${{ matrix.arch }}
 
-      - uses: pypa/cibuildwheel@v2.19.1
+      - uses: pypa/cibuildwheel@v2.19.2
         env:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_ARCHS: ${{ matrix.arch }}
