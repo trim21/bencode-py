@@ -1,6 +1,6 @@
 mypy ; implementation_name == "cpython"
 # test
-pytest==8.2.2
+pytest==8.3.2
 pytest-cov==5.0.0
 pytest-github-actions-annotate-failures==0.2.0
 # lint
