@@ -110,15 +110,17 @@ jobs:
 
       - run: python -m pytest --cov --assert-pkg-compiled=false --junitxml=junit.xml
 
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() }} # so actions still run even test failed
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Upload test results to Codecov
-        uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
   test-pp:
     strategy:
