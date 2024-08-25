@@ -16,6 +16,7 @@ def test_non_bytes_input():
 @pytest.mark.parametrize(
     "raw",
     [
+        b"",
         b"1",
         b"1:",
         b"i-0e",
