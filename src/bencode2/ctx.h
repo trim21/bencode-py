@@ -12,24 +12,26 @@
 
 #define defaultBufferSize 4096
 
-class Context {
+class EncodeContext {
 public:
     std::string s;
-
+    size_t stack_depth;
     std::unordered_set<uintptr_t> seen;
 
-    Context() {
+    EncodeContext() {
         s = std::string();
+        stack_depth = 0;
         s.reserve(defaultBufferSize);
     }
 
-    ~Context() {
+    ~EncodeContext() {
         debug_print("delete context");
         seen.clear();
         s.clear();
     }
 
     void reset() {
+        stack_depth = 0;
         s.clear();
         seen.clear();
     }

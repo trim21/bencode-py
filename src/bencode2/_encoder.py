@@ -14,11 +14,11 @@ class BencodeEncodeError(ValueError):
 def bencode(value: Any, /) -> bytes:
     """Encode value into the bencode format."""
     with io.BytesIO() as r:
-        __encode(value, r, set())
+        __encode(value, r, set(), stack_depth=0)
         return r.getvalue()
 
 
-def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
+def __encode(value: Any, r: io.BytesIO, seen: set[int], stack_depth: int) -> None:
     if isinstance(value, str):
         return __encode_bytes(value.encode("UTF-8"), r)
 
@@ -32,26 +32,35 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
     if isinstance(value, bytes):
         return __encode_bytes(value, r)
 
+    stack_depth += 1
+
     i = id(value)
     if isinstance(value, (dict, OrderedDict, MappingProxyType)):
-        if i in seen:
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-        __encode_mapping(value, r, seen)
-        seen.remove(i)
+        if stack_depth >= 100:
+            if i in seen:
+                raise BencodeEncodeError(f"circular reference found {value!r}")
+            seen.add(i)
+        __encode_mapping(value, r, seen, stack_depth=stack_depth)
+        if stack_depth >= 100:
+            seen.remove(i)
+        stack_depth -= 1
         return
 
     if isinstance(value, (list, tuple)):
-        if i in seen:
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
+        if stack_depth >= 100:
+            if i in seen:
+                raise BencodeEncodeError(f"circular reference found {value!r}")
+            seen.add(i)
 
         r.write(b"l")
         for item in value:
-            __encode(item, r, seen)
+            __encode(item, r, seen, stack_depth=stack_depth)
         r.write(b"e")
 
-        seen.remove(i)
+        if stack_depth >= 100:
+            seen.remove(i)
+        stack_depth -= 1
+
         return
 
     if isinstance(value, bytearray):
@@ -65,11 +74,17 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int]) -> None:
         return
 
     if is_dataclass(value) and not isinstance(value, type):
-        if i in seen:
-            raise BencodeEncodeError(f"circular reference found {value!r}")
-        seen.add(i)
-        __encode_dataclass(value, r, seen)
-        seen.remove(i)
+        if stack_depth >= 100:
+            if i in seen:
+                raise BencodeEncodeError(f"circular reference found {value!r}")
+            seen.add(i)
+
+        __encode_dataclass(value, r, seen, stack_depth=stack_depth)
+
+        if stack_depth >= 100:
+            seen.remove(i)
+        stack_depth -= 1
+
         return
 
     raise TypeError(f"type '{type(value)!r}' not supported by bencode")
@@ -81,7 +96,9 @@ def __encode_bytes(x: bytes, r: io.BytesIO) -> None:
     r.write(x)
 
 
-def __encode_mapping(x: Mapping[Any, Any], r: io.BytesIO, seen: set[int]) -> None:
+def __encode_mapping(
+    x: Mapping[Any, Any], r: io.BytesIO, seen: set[int], stack_depth: int
+) -> None:
     r.write(b"d")
 
     # force all keys to bytes, because str and bytes are incomparable
@@ -94,12 +111,12 @@ def __encode_mapping(x: Mapping[Any, Any], r: io.BytesIO, seen: set[int]) -> Non
 
     for k, v in i_list:
         __encode_bytes(k, r)
-        __encode(v, r, seen)
+        __encode(v, r, seen, stack_depth=stack_depth)
 
     r.write(b"e")
 
 
-def __encode_dataclass(x: Any, r: io.BytesIO, seen: set[int]) -> None:
+def __encode_dataclass(x: Any, r: io.BytesIO, seen: set[int], stack_depth: int) -> None:
     keys = fields(x)
     if not keys:
         r.write(b"de")
@@ -113,7 +130,7 @@ def __encode_dataclass(x: Any, r: io.BytesIO, seen: set[int]) -> None:
 
     for k in ks:
         __encode_bytes(k.encode(), r)
-        __encode(getattr(x, k), r, seen)
+        __encode(getattr(x, k), r, seen, stack_depth=stack_depth)
 
     r.write(b"e")
 
