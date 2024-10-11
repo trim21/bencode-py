@@ -9,9 +9,9 @@
 namespace py = pybind11;
 
 // dataclasses.fields
-extern py::object dataclasses_fields;
+// extern py::object dataclasses_fields;
 // dataclasses.is_dataclass
-extern py::object is_dataclasses;
+// extern py::object is_dataclasses;
 
 static void encodeAny(Context *ctx, py::handle obj);
 
@@ -131,46 +131,47 @@ static void encodeDictLike(Context *ctx, py::handle h) {
   return;
 }
 
-static void encodeDataclasses(Context *ctx, py::handle h) {
-  debug_print("encodeDataclasses");
-
-  ctx->writeChar('d');
-  debug_print("get object size");
-  auto fields = dataclasses_fields(h);
-  auto size = PyTuple_Size(fields.ptr());
-  if (size == 0) {
-    ctx->writeChar('e');
-    return;
-  }
-
-  auto obj = h.cast<py::object>();
-
-  std::vector<std::pair<std::string, py::handle>> m(size);
-
-  size_t index = 0;
-  for (auto field : fields) {
-    auto key = field.attr("name").ptr();
-    auto value = obj.attr(key);
-
-    debug_print("set items");
-    m.at(index) =
-        std::make_pair(py::handle(key).cast<std::string>(), py::handle(value));
-    index++;
-  }
-
-  std::sort(m.begin(), m.end(), cmp);
-
-  for (auto pair : m) {
-    ctx->writeSize_t(pair.first.length());
-    ctx->writeChar(':');
-    ctx->write(pair.first.data(), pair.first.length());
-
-    encodeAny(ctx, pair.second);
-  }
-
-  ctx->writeChar('e');
-  return;
-}
+// static void encodeDataclasses(Context *ctx, py::handle h) {
+//   debug_print("encodeDataclasses");
+//
+//   ctx->writeChar('d');
+//   debug_print("get object size");
+//   auto fields = dataclasses_fields(h);
+//   auto size = PyTuple_Size(fields.ptr());
+//   if (size == 0) {
+//     ctx->writeChar('e');
+//     return;
+//   }
+//
+//   auto obj = h.cast<py::object>();
+//
+//   std::vector<std::pair<std::string, py::handle>> m(size);
+//
+//   size_t index = 0;
+//   for (auto field : fields) {
+//     auto key = field.attr("name").ptr();
+//     auto value = obj.attr(key);
+//
+//     debug_print("set items");
+//     m.at(index) =
+//         std::make_pair(py::handle(key).cast<std::string>(),
+//         py::handle(value));
+//     index++;
+//   }
+//
+//   std::sort(m.begin(), m.end(), cmp);
+//
+//   for (auto pair : m) {
+//     ctx->writeSize_t(pair.first.length());
+//     ctx->writeChar(':');
+//     ctx->write(pair.first.data(), pair.first.length());
+//
+//     encodeAny(ctx, pair.second);
+//   }
+//
+//   ctx->writeChar('e');
+//   return;
+// }
 
 static void encodeInt_fast(Context *ctx, long long val) {
   ctx->writeChar('i');
@@ -357,9 +358,9 @@ static void encodeAny(Context *ctx, const py::handle obj) {
     encodeComposeObject(ctx, obj, encodeDictLike);
   }
 
-  if (is_dataclasses(obj).ptr() == Py_True) {
-    encodeComposeObject(ctx, obj, encodeDataclasses);
-  }
+  //  if (is_dataclasses(obj).ptr() == Py_True) {
+  //    encodeComposeObject(ctx, obj, encodeDataclasses);
+  //  }
 
   // Unsupported type, raise TypeError
   std::string repr = py::repr(obj.get_type());
