@@ -25,9 +25,7 @@ jobs:
         with:
           action: add
           linters: mypy
-
-      - name: mypy
-        run: mypy --show-column-numbers src/
+          run: mypy --show-column-numbers src/
 
   pre-commit:
     runs-on: ubuntu-latest

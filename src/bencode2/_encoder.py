@@ -7,7 +7,7 @@ from types import MappingProxyType
 from typing import Any, Mapping
 
 
-class BencodeEncodeError(Exception):
+class BencodeEncodeError(ValueError):
     """Bencode encode error."""
 
 

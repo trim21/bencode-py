@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Final
 
+from typing_extensions import Buffer
+
 char_l: Final = 108  # ord("l")
 char_i: Final = 105  # ord("i")
 char_e: Final = 101  # ord("e")
@@ -29,21 +31,28 @@ def atoi(b: memoryview) -> int:
     return total * sign
 
 
-class BencodeDecodeError(Exception):
+class BencodeDecodeError(ValueError):
     """Bencode decode error."""
 
 
+def bdecode(value: Buffer, /) -> Any:
+    """Decode bencode formatted bytes to python value."""
+    if not isinstance(value, bytes):
+        value = memoryview(value).tobytes()
+    if not value:
+        raise BencodeDecodeError("empty input")
+    return Decoder(value).decode()
+
+
 class Decoder:
-    str_key: bool
     value: bytes
     mw: memoryview
     index: int
     size: int
 
-    __slots__ = ("str_key", "value", "mw", "index", "size")
+    __slots__ = ("value", "mw", "index", "size")
 
-    def __init__(self, value: bytes, str_key: bool) -> None:
-        self.str_key = str_key
+    def __init__(self, value: bytes) -> None:
         self.value = value
         self.size = len(value)
         self.mw = memoryview(value)
@@ -184,9 +193,6 @@ class Decoder:
         _check_sorted(items, start_index)
 
         self.index += 1
-
-        if self.str_key:
-            return {key.decode(): value for key, value in items}
 
         return dict(items)
 
