@@ -5,7 +5,10 @@ from glob import glob
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import find_packages, setup
 
-if os.environ.get("PY_BENCODE2_PURE_PYTHON") == "1":
+if (
+    os.environ.get("PY_BENCODE2_PURE_PYTHON") == "1"
+    or sys.implementation.name != "cpython"
+):
     setup(
         packages=find_packages("src"),
         package_dir={"": "src"},
