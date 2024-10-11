@@ -37,22 +37,25 @@ class BencodeDecodeError(ValueError):
 
 def bdecode(value: Buffer, /) -> Any:
     """Decode bencode formatted bytes to python value."""
-    mw = memoryview(value)
-    if not mw:
+    if not isinstance(value, bytes):
+        value = memoryview(value).tobytes()
+    if not value:
         raise BencodeDecodeError("empty input")
-    return Decoder(mw).decode()
+    return Decoder(value).decode()
 
 
 class Decoder:
-    value: memoryview
+    value: bytes
+    mw: memoryview
     index: int
     size: int
 
-    __slots__ = ("value", "index", "size")
+    __slots__ = ("value", "mw", "index", "size")
 
-    def __init__(self, mw: memoryview) -> None:
-        self.value = mw
-        self.size = len(mw)
+    def __init__(self, value: bytes) -> None:
+        self.value = value
+        self.size = len(value)
+        self.mw = memoryview(value)
         self.index = 0
 
     def decode(self) -> object:
@@ -88,7 +91,7 @@ class Decoder:
             )
 
         try:
-            n = atoi(self.value[self.index : index_end])
+            n = atoi(self.mw[self.index : index_end])
         except ValueError:
             raise BencodeDecodeError(
                 f"malformed int {self.value[self.index:index_end]!r}. index {self.index}"
@@ -160,7 +163,7 @@ class Decoder:
 
         self.index = index_colon + n
 
-        return bytes(s)
+        return s
 
     def __decode_dict(self) -> dict[str | bytes, Any]:
         start_index = self.index
