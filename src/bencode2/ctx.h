@@ -42,9 +42,13 @@ public:
         s.append(data, size);
     }
 
-    void writeSize_t(size_t val) { fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), val); }
+    void writeSize_t(size_t val) {
+        bufferGrow(20);
+        fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), val);
+    }
 
     void writeLongLong(int64_t val) {
+        bufferGrow(20);
         fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), val);
     }
 
