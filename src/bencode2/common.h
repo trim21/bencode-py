@@ -14,64 +14,64 @@ namespace py = pybind11;
 #ifdef BENCODE_CPP_DEBUG
 
 #ifdef _MSC_VER
-#define debug_print(fmt, ...)                                                  \
-                                                                               \
-  do {                                                                         \
-    printf(__FILE__);                                                          \
-    printf(":");                                                               \
-    printf("%d", __LINE__);                                                    \
-    printf("\t%s", __FUNCTION__);                                              \
-    printf("\tDEBUG: ");                                                       \
-    printf(fmt, __VA_ARGS__);                                                  \
-    printf("\n");                                                              \
-  } while (0)
+#define debug_print(fmt, ...)                                                                      \
+                                                                                                   \
+    do {                                                                                           \
+        printf(__FILE__);                                                                          \
+        printf(":");                                                                               \
+        printf("%d", __LINE__);                                                                    \
+        printf("\t%s", __FUNCTION__);                                                              \
+        printf("\tDEBUG: ");                                                                       \
+        printf(fmt, __VA_ARGS__);                                                                  \
+        printf("\n");                                                                              \
+    } while (0)
 
 #else
 
-#define debug_print(fmt, ...)                                                  \
-  do {                                                                         \
-    printf(__FILE__);                                                          \
-    printf(":");                                                               \
-    printf("%d", __LINE__);                                                    \
-    printf("\t%s\tDEBUG: ", __PRETTY_FUNCTION__);                              \
-    printf(fmt, ##__VA_ARGS__);                                                \
-    printf("\n");                                                              \
-  } while (0)
+#define debug_print(fmt, ...)                                                                      \
+    do {                                                                                           \
+        printf(__FILE__);                                                                          \
+        printf(":");                                                                               \
+        printf("%d", __LINE__);                                                                    \
+        printf("\t%s\tDEBUG: ", __PRETTY_FUNCTION__);                                              \
+        printf(fmt, ##__VA_ARGS__);                                                                \
+        printf("\n");                                                                              \
+    } while (0)
 
 #endif
 #else
 
-#define debug_print(fmt, ...)                                                  \
-  do {                                                                         \
-  } while (0)
+#define debug_print(fmt, ...)                                                                      \
+    do {                                                                                           \
+    } while (0)
 
 #endif
 
 struct EncodeError : public py::value_error {
 public:
-  EncodeError(std::string msg) { s = msg; }
+    EncodeError(std::string msg) { s = msg; }
 
-  const char *what() const throw() { return s.c_str(); }
+    const char *what() const throw() { return s.c_str(); }
 
 private:
-  std::string s;
+    std::string s;
 };
 
 struct DecodeError : public py::value_error {
 public:
-  DecodeError(std::string msg) { s = msg; }
+    DecodeError(std::string msg) { s = msg; }
 
-  const char *what() const throw() { return s.c_str(); }
+    const char *what() const throw() { return s.c_str(); }
 
 private:
-  std::string s;
+    std::string s;
 };
 
 class AutoFree {
 public:
-  PyObject *ptr;
+    PyObject *ptr;
 
-  AutoFree(PyObject *p) { ptr = p; }
+    AutoFree(PyObject *p) { ptr = p; }
 
-  ~AutoFree() { Py_DecRef(ptr); }
+    ~AutoFree() { Py_DecRef(ptr); }
 };
