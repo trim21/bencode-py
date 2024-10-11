@@ -13,9 +13,12 @@ jobs:
           - { os: macos-13, arch: x86_64, build: "*" }
           - { os: macos-13, arch: arm64, build: "*" }
           - { os: windows-latest, arch: AMD64, build: "*" }
+          - { os: ubuntu-latest, arch: x86_64, build: "*t-*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*[02468]-*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*[13579]-*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-m*anylinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*t-manylinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*t-musllinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-manylinux*" }
           - { os: ubuntu-latest, arch: aarch64, build: "*[16]-manylinux*" }
           - { os: ubuntu-latest, arch: aarch64, build: "*[27]-manylinux*" }
           - { os: ubuntu-latest, arch: aarch64, build: "*[38]-manylinux*" }
