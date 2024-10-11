@@ -1,3 +1,6 @@
+pybind11
+setuptools
+
 mypy ; implementation_name == "cpython"
 # test
 pytest==8.3.3

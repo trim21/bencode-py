@@ -1,11 +1,12 @@
-from pathlib import Path
-from typing import Any
+try:
+    from ._bencode import BencodeDecodeError, BencodeEncodeError, bdecode, bencode
 
-from ._decoder import BencodeDecodeError
-from ._decoder import Decoder as _Decoder
-from ._encoder import BencodeEncodeError, bencode
+    COMPILED = True
+except ImportError:
+    from ._decoder import BencodeDecodeError, bdecode
+    from ._encoder import BencodeEncodeError, bencode
 
-COMPILED = Path(__file__).suffix in (".pyd", ".so")
+    COMPILED = False
 
 __all__ = (
     "BencodeDecodeError",
@@ -14,12 +15,3 @@ __all__ = (
     "bdecode",
     "COMPILED",
 )
-
-
-def bdecode(value: bytes, /, *, str_key: bool = False) -> Any:
-    """Decode bencode formatted bytes to python value."""
-    if not isinstance(value, bytes):
-        raise TypeError("only support decoding bytes")
-    if not value:
-        raise BencodeDecodeError("empty input")
-    return _Decoder(value, str_key).decode()

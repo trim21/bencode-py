@@ -33,10 +33,6 @@ import bencode2
 
 assert bencode2.bdecode(b"d4:spaml1:a1:bee") == {b"spam": [b"a", b"b"]}
 
-# If you want to decode dict with str keys:
-# Note: this doesn't work with BitTorrent V2 torrent file.
-assert bencode2.bdecode(b"d4:spaml1:a1:bee", str_key=True) == {"spam": [b"a", b"b"]}
-
 assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 ```
 
@@ -63,4 +59,3 @@ Many python types are supported.
 |   `list`, `tuple`, `NamedTuple`   |    array     |
 |       `dict`, `OrderedDict`       |  directory   |
 |       `types.MaapingProxy`        |  directory   |
-|            dataclasses            |  directory   |

@@ -72,14 +72,3 @@ def test_decode1():
         b"t": b"aa",
         b"y": b"q",
     }
-
-
-@pytest.mark.parametrize(
-    ["raw", "expected"],
-    [
-        (b"d3:cow3:moo4:spam4:eggse", {"cow": b"moo", "spam": b"eggs"}),
-        (b"d4:spaml1:a1:bee", {"spam": [b"a", b"b"]}),
-    ],
-)
-def test_dict_str_key(raw: bytes, expected: Any):
-    assert bdecode(raw, str_key=True) == expected

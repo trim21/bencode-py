@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling>=1.20.0"]
-build-backend = "hatchling.build"
+requires = ["setuptools", "pybind11>=2.13.6,<3"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "bencode2"
@@ -41,15 +41,6 @@ include = ['src/']
 [tool.hatch.build.targets.wheel]
 packages = ["src/bencode2"]
 
-[tool.hatch.build.targets.wheel.hooks.cython]
-enable-by-default = false
-dependencies = ["hatch-cython<1"]
-
-[tool.hatch.build.targets.wheel.hooks.cython.options]
-directives = { boundscheck = true, nonecheck = false, language_level = 3, binding = true }
-
-[tool.cibuildwheel]
-before-build = "python cleanup.py"
 
 [tool.cibuildwheel.environment]
 HATCH_BUILD_HOOKS_ENABLE = "1"

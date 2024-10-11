@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Final
 
+from typing_extensions import Buffer
+
 char_l: Final = 108  # ord("l")
 char_i: Final = 105  # ord("i")
 char_e: Final = 101  # ord("e")
@@ -29,24 +31,28 @@ def atoi(b: memoryview) -> int:
     return total * sign
 
 
-class BencodeDecodeError(Exception):
+class BencodeDecodeError(ValueError):
     """Bencode decode error."""
 
 
+def bdecode(value: Buffer, /) -> Any:
+    """Decode bencode formatted bytes to python value."""
+    mw = memoryview(value)
+    if not mw:
+        raise BencodeDecodeError("empty input")
+    return Decoder(mw).decode()
+
+
 class Decoder:
-    str_key: bool
-    value: bytes
-    mw: memoryview
+    value: memoryview
     index: int
     size: int
 
-    __slots__ = ("str_key", "value", "mw", "index", "size")
+    __slots__ = ("value", "index", "size")
 
-    def __init__(self, value: bytes, str_key: bool) -> None:
-        self.str_key = str_key
-        self.value = value
-        self.size = len(value)
-        self.mw = memoryview(value)
+    def __init__(self, mw: memoryview) -> None:
+        self.value = mw
+        self.size = len(mw)
         self.index = 0
 
     def decode(self) -> object:
@@ -82,7 +88,7 @@ class Decoder:
             )
 
         try:
-            n = atoi(self.mw[self.index : index_end])
+            n = atoi(self.value[self.index : index_end])
         except ValueError:
             raise BencodeDecodeError(
                 f"malformed int {self.value[self.index:index_end]!r}. index {self.index}"
@@ -154,7 +160,7 @@ class Decoder:
 
         self.index = index_colon + n
 
-        return s
+        return bytes(s)
 
     def __decode_dict(self) -> dict[str | bytes, Any]:
         start_index = self.index
@@ -184,9 +190,6 @@ class Decoder:
         _check_sorted(items, start_index)
 
         self.index += 1
-
-        if self.str_key:
-            return {key.decode(): value for key, value in items}
 
         return dict(items)
 

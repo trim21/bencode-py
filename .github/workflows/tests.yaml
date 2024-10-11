@@ -30,7 +30,7 @@ jobs:
 
       - run: pipx run twine check --strict dist/*
 
-  test-cp-build:
+  test-cp-cpp:
     needs: [ build ]
     strategy:
       fail-fast: false
@@ -74,7 +74,7 @@ jobs:
 
       - run: pytest --assert-pkg-compiled=true
 
-  test-cp:
+  test-cp-py:
     strategy:
       fail-fast: false
       matrix:
@@ -150,9 +150,9 @@ jobs:
 
   test-pass:
     needs:
-      - test-cp
       - test-pp
-      - test-cp-build
+      - test-cp-cpp
+      - test-cp-py
       - twine-check
     runs-on: 'ubuntu-latest'
     steps:
