@@ -1,6 +1,5 @@
 #include <Python.h>
 #include <algorithm> // std::sort
-#include <iostream>
 #include <pybind11/pybind11.h>
 
 #include "common.h"
