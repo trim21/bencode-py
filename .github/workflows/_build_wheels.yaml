@@ -29,6 +29,8 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Restore cached Primes
         id: cache
