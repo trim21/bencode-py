@@ -45,7 +45,7 @@ public:
 
     void write(std::string ss) { write(ss.data(), ss.size()); }
 
-    void write(const char *data, HPy_ssize_t size) {
+    void write(const char *data, Py_ssize_t size) {
         bufferGrow(size);
 
         std::memcpy(buf + index, data, size);
@@ -64,7 +64,7 @@ public:
     }
 
 private:
-    void bufferGrow(HPy_ssize_t size) {
+    void bufferGrow(Py_ssize_t size) {
         if (size + index + 1 >= cap) {
             char *tmp = (char *)realloc(buf, cap * 2 + size);
             if (tmp == NULL) {

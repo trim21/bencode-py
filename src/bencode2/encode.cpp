@@ -192,26 +192,26 @@ static void encodeInt(Context *ctx, py::handle obj) {
 }
 
 static void encodeInt_slow(Context *ctx, py::handle obj) {
-    HPy fmt = PyUnicode_FromString("%d");
+    PyObject *fmt = PyUnicode_FromString("%d");
     if (fmt == NULL) {
         return;
     }
 
     auto _0 = AutoFree(fmt);
 
-    HPy s = PyUnicode_Format(fmt, obj.ptr()); // s = '%d" % i
+    PyObject *s = PyUnicode_Format(fmt, obj.ptr()); // s = '%d" % i
     if (s == NULL) {
         return;
     }
     auto _1 = AutoFree(s);
 
-    HPy b = PyUnicode_AsUTF8String(s);
+    PyObject *b = PyUnicode_AsUTF8String(s);
     if (b == NULL) {
         return;
     }
     auto _2 = AutoFree(b);
 
-    HPy_ssize_t size;
+    Py_ssize_t size;
     char *data;
     if (PyBytes_AsStringAndSize(b, &data, &size)) {
         return;
@@ -226,9 +226,9 @@ static void encodeInt_slow(Context *ctx, py::handle obj) {
 static void encodeList(Context *ctx, const py::handle obj) {
     ctx->writeChar('l');
 
-    HPy_ssize_t len = PyList_Size(obj.ptr());
-    for (HPy_ssize_t i = 0; i < len; i++) {
-        HPy o = PyList_GetItem(obj.ptr(), i);
+    Py_ssize_t len = PyList_Size(obj.ptr());
+    for (Py_ssize_t i = 0; i < len; i++) {
+        PyObject *o = PyList_GetItem(obj.ptr(), i);
         encodeAny(ctx, o);
     }
 
@@ -238,9 +238,9 @@ static void encodeList(Context *ctx, const py::handle obj) {
 static void encodeTuple(Context *ctx, py::handle obj) {
     ctx->writeChar('l');
 
-    HPy_ssize_t len = PyTuple_Size(obj.ptr());
-    for (HPy_ssize_t i = 0; i < len; i++) {
-        HPy o = PyTuple_GetItem(obj.ptr(), i);
+    Py_ssize_t len = PyTuple_Size(obj.ptr());
+    for (Py_ssize_t i = 0; i < len; i++) {
+        PyObject *o = PyTuple_GetItem(obj.ptr(), i);
         encodeAny(ctx, o);
     }
 
@@ -279,7 +279,7 @@ static void encodeAny(Context *ctx, const py::handle obj) {
 
     if (PyBytes_Check(obj.ptr())) {
         debug_print("encode bytes");
-        HPy_ssize_t size = 0;
+        Py_ssize_t size = 0;
         char *s;
 
         if (PyBytes_AsStringAndSize(obj.ptr(), &s, &size)) {
@@ -297,7 +297,7 @@ static void encodeAny(Context *ctx, const py::handle obj) {
 
     if (PyUnicode_Check(obj.ptr())) {
         debug_print("encode str");
-        HPy_ssize_t size = 0;
+        Py_ssize_t size = 0;
 
         const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
 

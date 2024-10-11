@@ -116,7 +116,7 @@ __OverFlow:;
 
     s[n - 1] = 0;
 
-    HPy i = PyLong_FromString(s, NULL, 10);
+    PyObject *i = PyLong_FromString(s, NULL, 10);
 
     free(s);
 

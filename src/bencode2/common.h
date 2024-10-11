@@ -4,9 +4,6 @@
 #include <pybind11/pybind11.h>
 namespace py = pybind11;
 
-#define HPy_ssize_t Py_ssize_t
-#define HPy PyObject *
-
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
 #endif
