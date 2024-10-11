@@ -85,8 +85,6 @@ jobs:
           - "macos-14"
 
     runs-on: "${{ matrix.os }}"
-    env:
-      PY_BENCODE2_PURE_PYTHON: '1'
     steps:
       - uses: actions/checkout@v4
 
@@ -130,6 +128,8 @@ jobs:
 
     runs-on: "${{ matrix.os }}"
 
+    env:
+      PY_BENCODE2_PURE_PYTHON: '1'
     steps:
       - uses: actions/checkout@v4
 
