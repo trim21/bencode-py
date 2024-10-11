@@ -36,18 +36,18 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int], stack_depth: int) -> Non
 
     i = id(value)
     if isinstance(value, (dict, OrderedDict, MappingProxyType)):
-        if stack_depth >= 1000:
+        if stack_depth >= 100:
             if i in seen:
                 raise BencodeEncodeError(f"circular reference found {value!r}")
             seen.add(i)
         __encode_mapping(value, r, seen, stack_depth=stack_depth)
-        if stack_depth >= 1000:
+        if stack_depth >= 100:
             seen.remove(i)
         stack_depth -= 1
         return
 
     if isinstance(value, (list, tuple)):
-        if stack_depth >= 1000:
+        if stack_depth >= 100:
             if i in seen:
                 raise BencodeEncodeError(f"circular reference found {value!r}")
             seen.add(i)
@@ -57,7 +57,7 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int], stack_depth: int) -> Non
             __encode(item, r, seen, stack_depth=stack_depth)
         r.write(b"e")
 
-        if stack_depth >= 1000:
+        if stack_depth >= 100:
             seen.remove(i)
         stack_depth -= 1
 
@@ -74,14 +74,14 @@ def __encode(value: Any, r: io.BytesIO, seen: set[int], stack_depth: int) -> Non
         return
 
     if is_dataclass(value) and not isinstance(value, type):
-        if stack_depth >= 1000:
+        if stack_depth >= 100:
             if i in seen:
                 raise BencodeEncodeError(f"circular reference found {value!r}")
             seen.add(i)
 
         __encode_dataclass(value, r, seen, stack_depth=stack_depth)
 
-        if stack_depth >= 1000:
+        if stack_depth >= 100:
             seen.remove(i)
         stack_depth -= 1
 
