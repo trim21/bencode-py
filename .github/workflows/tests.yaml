@@ -81,7 +81,7 @@ jobs:
       matrix:
         os:
 #          - "windows-latest"
-          - "ubuntu-23.04"
+          - "ubuntu-24.04"
 #          - "macos-14"
 
     runs-on: "${{ matrix.os }}"
