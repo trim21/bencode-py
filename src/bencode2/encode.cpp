@@ -252,7 +252,8 @@ static void encodeTuple(EncodeContext *ctx, py::handle obj) {
         debug_print("put object %p to seen", key);                                                 \
         debug_print("after put object %p to seen", key);                                           \
         ctx->stack_depth++;                                                                        \
-        if (ctx->stack_depth >= 1000) {                                                            \
+        bool enableCheck = ctx->stack_depth >= 1000;                                               \
+        if (enableCheck) {                                                                         \
             if (ctx->seen.find(key) != ctx->seen.end()) {                                          \
                 debug_print("circular reference found");                                           \
                 throw EncodeError("circular reference found");                                     \
@@ -260,7 +261,7 @@ static void encodeTuple(EncodeContext *ctx, py::handle obj) {
             ctx->seen.insert(key);                                                                 \
         }                                                                                          \
         encoder(ctx, obj);                                                                         \
-        if (ctx->stack_depth >= 1000) {                                                            \
+        if (enableCheck) {                                                                         \
             ctx->seen.erase(key);                                                                  \
         }                                                                                          \
         ctx->stack_depth--;                                                                        \
