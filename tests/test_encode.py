@@ -184,7 +184,6 @@ def test_recursive_object():
         assert bencode(p)
 
 
-@pytest.mark.skip("not supported yet")
 def test_dataclasses():
     @dataclasses.dataclass
     class Obj:
