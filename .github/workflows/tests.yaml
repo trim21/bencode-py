@@ -46,7 +46,7 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
-          - "~3.13.0-rc.2"
+          - "3.13"
         exclude:
           - { os: macos-14, python-version: '3.8' }
           - { os: macos-14, python-version: '3.9' }
@@ -74,6 +74,40 @@ jobs:
 
       - run: pytest --assert-pkg-compiled=true
 
+  test-cp-cpp-nogil:
+    needs: [ build ]
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "windows-latest"
+          - "ubuntu-22.04"
+          - "macos-14"
+
+    runs-on: "${{ matrix.os }}"
+    env:
+      PY_BENCODE2_PURE_PYTHON: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - uses: deadsnakes/action@v3.2.0
+        with:
+          python-version: 3.13
+          nogil: true
+
+      - run: python -m pip install -U pip
+      - run: pip install bencode2 --no-index --find-links ./dist/
+      - run: pip install -r requirements.txt
+
+      - run: pytest --assert-pkg-compiled=true
+
+
   test-cp-py:
     strategy:
       fail-fast: false
@@ -89,7 +123,7 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
-          - "~3.13.0-rc.2"
+          - "3.13"
         exclude:
           - { os: macos-14, python-version: '3.8' }
           - { os: macos-14, python-version: '3.9' }
@@ -114,6 +148,44 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-cp-py-nogil:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "windows-latest"
+          - "ubuntu-22.04"
+          - "macos-14"
+
+    runs-on: "${{ matrix.os }}"
+    env:
+      PY_BENCODE2_PURE_PYTHON: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - uses: deadsnakes/action@v3.2.0
+        with:
+          python-version: 3.13
+          nogil: true
+
+      - run: pip install -e .
+      - run: pip install -r requirements.txt
+
+      - run: python -m pytest --cov --assert-pkg-compiled=false
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
 
   test-pp:
     strategy:
@@ -152,7 +224,9 @@ jobs:
     needs:
       - test-pp
       - test-cp-cpp
+      - test-cp-cpp-nogil
       - test-cp-py
+      - test-cp-py-nogil
       - twine-check
     runs-on: 'ubuntu-latest'
     steps:
