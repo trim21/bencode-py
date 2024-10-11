@@ -384,7 +384,7 @@ std::unique_ptr<Context> getContext() {
 size_t const ctx_buffer_reuse_cap = 30 * 1024 * 1024u;
 
 void releaseContext(std::unique_ptr<Context> ctx) {
-    if (pool.size() < 5 && ctx->cap <= ctx_buffer_reuse_cap) {
+    if (pool.size() < 5 && ctx->s.capacity() <= ctx_buffer_reuse_cap) {
         debug_print("put Context back to pool");
         ctx.get()->reset();
         pool.push_back(ctx.get());
@@ -410,7 +410,7 @@ py::bytes bencode(py::object v) {
 
     encodeAny(ctx.ptr.get(), v);
 
-    auto res = py::bytes(ctx.ptr->buf, ctx.ptr->index);
+    auto res = py::bytes(ctx.ptr->s);
 
     return res;
 }

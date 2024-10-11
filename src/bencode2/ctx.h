@@ -1,45 +1,36 @@
 #pragma once
 #define FMT_HEADER_ONLY
 
+#include <stdint.h>
 #include <string>
 #include <unordered_set>
 
+#include <fmt/compile.h>
 #include <fmt/core.h>
 
 #include "common.h"
 
 #define defaultBufferSize 4096
 
-class BufferAllocFailed : std::bad_alloc {
-    const char *what() const throw() { return "failed to alloc member for buffer"; }
-};
-
 class Context {
 public:
-    char *buf;
-    size_t index;
-    size_t cap;
+    std::string s;
 
     std::unordered_set<uintptr_t> seen;
 
     Context() {
-        buf = (char *)malloc(defaultBufferSize);
-        if (buf == NULL) {
-            throw BufferAllocFailed();
-        }
-
-        index = 0;
-        cap = defaultBufferSize;
+        s = std::string();
+        s.reserve(defaultBufferSize);
     }
 
     ~Context() {
         debug_print("delete context");
         seen.clear();
-        free(buf);
+        s.clear();
     }
 
     void reset() {
-        index = 0;
+        s.clear();
         seen.clear();
     }
 
@@ -48,30 +39,28 @@ public:
     void write(const char *data, Py_ssize_t size) {
         bufferGrow(size);
 
-        std::memcpy(buf + index, data, size);
-
-        index = index + size;
+        s.append(data, size);
     }
 
-    void writeSize_t(size_t val) { write(fmt::format("{}", val)); }
+    void writeSize_t(size_t val) {
+        bufferGrow(20);
+        fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), val);
+    }
 
-    void writeLongLong(long long val) { write(fmt::format("{}", val)); }
+    void writeLongLong(int64_t val) {
+        bufferGrow(20);
+        fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), val);
+    }
 
     void writeChar(const char c) {
         bufferGrow(1);
-        buf[index] = c;
-        index = index + 1;
+        s.push_back(c);
     }
 
 private:
     void bufferGrow(Py_ssize_t size) {
-        if (size + index + 1 >= cap) {
-            char *tmp = (char *)realloc(buf, cap * 2 + size);
-            if (tmp == NULL) {
-                throw BufferAllocFailed();
-            }
-            cap = cap * 2 + size;
-            buf = tmp;
+        if (size + s.length() + 1 >= s.capacity()) {
+            s.reserve(s.capacity() * 2 + size);
         }
     }
 };
