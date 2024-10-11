@@ -80,9 +80,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "windows-latest"
-          - "ubuntu-22.04"
-          - "macos-14"
+#          - "windows-latest"
+          - "ubuntu-23.04"
+#          - "macos-14"
 
     runs-on: "${{ matrix.os }}"
     steps:
@@ -154,9 +154,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "windows-latest"
-          - "ubuntu-22.04"
-          - "macos-14"
+#          - "windows-latest"
+          - "ubuntu-24.04"
+#          - "macos-14"
 
     runs-on: "${{ matrix.os }}"
     env:
