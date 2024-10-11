@@ -13,13 +13,13 @@ extern py::object dataclasses_fields;
 // dataclasses.is_dataclass
 extern py::object is_dataclasses;
 
-static void encodeAny(Context *ctx, py::handle obj);
+static void encodeAny(EncodeContext *ctx, py::handle obj);
 
 bool cmp(std::pair<std::string, py::handle> &a, std::pair<std::string, py::handle> &b) {
     return a.first < b.first;
 }
 
-static void encodeDict(Context *ctx, py::handle obj) {
+static void encodeDict(EncodeContext *ctx, py::handle obj) {
     debug_print("encodeDict");
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
@@ -73,7 +73,7 @@ static void encodeDict(Context *ctx, py::handle obj) {
 }
 
 // slow path for types.MappingProxyType
-static void encodeDictLike(Context *ctx, py::handle h) {
+static void encodeDictLike(EncodeContext *ctx, py::handle h) {
     debug_print("encodeDictLike");
     ctx->writeChar('d');
     debug_print("get object size");
@@ -128,7 +128,7 @@ static void encodeDictLike(Context *ctx, py::handle h) {
     return;
 }
 
-static void encodeDataclasses(Context *ctx, py::handle h) {
+static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
     debug_print("encodeDataclasses");
 
     ctx->writeChar('d');
@@ -168,15 +168,15 @@ static void encodeDataclasses(Context *ctx, py::handle h) {
     return;
 }
 
-static void encodeInt_fast(Context *ctx, long long val) {
+static void encodeInt_fast(EncodeContext *ctx, long long val) {
     ctx->writeChar('i');
     ctx->writeLongLong(val);
     ctx->writeChar('e');
 }
 
-static void encodeInt_slow(Context *ctx, py::handle obj);
+static void encodeInt_slow(EncodeContext *ctx, py::handle obj);
 
-static void encodeInt(Context *ctx, py::handle obj) {
+static void encodeInt(EncodeContext *ctx, py::handle obj) {
     int overflow = 0;
     long long val = PyLong_AsLongLongAndOverflow(obj.ptr(), &overflow);
     if (overflow) {
@@ -191,7 +191,7 @@ static void encodeInt(Context *ctx, py::handle obj) {
     return encodeInt_fast(ctx, val);
 }
 
-static void encodeInt_slow(Context *ctx, py::handle obj) {
+static void encodeInt_slow(EncodeContext *ctx, py::handle obj) {
     PyObject *fmt = PyUnicode_FromString("%d");
     if (fmt == NULL) {
         return;
@@ -223,7 +223,7 @@ static void encodeInt_slow(Context *ctx, py::handle obj) {
 }
 
 //
-static void encodeList(Context *ctx, const py::handle obj) {
+static void encodeList(EncodeContext *ctx, const py::handle obj) {
     ctx->writeChar('l');
 
     Py_ssize_t len = PyList_Size(obj.ptr());
@@ -235,7 +235,7 @@ static void encodeList(Context *ctx, const py::handle obj) {
     ctx->writeChar('e');
 }
 
-static void encodeTuple(Context *ctx, py::handle obj) {
+static void encodeTuple(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('l');
 
     Py_ssize_t len = PyTuple_Size(obj.ptr());
@@ -252,17 +252,23 @@ static void encodeTuple(Context *ctx, py::handle obj) {
         uintptr_t key = (uintptr_t)obj.ptr();                                                      \
         debug_print("put object %p to seen", key);                                                 \
         debug_print("after put object %p to seen", key);                                           \
-        if (ctx->seen.find(key) != ctx->seen.end()) {                                              \
-            debug_print("circular reference found");                                               \
-            throw EncodeError("circular reference found");                                         \
+        ctx->stack_depth++;                                                                        \
+        if (ctx->stack_depth >= 1000) {                                                            \
+            if (ctx->seen.find(key) != ctx->seen.end()) {                                          \
+                debug_print("circular reference found");                                           \
+                throw EncodeError("circular reference found");                                     \
+            }                                                                                      \
+            ctx->seen.insert(key);                                                                 \
         }                                                                                          \
-        ctx->seen.insert(key);                                                                     \
         encoder(ctx, obj);                                                                         \
-        ctx->seen.erase(key);                                                                      \
+        if (ctx->stack_depth >= 1000) {                                                            \
+            ctx->seen.erase(key);                                                                  \
+        }                                                                                          \
+        ctx->stack_depth--;                                                                        \
         return;                                                                                    \
     } while (0)
 
-static void encodeAny(Context *ctx, const py::handle obj) {
+static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     debug_print("encodeAny");
 
     if (obj.ptr() == Py_True) {
@@ -365,27 +371,41 @@ static void encodeAny(Context *ctx, const py::handle obj) {
     throw py::type_error(msg);
 }
 
-static std::vector<Context *> pool;
+static std::vector<EncodeContext *> pool;
 
-std::unique_ptr<Context> getContext() {
+// only add lock when building in free thread
+#if Py_GIL_DISABLED
+static std::mutex m;
+#endif
+
+std::unique_ptr<EncodeContext> getContext() {
+#if Py_GIL_DISABLED
+    std::lock_guard<std::mutex> guard(m);
+#endif
+
     if (pool.empty()) {
         debug_print("empty pool, create Context");
-        return std::make_unique<Context>();
+        return std::make_unique<EncodeContext>();
     }
 
     debug_print("get Context from pool");
     auto ctx = pool.back();
     pool.pop_back();
 
-    return std::unique_ptr<Context>(ctx);
+    return std::unique_ptr<EncodeContext>(ctx);
 }
 
 // 30 MiB
 size_t const ctx_buffer_reuse_cap = 30 * 1024 * 1024u;
 
-void releaseContext(std::unique_ptr<Context> ctx) {
+void releaseContext(std::unique_ptr<EncodeContext> ctx) {
     if (pool.size() < 5 && ctx->s.capacity() <= ctx_buffer_reuse_cap) {
         debug_print("put Context back to pool");
+
+#if Py_GIL_DISABLED
+        std::lock_guard<std::mutex> guard(m);
+#endif
+
         ctx.get()->reset();
         pool.push_back(ctx.get());
         ctx.release();
@@ -398,7 +418,7 @@ void releaseContext(std::unique_ptr<Context> ctx) {
 
 class CtxMgr {
 public:
-    std::unique_ptr<Context> ptr;
+    std::unique_ptr<EncodeContext> ptr;
     CtxMgr() { ptr = getContext(); }
 
     ~CtxMgr() { releaseContext(std::move(ptr)); }
