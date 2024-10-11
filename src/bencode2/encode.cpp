@@ -137,7 +137,7 @@ static void encodeDataclasses(Context *ctx, py::handle h) {
   ctx->writeChar('d');
   debug_print("get object size");
   auto fields = dataclasses_fields(h);
-  auto size = len(fields);
+  auto size = PyTuple_Size(fields.ptr());
   if (size == 0) {
     ctx->writeChar('e');
     return;
@@ -357,7 +357,7 @@ static void encodeAny(Context *ctx, const py::handle obj) {
     encodeComposeObject(ctx, obj, encodeDictLike);
   }
 
-  if (is_dataclasses.call(obj).ptr() == Py_True) {
+  if (is_dataclasses(obj).ptr() == Py_True) {
     encodeComposeObject(ctx, obj, encodeDataclasses);
   }
 
