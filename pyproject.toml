@@ -29,6 +29,10 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 
+dependencies = [
+    'typing_extensions'
+]
+
 [project.urls]
 Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
@@ -40,10 +44,6 @@ include = ['src/']
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bencode2"]
-
-
-[tool.cibuildwheel.environment]
-HATCH_BUILD_HOOKS_ENABLE = "1"
 
 [tool.black]
 target-version = ['py38']
