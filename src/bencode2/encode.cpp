@@ -14,8 +14,40 @@ extern py::object is_dataclasses;
 
 static void encodeAny(EncodeContext *ctx, py::handle obj);
 
-bool cmp(std::pair<std::string, py::handle> &a, std::pair<std::string, py::handle> &b) {
+bool cmp(std::pair<std::string_view, py::handle> &a, std::pair<std::string_view, py::handle> &b) {
     return a.first < b.first;
+}
+
+static std::string_view from_py_string(py::handle obj) {
+    debug_print("encode str");
+
+    if (PyBytes_Check(obj.ptr())) {
+        Py_ssize_t size = 0;
+        char *s;
+
+        if (PyBytes_AsStringAndSize(obj.ptr(), &s, &size)) {
+            throw std::runtime_error("failed to get contents of bytes");
+        }
+
+        return std::basic_string_view(s, size);
+    }
+
+    if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
+        const char *s = (char *)PyUnicode_DATA(obj.ptr());
+        Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
+        return std::basic_string_view(s, size);
+    }
+
+    if (PyUnicode_IS_COMPACT(obj.ptr()) &&
+        ((PyCompactUnicodeObject *)(obj.ptr()))->utf8_length != 0) {
+        const char *s = ((PyCompactUnicodeObject *)(obj.ptr()))->utf8;
+        Py_ssize_t size = ((PyCompactUnicodeObject *)(obj.ptr()))->utf8_length;
+        return std::basic_string_view(s, size);
+    }
+
+    Py_ssize_t size = 0;
+    const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
+    return std::basic_string_view(s, size);
 }
 
 static void encodeDict(EncodeContext *ctx, py::handle obj) {
@@ -27,7 +59,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
         return;
     }
 
-    std::vector<std::pair<std::string, py::handle>> m(l);
+    std::vector<std::pair<std::string_view, py::handle>> m(l);
     auto items = PyDict_Items(obj.ptr());
 
     // smart pointer to dec_ref when function return
@@ -43,7 +75,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
         }
 
         debug_print("set items");
-        m.at(i) = std::make_pair(py::handle(key).cast<std::string>(), py::handle(value));
+        m.at(i) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
     }
 
     std::sort(m.begin(), m.end(), cmp);
@@ -84,7 +116,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    std::vector<std::pair<std::string, py::handle>> m(l);
+    std::vector<std::pair<std::string_view, py::handle>> m(l);
     debug_print("get items");
     auto items = obj.attr("items")();
 
@@ -98,7 +130,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
         }
 
         debug_print("set items");
-        m.at(index) = std::make_pair(py::handle(key).cast<std::string>(), py::handle(value));
+        m.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
         index++;
     }
 
@@ -141,7 +173,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    std::vector<std::pair<std::string, py::handle>> m(size);
+    std::vector<std::pair<std::string_view, py::handle>> m(size);
 
     size_t index = 0;
     for (auto field : fields) {
@@ -149,7 +181,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
         auto value = obj.attr(key);
 
         debug_print("set items");
-        m.at(index) = std::make_pair(py::handle(key).cast<std::string>(), py::handle(value));
+        m.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
         index++;
     }
 
@@ -268,6 +300,48 @@ static void encodeTuple(EncodeContext *ctx, py::handle obj) {
         return;                                                                                    \
     } while (0)
 
+// for internal detail of python string
+// https://github.com/python/cpython/blob/850189a64e7f0b920fe48cb12a5da3e648435680/Include/cpython/unicodeobject.h#L81
+static void encodeStr(EncodeContext *ctx, const py::handle obj) {
+    debug_print("encode str");
+
+    if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
+        const char *s = (char *)PyUnicode_DATA(obj.ptr());
+        Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
+        debug_print("write length");
+        ctx->writeSize_t(size);
+        debug_print("write char");
+        ctx->writeChar(':');
+        debug_print("write content");
+        ctx->write(s, size);
+        return;
+    }
+
+    if (PyUnicode_IS_COMPACT(obj.ptr()) &&
+        ((PyCompactUnicodeObject *)(obj.ptr()))->utf8_length != 0) {
+        const char *s = ((PyCompactUnicodeObject *)(obj.ptr()))->utf8;
+        Py_ssize_t size = ((PyCompactUnicodeObject *)(obj.ptr()))->utf8_length;
+        debug_print("write length");
+        ctx->writeSize_t(size);
+        debug_print("write char");
+        ctx->writeChar(':');
+        debug_print("write content");
+        ctx->write(s, size);
+        return;
+    }
+
+    Py_ssize_t size = 0;
+    const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
+
+    debug_print("write length");
+    ctx->writeSize_t(size);
+    debug_print("write char");
+    ctx->writeChar(':');
+    debug_print("write content");
+    ctx->write(s, size);
+    return;
+}
+
 static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     debug_print("encodeAny");
 
@@ -302,17 +376,7 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     }
 
     if (PyUnicode_Check(obj.ptr())) {
-        debug_print("encode str");
-        Py_ssize_t size = 0;
-
-        const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
-
-        debug_print("write length");
-        ctx->writeSize_t(size);
-        debug_print("write char");
-        ctx->writeChar(':');
-        debug_print("write content");
-        ctx->write(s, size);
+        encodeStr(ctx, obj);
         return;
     }
 
