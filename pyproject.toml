@@ -38,11 +38,16 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
+[tool.cibuildwheel]
+skip = 'pp*'
+
 [tool.cibuildwheel.linux]
-before-build = ". <(curl https://aka.ms/vcpkg-init.sh -L)"
+before-build = "bash -c '. <(curl https://aka.ms/vcpkg-init.sh -L)' && ~/.vcpkg/vcpkg install"
+environment = { VCPKG_ROOT = '/root/.vcpkg', HTTPS_PROXY = 'http://192.168.2.18:7890' }
 
 [tool.cibuildwheel.macos]
-before-build = 'curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd'
+before-build = "bash -c '. <(curl https://aka.ms/vcpkg-init.sh -L)' && ~/.vcpkg/vcpkg install"
+environment = { VCPKG_ROOT = '/root/.vcpkg' }
 
 [tool.black]
 target-version = ['py38']
