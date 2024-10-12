@@ -41,7 +41,6 @@ jobs:
         uses: johnwason/vcpkg-action@v6
         id: vcpkg
         with:
-          pkgs: fmt
           triplet: x64-windows
           token: ${{ github.token }}
           github-binarycache: false
