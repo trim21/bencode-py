@@ -1,6 +1,8 @@
 import os
+import platform
 import sys
 from glob import glob
+from pathlib import Path
 
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import find_packages, setup
@@ -17,6 +19,13 @@ if (
         zip_safe=False,
     )
 else:
+    bits = platform.architecture()[0][:2]
+    if sys.platform == "win32":
+        triplet = f"x{bits}-windows"
+    else:
+        triplet = os.environ["TRIPLET"]
+
+    vcpkg_include = Path(os.environ["VCPKG_ROOT"]).joinpath(triplet).joinpath("include")
 
     macro = [("FMT_HEADER_ONLY", "")]
 
@@ -29,7 +38,7 @@ else:
     module = Pybind11Extension(
         "bencode2._bencode",
         sources=sorted(glob("./src/bencode2/*.cpp")),
-        include_dirs=["./src/bencode2", "./vendor/fmt/include"],
+        include_dirs=["./src/bencode2", str(vcpkg_include)],
         define_macros=macro,
         extra_compile_args=extra_compile_args,
     )

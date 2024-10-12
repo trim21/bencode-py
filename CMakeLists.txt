@@ -11,10 +11,20 @@ find_package(Python3 COMPONENTS Interpreter Development)
 # add python includes to find <Python.h>
 include_directories(${Python3_INCLUDE_DIRS})
 
-include_directories(./src/bencode_cpp/)
+include_directories(./src/bencode2/)
 
-include_directories(./vendor/fmt/include/)
-include_directories(./.venv/Lib/site-packages/pybind11/include/)
+# Detect the installed pybind11 package and import it into CMake
+execute_process(
+        COMMAND "${Python_EXECUTABLE}" -m pybind11 --cmakedir
+        OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE PYBIND11_ROOT)
+
+#list(APPEND CMAKE_PREFIX_PATH ${PYBIND11_ROOT})
+
+#message(${PYBIND11_ROOT}/../../include)
+
+include_directories(${PYBIND11_ROOT}/../../../include)
+
+find_package(fmt CONFIG REQUIRED)
 
 add_executable(
         bencode2
@@ -25,3 +35,5 @@ add_executable(
         src/bencode2/common.h
         src/bencode2/ctx.h
 )
+
+target_link_libraries(bencode2 PRIVATE fmt::fmt-header-only)
