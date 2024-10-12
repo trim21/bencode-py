@@ -51,6 +51,7 @@ jobs:
       - uses: pypa/cibuildwheel@v2.21.3
         env:
           TRIPLET: ${{ matrix.triplet }}
+          CIBW_ENVIRONMENT_PASS_LINUX: TRIPLET
           CIBW_BUILD_VERBOSITY: 1
           CIBW_FREE_THREADED_SUPPORT: true
           CIBW_ARCHS: ${{ matrix.arch }}
