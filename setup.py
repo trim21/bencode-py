@@ -22,10 +22,19 @@ else:
     bits = platform.architecture()[0][:2]
     if sys.platform == "win32":
         triplet = f"x{bits}-windows"
+    elif sys.platform == "linux":
+        triplet = f"x{bits}-linux"
+    elif sys.platform == "darwin":
+        triplet = f"x{bits}-osx"
     else:
         triplet = os.environ["TRIPLET"]
 
-    vcpkg_include = Path(os.environ["VCPKG_ROOT"]).joinpath(triplet).joinpath("include")
+    vcpkg_include = (
+        Path(os.environ["VCPKG_ROOT"])
+        .joinpath("installed")
+        .joinpath(triplet)
+        .joinpath("include")
+    )
 
     macro = [("FMT_HEADER_ONLY", "")]
 

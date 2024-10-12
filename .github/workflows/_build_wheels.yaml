@@ -10,24 +10,24 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: macos-13, arch: x86_64, build: "*" }
-          - { os: macos-13, arch: arm64, build: "*" }
+          - { os: macos-13, arch: x86_64, build: "*", triplet: 'x64-osx' }
+          - { os: macos-13, arch: arm64, build: "*", triplet: 'arm64-osx' }
           - { os: windows-latest, arch: AMD64, build: "*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*t-*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*[02468]-*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*[13579]-*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-musllinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*t-manylinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*t-musllinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-manylinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-manylinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-manylinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-manylinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-manylinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-musllinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-musllinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-musllinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-musllinux*", triplet: 'aarch64_linux' }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-musllinux*", triplet: 'aarch64_linux' }
     steps:
       - uses: docker/setup-qemu-action@v3
         if: matrix.os == 'ubuntu-latest'
@@ -50,11 +50,13 @@ jobs:
 
       - uses: pypa/cibuildwheel@v2.21.3
         env:
+          TRIPLET: ${{ matrix.triplet }}
           CIBW_BUILD_VERBOSITY: 1
           CIBW_FREE_THREADED_SUPPORT: true
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_BUILD: ${{ matrix.build }}
           CIBW_SKIP: 'pp*'
+          CIBW_BUILD_FRONTEND: 'build'
           MACOSX_DEPLOYMENT_TARGET: '11.0'
 
       - run: ls ./wheelhouse/
@@ -68,13 +70,13 @@ jobs:
     name: make sdist and wheel
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - run: pipx run build
-      env:
-        PY_BENCODE2_PURE_PYTHON: '1'
+      - run: pipx run build
+        env:
+          PY_BENCODE2_PURE_PYTHON: '1'
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: 'wheels-dist'
-        path: dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'wheels-dist'
+          path: dist/*
