@@ -11,10 +11,15 @@ find_package(Python3 COMPONENTS Interpreter Development)
 # add python includes to find <Python.h>
 include_directories(${Python3_INCLUDE_DIRS})
 
-include_directories(./src/bencode_cpp/)
+include_directories(./src/bencode2/)
+
+execute_process(
+        COMMAND "${Python_EXECUTABLE}" -m pybind11 --cmakedir
+        OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE PYBIND11_ROOT)
+
+include_directories(${PYBIND11_ROOT}/../../../include)
 
 include_directories(./vendor/fmt/include/)
-include_directories(./.venv/Lib/site-packages/pybind11/include/)
 
 add_executable(
         bencode2
