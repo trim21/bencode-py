@@ -41,6 +41,8 @@ Issues = "https://github.com/trim21/bencode-py/issues"
 [tool.cibuildwheel.linux]
 before-build = ". <(curl https://aka.ms/vcpkg-init.sh -L)"
 
+[tool.cibuildwheel.macos]
+before-build = 'curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd'
 
 [tool.black]
 target-version = ['py38']
