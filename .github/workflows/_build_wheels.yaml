@@ -36,6 +36,10 @@ jobs:
         with:
           submodules: 'true'
 
+      - name: enable vcpkg
+        if: matrix.os == 'windows-latest'
+        run: ${{ github.workspace }}/vcpkg/vcpkg install
+
       - name: Restore cached Primes
         id: cache
         uses: actions/cache@v4

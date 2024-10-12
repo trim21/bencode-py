@@ -43,7 +43,7 @@ skip = 'pp*'
 
 [tool.cibuildwheel.linux]
 before-build = "bash -c '. <(curl https://aka.ms/vcpkg-init.sh -L)' && ~/.vcpkg/vcpkg install"
-environment = { VCPKG_ROOT = '/root/.vcpkg', HTTPS_PROXY = 'http://192.168.2.18:7890' }
+environment = { VCPKG_ROOT = '/root/.vcpkg' }
 
 [tool.cibuildwheel.macos]
 before-build = "bash -c '. <(curl https://aka.ms/vcpkg-init.sh -L)' && ~/.vcpkg/vcpkg install"
