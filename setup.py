@@ -22,10 +22,6 @@ else:
     bits = platform.architecture()[0][:2]
     if sys.platform == "win32":
         triplet = f"x{bits}-windows"
-    elif sys.platform == "linux":
-        triplet = f"x{bits}-linux"
-    elif sys.platform == "darwin":
-        triplet = f"x{bits}-osx"
     else:
         triplet = os.environ["TRIPLET"]
 
