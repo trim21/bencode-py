@@ -38,7 +38,13 @@ jobs:
 
       - name: enable vcpkg
         if: matrix.os == 'windows-latest'
-        run: ${{ github.workspace }}/vcpkg/vcpkg install
+        uses: johnwason/vcpkg-action@v6
+        id: vcpkg
+        with:
+          pkgs: fmt
+          triplet: x64-windows
+          token: ${{ github.token }}
+          github-binarycache: false
 
       - name: Restore cached Primes
         id: cache
