@@ -27,7 +27,7 @@ else:
         extra_compile_args = ["/utf-8"]
 
     module = Pybind11Extension(
-        "bencode2._bencode",
+        "bencode2.__bencode",
         sources=sorted(glob("./src/bencode2/*.cpp")),
         include_dirs=["./src/bencode2", "./vendor/fmt/include"],
         define_macros=macro,

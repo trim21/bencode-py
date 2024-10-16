@@ -1,5 +1,5 @@
 try:  # pragma: no cover
-    from ._bencode import BencodeDecodeError, BencodeEncodeError, bdecode, bencode
+    from .__bencode import BencodeDecodeError, BencodeEncodeError, bdecode, bencode
 
     COMPILED = True
 except ImportError:  # pragma: no cover

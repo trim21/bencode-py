@@ -11,7 +11,7 @@ extern py::bytes bencode(py::object v);
 
 extern py::object bdecode(py::buffer b);
 
-PYBIND11_MODULE(_bencode, m, py::mod_gil_not_used()) {
+PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
     auto mod = m.import("dataclasses");
     mod.inc_ref();
     dataclasses_fields = mod.attr("fields");
