@@ -39,6 +39,13 @@ assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 
 ### Decoding
 
+| bencode type | python type |
+|:------------:|:-----------:|
+|   integer    |    `int`    |
+|    string    |   `bytes`   |
+|    array     |   `list`    |
+|  directory   |   `dict`    |
+
 bencode have 4 native types, integer, string, array and directory.
 
 This package will decode integer to `int`, array to `list` and
@@ -48,8 +55,6 @@ Because bencode string is not defined as utf-8 string, and will contain raw byte
 bencode2 will decode bencode string to python `bytes`.
 
 ### Encoding
-
-Many python types are supported.
 
 |            python type            | bencode type |
 |:---------------------------------:|:------------:|
@@ -61,3 +66,18 @@ Many python types are supported.
 |       `dict`, `OrderedDict`       |  directory   |
 |       `types.MaapingProxy`        |  directory   |
 |            dataclasses            |  directory   |
+
+## free threading
+
+bencode2 have a free threading wheel on pypi, build with GIL disabled.
+
+When encoding or decoding, it will not acquire GIL, which mean it's the caller's
+responsibility to ensure thread safety.
+
+When calling `bencode`, it's safe to encode same object in multiple threading,
+but it's not safe to encoding a object and change it in another thread at same time.
+
+Also, when decoding, `bytes` objects are immutable so it's safe to be used in multiple
+threading,
+but `memoryview` and `bytearray` maybe not, please make sure underlay data doesn't
+change when decoding.
