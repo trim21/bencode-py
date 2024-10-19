@@ -71,8 +71,8 @@ bencode2 will decode bencode string to python `bytes`.
 
 bencode2 have a free threading wheel on pypi, build with GIL disabled.
 
-When encoding or decoding, it will not acquire GIL, which mean it's the caller's
-responsibility to ensure thread safety.
+When encoding or decoding, it will not acquire GIL and may call non-thread-safy c-api,
+which mean it's the caller's responsibility to ensure thread safety.
 
 When calling `bencode`, it's safe to encode same object in multiple threading,
 but it's not safe to encoding a object and change it in another thread at same time.
