@@ -47,6 +47,7 @@ build-dir = "build/{wheel_tag}"
 
 # Build stable ABI wheels for CPython 3.12+
 wheel.py-api = "py3"
+editable.mode = "inplace"
 
 [tool.hatch.build.targets.sdist]
 sources = ["src/"]
