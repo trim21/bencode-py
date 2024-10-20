@@ -7,11 +7,6 @@
 
 namespace py = pybind11;
 
-// dataclasses.fields
-extern py::object dataclasses_fields;
-// dataclasses.is_dataclass
-extern py::object is_dataclasses;
-
 static void encodeAny(EncodeContext *ctx, py::handle obj);
 
 bool cmp(std::pair<std::string_view, py::handle> &a, std::pair<std::string_view, py::handle> &b) {

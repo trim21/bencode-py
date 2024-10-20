@@ -4,7 +4,10 @@
 
 namespace py = pybind11;
 
+// dataclasses.fields
 py::object dataclasses_fields;
+
+// dataclasses.is_dataclass
 py::object is_dataclasses;
 
 extern py::bytes bencode(py::object v);
@@ -18,6 +21,9 @@ extern py::object bdecode(py::buffer b);
 #if __cplusplus < 201703L
 #error "require at least cpp 17"
 #endif
+
+#include "decode.h"
+#include "encode.h"
 
 PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
     auto mod = m.import("dataclasses");

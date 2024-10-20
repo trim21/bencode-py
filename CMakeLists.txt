@@ -24,8 +24,8 @@ include_directories(./vendor/fmt/include/)
 add_executable(
         bencode2
         src/bencode2/bencode.cpp
-        src/bencode2/encode.cpp
-        src/bencode2/decode.cpp
+        src/bencode2/encode.h
+        src/bencode2/decode.h
         src/bencode2/overflow.h
         src/bencode2/common.h
         src/bencode2/encode_ctx.h
