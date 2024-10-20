@@ -75,6 +75,7 @@ jobs:
         with:
           name: 'wheels-${{ runner.os }}-${{ matrix.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
+          if-no-files-found: ignore
 
   build:
     name: make sdist and wheel
