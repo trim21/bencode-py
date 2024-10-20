@@ -3,7 +3,7 @@
 #include <pybind11/pybind11.h>
 
 #include "common.h"
-#include "ctx.h"
+#include "encode_ctx.h"
 
 namespace py = pybind11;
 
@@ -94,7 +94,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
     for (auto pair : m) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
-        ctx->write(pair.first.data(), pair.first.length());
+        ctx->write(pair.first);
 
         encodeAny(ctx, pair.second);
     }
@@ -150,7 +150,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
     for (auto pair : m) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
-        ctx->write(pair.first.data(), pair.first.length());
+        ctx->write(pair.first);
 
         encodeAny(ctx, pair.second);
     }
@@ -190,7 +190,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
     for (auto pair : m) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
-        ctx->write(pair.first.data(), pair.first.length());
+        ctx->write(pair.first);
 
         encodeAny(ctx, pair.second);
     }
@@ -463,7 +463,7 @@ std::unique_ptr<EncodeContext> getContext() {
 size_t const ctx_buffer_reuse_cap = 30 * 1024 * 1024u;
 
 void releaseContext(std::unique_ptr<EncodeContext> ctx) {
-    if (pool.size() < 5 && ctx->s.capacity() <= ctx_buffer_reuse_cap) {
+    if (pool.size() < 5 && ctx->buffer.capacity() <= ctx_buffer_reuse_cap) {
         debug_print("put Context back to pool");
 
 #if Py_GIL_DISABLED
@@ -494,7 +494,7 @@ py::bytes bencode(py::object v) {
 
     encodeAny(ctx.ptr.get(), v);
 
-    auto res = py::bytes(ctx.ptr->s);
+    auto res = py::bytes(ctx.ptr->buffer.data(), ctx.ptr->buffer.size());
 
     return res;
 }

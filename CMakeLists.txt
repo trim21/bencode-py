@@ -28,5 +28,5 @@ add_executable(
         src/bencode2/decode.cpp
         src/bencode2/overflow.h
         src/bencode2/common.h
-        src/bencode2/ctx.h
+        src/bencode2/encode_ctx.h
 )

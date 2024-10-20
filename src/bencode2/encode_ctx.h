@@ -14,55 +14,65 @@
 
 class EncodeContext {
 public:
-    std::string s;
+    std::vector<char> buffer;
     size_t stack_depth;
     std::unordered_set<uintptr_t> seen;
 
     EncodeContext() {
-        s = std::string();
+        buffer = std::vector<char>();
         stack_depth = 0;
-        s.reserve(defaultBufferSize);
+        buffer.reserve(defaultBufferSize);
     }
 
     ~EncodeContext() {
         debug_print("delete context");
         seen.clear();
-        s.clear();
+        buffer.clear();
     }
 
     void reset() {
         stack_depth = 0;
-        s.clear();
+        buffer.clear();
         seen.clear();
     }
 
-    void write(std::string ss) { write(ss.data(), ss.size()); }
+    void write(std::string ss) {
+        bufferGrow(ss.size());
+
+        buffer.insert(buffer.end(), ss.begin(), ss.end());
+    }
+
+    void write(std::string_view val) {
+        bufferGrow(val.size());
+
+        buffer.insert(buffer.end(), val.begin(), val.end());
+    }
 
     void write(const char *data, Py_ssize_t size) {
         bufferGrow(size);
 
-        s.append(data, size);
+        buffer.insert(buffer.end(), data, data + size);
     }
 
     void writeSize_t(size_t val) {
         bufferGrow(20);
-        fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), val);
+        fmt::format_to(std::back_inserter(buffer), "{}", val);
     }
 
     void writeLongLong(int64_t val) {
         bufferGrow(20);
-        fmt::format_to(std::back_inserter(s), FMT_COMPILE("{}"), val);
+        fmt::format_to(std::back_inserter(buffer), "{}", val);
     }
 
     void writeChar(const char c) {
         bufferGrow(1);
-        s.push_back(c);
+        buffer.push_back(c);
     }
 
 private:
     void bufferGrow(Py_ssize_t size) {
-        if (size + s.length() + 1 >= s.capacity()) {
-            s.reserve(s.capacity() * 2 + size);
+        if (size + buffer.size() + 1 >= buffer.capacity()) {
+            buffer.reserve(buffer.capacity() * 2 + size);
         }
     }
 };
