@@ -1,40 +1,26 @@
-#include <pybind11/pybind11.h>
+#define FMT_HEADER_ONLY
 
-#include "common.h"
-
-namespace py = pybind11;
+#include <nanobind/nanobind.h>
+namespace nb = nanobind;
 
 // dataclasses.fields
-py::object dataclasses_fields;
+nb::object dataclasses_fields;
 
 // dataclasses.is_dataclass
-py::object is_dataclasses;
-
-extern py::bytes bencode(py::object v);
-
-extern py::object bdecode(py::buffer b);
-
-#ifndef __cplusplus
-#error "require at least cpp 17"
-#endif
-
-#if __cplusplus < 201703L
-#error "require at least cpp 17"
-#endif
+nb::object is_dataclasses;
 
 #include "decode.h"
 #include "encode.h"
 
-PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
-    auto mod = m.import("dataclasses");
-    mod.inc_ref();
+NB_MODULE(__bencode, m) {
+    auto mod = m.import_("dataclasses");
     dataclasses_fields = mod.attr("fields");
     dataclasses_fields.inc_ref();
     is_dataclasses = mod.attr("is_dataclass");
     is_dataclasses.inc_ref();
 
-    m.def("bdecode", &bdecode, "");
-    m.def("bencode", &bencode, "");
-    py::register_exception<DecodeError>(m, "BencodeDecodeError");
-    py::register_exception<EncodeError>(m, "BencodeEncodeError");
+    nb::exception<EncodeError>(m, "BencodeEncodeError", PyExc_ValueError);
+    nb::exception<DecodeError>(m, "BencodeDecodeError", PyExc_ValueError);
+    m.def("bencode", bencode);
+    m.def("bdecode", bdecode);
 }

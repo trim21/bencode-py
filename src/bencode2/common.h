@@ -2,8 +2,9 @@
 #include <fmt/core.h>
 
 #include <Python.h>
-#include <pybind11/pybind11.h>
-namespace py = pybind11;
+#include <nanobind/nanobind.h>
+
+namespace nb = nanobind;
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
@@ -68,7 +69,7 @@ namespace py = pybind11;
 
 #endif
 
-struct EncodeError : public py::value_error {
+struct EncodeError {
 public:
     EncodeError(std::string msg) { s = msg; }
 
@@ -78,7 +79,7 @@ private:
     std::string s;
 };
 
-struct DecodeError : public py::value_error {
+struct DecodeError {
 public:
     DecodeError(std::string msg) { s = msg; }
 
