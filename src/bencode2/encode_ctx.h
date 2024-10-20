@@ -36,12 +36,6 @@ public:
         seen.clear();
     }
 
-    void write(std::string ss) {
-        bufferGrow(ss.size());
-
-        buffer.insert(buffer.end(), ss.begin(), ss.end());
-    }
-
     void write(std::string_view val) {
         bufferGrow(val.size());
 

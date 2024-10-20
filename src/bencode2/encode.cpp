@@ -209,7 +209,7 @@ static void encodeInt_slow(EncodeContext *ctx, py::handle obj);
 
 static void encodeInt(EncodeContext *ctx, py::handle obj) {
     int overflow = 0;
-    long long val = PyLong_AsLongLongAndOverflow(obj.ptr(), &overflow);
+    int64_t val = PyLong_AsLongLongAndOverflow(obj.ptr(), &overflow);
     if (overflow) {
         PyErr_Clear();
         // slow path for very long int
@@ -223,37 +223,18 @@ static void encodeInt(EncodeContext *ctx, py::handle obj) {
 }
 
 static void encodeInt_slow(EncodeContext *ctx, py::handle obj) {
-    PyObject *fmt = PyUnicode_FromString("%d");
-    if (fmt == NULL) {
-        return;
-    }
-
-    auto _0 = AutoFree(fmt);
-
-    PyObject *s = PyUnicode_Format(fmt, obj.ptr()); // s = '%d" % i
-    if (s == NULL) {
-        return;
-    }
-    auto _1 = AutoFree(s);
-
-    PyObject *b = PyUnicode_AsUTF8String(s);
-    if (b == NULL) {
-        return;
-    }
-    auto _2 = AutoFree(b);
-
-    Py_ssize_t size;
-    char *data;
-    if (PyBytes_AsStringAndSize(b, &data, &size)) {
-        return;
-    }
-
     ctx->writeChar('i');
-    ctx->write(data, size);
+
+    auto i = PyNumber_Long(obj.ptr());
+    auto _ = AutoFree(i);
+
+    auto s = py::str(i);
+    auto sv = from_py_string(s);
+    ctx->write(sv);
+
     ctx->writeChar('e');
 }
 
-//
 static void encodeList(EncodeContext *ctx, const py::handle obj) {
     ctx->writeChar('l');
 

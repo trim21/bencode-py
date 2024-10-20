@@ -5,7 +5,6 @@ import dataclasses
 import enum
 import sys
 import types
-import unittest
 from typing import Any, NamedTuple
 
 import pytest
@@ -13,58 +12,44 @@ import pytest
 from bencode2 import BencodeEncodeError, bencode
 
 
-class EncodeTestCase(unittest.TestCase):
-    def test_exception_when_strict(self):
-        invalid_obj = None
-        with self.assertRaises(TypeError):
-            bencode(invalid_obj)
+@pytest.mark.parametrize(
+    ["raw", "expected"],
+    [
+        (["", 1], b"l0:i1ee"),
+        ({"": 2}, b"d0:i2ee"),
+        ("", b"0:"),
+        (True, b"i1e"),
+        (False, b"i0e"),
+        (-3, b"i-3e"),
+        (-0, b"i0e"),
+        (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
+        (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
+        (4927586304, b"i4927586304e"),
+        (bytearray([1, 2, 3]), b"3:\x01\x02\x03"),
+        (memoryview(b"\x01\x02\x03"), b"3:\x01\x02\x03"),
+        ("你好", b"6:" + "你好".encode()),
+        ("\U0001f600", b"4:\xf0\x9f\x98\x80"),
+        ([b"spam", b"eggs"], b"l4:spam4:eggse"),
+        ({b"cow": b"moo", b"spam": b"eggs"}, b"d3:cow3:moo4:spam4:eggse"),
+        ({b"spam": [b"a", b"b"]}, b"d4:spaml1:a1:bee"),
+        ({}, b"de"),
+        (
+            types.MappingProxyType({b"cow": b"moo", b"spam": b"eggs"}),
+            b"d3:cow3:moo4:spam4:eggse",
+        ),
+        (types.MappingProxyType({b"spam": [b"a", b"b"]}), b"d4:spaml1:a1:bee"),
+        (types.MappingProxyType({}), b"de"),
+        (collections.OrderedDict(), b"de"),
+    ],
+)
+def test_basic(raw: Any, expected: bytes):
+    assert bencode(raw) == expected
 
-    def test_encode_str(self):
-        coded = bencode("ThisIsAString")
-        self.assertEqual(
-            coded, b"13:ThisIsAString", msg="Failed to encode string from str."
-        )
 
-    def test_encode_int(self):
-        coded = bencode(42)
-        self.assertEqual(coded, b"i42e", msg="Failed to encode integer from int.")
-
-    def test_encode_bytes(self):
-        b = b"TheseAreSomeBytes"
-        coded = bencode(b)
-        s = bytes(str(len(b)), "utf-8")
-        self.assertEqual(coded, s + b":" + b, msg="Failed to encode string from bytes.")
-
-    def test_encode_list(self):
-        s = ["a", "b", 3]
-        coded = bencode(s)
-        self.assertEqual(coded, b"l1:a1:bi3ee", msg="Failed to encode list from list.")
-
-    def test_encode_tuple(self):
-        t = ("a", "b", 3)
-        coded = bencode(t)
-        self.assertEqual(coded, b"l1:a1:bi3ee", msg="Failed to encode list from tuple.")
-
-    def test_encode_dict(self):
-        od = collections.OrderedDict()
-        od["ka"] = "va"
-        od["kb"] = 2
-        coded = bencode(od)
-        self.assertEqual(
-            coded, b"d2:ka2:va2:kbi2ee", msg="Failed to encode dictionary from dict."
-        )
-
-    def test_encode_complex(self):
-        od = collections.OrderedDict()
-        od["KeyA"] = ["listitemA", {"k": "v"}, 3]
-        od["KeyB"] = {"k": "v"}
-        od["KeyC"] = 3
-        od["KeyD"] = "AString"
-        expected_result = (
-            b"d4:KeyAl9:listitemAd1:k1:vei3ee4:KeyBd1:k1:ve4:KeyCi3e4:KeyD7:AStringe"
-        )
-        coded = bencode(od)
-        self.assertEqual(coded, expected_result, msg="Failed to encode complex object.")
+def test_exception_when_strict():
+    invalid_obj = None
+    with pytest.raises(TypeError):
+        bencode(invalid_obj)
 
 
 def test_encode():
@@ -107,40 +92,6 @@ def test_dict_int_keys():
         bencode({1: 2})
     with pytest.raises(TypeError):
         bencode(0.0)
-
-
-@pytest.mark.parametrize(
-    ["raw", "expected"],
-    [
-        (["", 1], b"l0:i1ee"),
-        ({"": 2}, b"d0:i2ee"),
-        ("", b"0:"),
-        (True, b"i1e"),
-        (False, b"i0e"),
-        (-3, b"i-3e"),
-        (-0, b"i0e"),
-        (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
-        (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
-        (4927586304, b"i4927586304e"),
-        (bytearray([1, 2, 3]), b"3:\x01\x02\x03"),
-        (memoryview(b"\x01\x02\x03"), b"3:\x01\x02\x03"),
-        ("你好", b"6:" + "你好".encode()),
-        ("\U0001f600", b"4:\xf0\x9f\x98\x80"),
-        ([b"spam", b"eggs"], b"l4:spam4:eggse"),
-        ({b"cow": b"moo", b"spam": b"eggs"}, b"d3:cow3:moo4:spam4:eggse"),
-        ({b"spam": [b"a", b"b"]}, b"d4:spaml1:a1:bee"),
-        ({}, b"de"),
-        (
-            types.MappingProxyType({b"cow": b"moo", b"spam": b"eggs"}),
-            b"d3:cow3:moo4:spam4:eggse",
-        ),
-        (types.MappingProxyType({b"spam": [b"a", b"b"]}), b"d4:spaml1:a1:bee"),
-        (types.MappingProxyType({}), b"de"),
-        (collections.OrderedDict(), b"de"),
-    ],
-)
-def test_basic(raw: Any, expected: bytes):
-    assert bencode(raw) == expected
 
 
 def test_recursive_object():
@@ -251,8 +202,10 @@ def test_enum():
 
     class IntEnum(int, enum.Enum):
         v = "1"
+        b = 18446744073709551616
 
     assert bencode(IntEnum.v) == b"i1e"
+    assert bencode(IntEnum.b) == b"i18446744073709551616e"
 
 
 @pytest.mark.skipif(sys.version_info < (3, 11), reason="enum.StrEnum need py>=3.11")
