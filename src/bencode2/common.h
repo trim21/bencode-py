@@ -37,7 +37,7 @@ namespace py = pybind11;
 #ifdef BENCODE_CPP_DEBUG
 
 #ifdef _MSC_VER
-#define debug_print(fmt, ...)                                                                      \
+#define debug_print(format, ...)                                                                   \
                                                                                                    \
     do {                                                                                           \
         printf(__FILE__);                                                                          \
@@ -45,20 +45,18 @@ namespace py = pybind11;
         printf("%d", __LINE__);                                                                    \
         printf("\t%s", __FUNCTION__);                                                              \
         printf("\tDEBUG: ");                                                                       \
-        printf(fmt, __VA_ARGS__);                                                                  \
-        printf("\n");                                                                              \
+        fmt::println(format, __VA_ARGS__);                                                         \
     } while (0)
 
 #else
 
-#define debug_print(fmt, ...)                                                                      \
+#define debug_print(format, ...)                                                                   \
     do {                                                                                           \
         printf(__FILE__);                                                                          \
         printf(":");                                                                               \
         printf("%d", __LINE__);                                                                    \
         printf("\t%s\tDEBUG: ", __PRETTY_FUNCTION__);                                              \
-        printf(fmt, ##__VA_ARGS__);                                                                \
-        printf("\n");                                                                              \
+        fmt::println(format, ##__VA_ARGS__);                                                       \
     } while (0)
 
 #endif

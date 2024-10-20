@@ -24,7 +24,7 @@ else:
     # if os.environ.get("BENCODE_CPP_DEBUG") == "1":
     # macro.append(("BENCODE_CPP_DEBUG", "1"))
     if sys.platform == "win32":
-        extra_compile_args = ["/utf-8"]
+        extra_compile_args = ["/utf-8", "/Zc:__cplusplus"]
 
     module = Pybind11Extension(
         "bencode2.__bencode",

@@ -19,8 +19,6 @@ bool cmp(std::pair<std::string_view, py::handle> &a, std::pair<std::string_view,
 }
 
 static std::string_view from_py_string(py::handle obj) {
-    debug_print("encode str");
-
     if (PyBytes_Check(obj.ptr())) {
         Py_ssize_t size = 0;
         char *s;
@@ -51,7 +49,6 @@ static std::string_view from_py_string(py::handle obj) {
 }
 
 static void encodeDict(EncodeContext *ctx, py::handle obj) {
-    debug_print("encodeDict");
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
     if (l == 0) {
@@ -74,16 +71,13 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
             throw py::type_error("dict keys must be str or bytes");
         }
 
-        debug_print("set items");
         m.at(i) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
     }
 
     std::sort(m.begin(), m.end(), cmp);
     auto lastKey = m[0].first;
-    debug_print("key '%s'\n", lastKey.data());
     for (auto i = 1; i < l; i++) {
         auto currentKey = m[i].first;
-        debug_print("key '%s'\n", currentKey.data());
         if (currentKey == lastKey) {
             throw EncodeError(fmt::format("found duplicated keys {}", lastKey));
         }
@@ -105,9 +99,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
 
 // slow path for types.MappingProxyType
 static void encodeDictLike(EncodeContext *ctx, py::handle h) {
-    debug_print("encodeDictLike");
     ctx->writeChar('d');
-    debug_print("get object size");
     auto l = PyObject_Size(h.ptr());
     if (l == 0) {
         ctx->writeChar('e');
@@ -117,7 +109,6 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
     auto obj = h.cast<py::object>();
 
     std::vector<std::pair<std::string_view, py::handle>> m(l);
-    debug_print("get items");
     auto items = obj.attr("items")();
 
     size_t index = 0;
@@ -129,17 +120,14 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
             throw EncodeError("dict keys must be str or bytes");
         }
 
-        debug_print("set items");
         m.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
         index++;
     }
 
     std::sort(m.begin(), m.end(), cmp);
     auto lastKey = m[0].first;
-    debug_print("key '%s'\n", lastKey.data());
     for (auto i = 1; i < l; i++) {
         auto currentKey = m[i].first;
-        debug_print("key '%s'\n", currentKey.data());
         if (currentKey == lastKey) {
             throw EncodeError(fmt::format("found duplicated keys {}", lastKey));
         }
@@ -160,10 +148,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
 }
 
 static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
-    debug_print("encodeDataclasses");
-
     ctx->writeChar('d');
-    debug_print("get object size");
     auto fields = dataclasses_fields(h);
     auto size = PyTuple_Size(fields.ptr());
     if (size == 0) {

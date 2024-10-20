@@ -107,24 +107,15 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
 
 // bencode int overflow u64 or i64, build a PyLong object from Str directly.
 __OverFlow:;
-    const size_t n = index_e - *index + 1;
-    char *s = (char *)malloc(n);
-    if (s == NULL) {
-        throw std::bad_alloc();
-    }
-
-    strncpy(s, &buf[*index], n);
+    std::string s = std::basic_string(buf + *index, index_e - *index);
 
     *index = index_e + 1;
 
-    s[n - 1] = 0;
-
-    PyObject *i = PyLong_FromString(s, NULL, 10);
-
-    free(s);
+    PyObject *i = PyLong_FromString(s.c_str(), NULL, 10);
 
     auto o = py::handle(i).cast<py::object>();
     o.dec_ref();
+    debug_print("{}", s);
     return o;
 }
 
@@ -209,20 +200,16 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
         auto key = decodeBytes(buf, index, size);
         auto obj = decodeAny(buf, index, size);
 
-        debug_print("1");
         // skip first key
         if (lastKey.has_value()) {
-            debug_print("2");
             if (key < lastKey.value()) {
                 decodeErrF("invalid dict, key not sorted. index {}", *index);
             }
-            debug_print("3");
             if (key.equal(lastKey.value())) {
                 std::string repr = py::repr(key);
                 decodeErrF("invalid dict, find duplicated keys {}. index {}", repr, *index);
             }
         }
-        debug_print("4");
         lastKey = std::make_optional(key);
 
         if (*index >= size) {
