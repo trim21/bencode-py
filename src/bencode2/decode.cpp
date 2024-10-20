@@ -12,7 +12,10 @@ namespace py = pybind11;
 
 static py::object decodeAny(const char *buf, Py_ssize_t *index, Py_ssize_t size);
 
-#define decodeErrF(f, ...) throw DecodeError(fmt::format(f, ##__VA_ARGS__));
+#define decodeErrF(f, ...)                                                                         \
+    do {                                                                                           \
+        throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
+    } while (0)
 
 static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     Py_ssize_t index_e = 0;
@@ -29,7 +32,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
 
     // malformed 'ie'
     if (*index + 1 == index_e) {
-        decodeErrF("invalid int, found 'ie': %zd", index_e);
+        decodeErrF("invalid int, found 'ie': {}", index_e);
     }
 
     int sign = 1;
@@ -137,26 +140,22 @@ static py::bytes decodeBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size
 
     if (index_sep == 0) {
         decodeErrF("invalid string, missing length: index %zd", *index);
-        return NULL;
     }
 
     if (buf[*index] == '0' && *index + 1 != index_sep) {
         decodeErrF("invalid bytes length, found at {}", *index);
-        return NULL;
     }
 
     Py_ssize_t len = 0;
     for (Py_ssize_t i = *index; i < index_sep; i++) {
         if (buf[i] < '0' || buf[i] > '9') {
             decodeErrF("invalid bytes length, found '%c' at %zd", buf[i], i);
-            return NULL;
         }
         len = len * 10 + (buf[i] - '0');
     }
 
     if (index_sep + len >= size) {
         decodeErrF("bytes length overflow, index {}", *index);
-        return NULL;
     }
 
     *index = index_sep + len + 1;
@@ -171,7 +170,7 @@ static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size
 
     while (1) {
         if (*index >= size) {
-            decodeErrF("buffer overflow when decoding list, index {}", *index)
+            decodeErrF("buffer overflow when decoding list, index {}", *index);
         }
 
         if (buf[*index] == 'e') {
@@ -200,7 +199,7 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
 
     while (1) {
         if (*index >= size) {
-            decodeErrF("buffer overflow when decoding dict, index {}", *index)
+            decodeErrF("buffer overflow when decoding dict, index {}", *index);
         }
 
         if (buf[*index] == 'e') {
