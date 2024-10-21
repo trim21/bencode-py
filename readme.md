@@ -11,15 +11,27 @@ Why yet another bencode package in python?
 
 because I need a bencode library:
 
-1. Correct, which mean it should fully validate its inputs,
-   and won't try to decode bencode bytes to `str` by default.
-   Bencode doesn't have a utf-8 str type, only bytes,
-   so many decoder try to decode bytes to str and fallback to bytes,
-   **this package won't, it parse bencode bytes value as python bytes.**
-2. Fast enough, that's why this package is written with c++.
-3. even cross implement, what's why
-   this package sill have a pure python fallback
-   and `bencode2-${version}-py3-none-any.whl` wheel on pypi.
+### 1. Correct
+
+It should fully validate its inputs, both encoded bencode bytes, or python object to be
+encoded.
+
+And it should not decode bencode bytes to `str` by default.
+
+Bencode doesn't have a utf-8 str type, only bytes,
+so many decoder try to decode bytes to str and fallback to bytes,
+**this package won't, it parse bencode bytes value as python bytes.**
+
+### 2. Fast enough
+
+this package is written with c++ in CPython.
+
+### 3. still cross implement
+
+This package sill have a pure python wheel `bencode2-${version}-py3-none-any.whl` wheel
+on pypi.
+
+Which means you can still use it in non-cpython python with same behavior.
 
 ## install
 
