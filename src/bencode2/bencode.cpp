@@ -1,9 +1,6 @@
 #include <pybind11/pybind11.h>
 
-#include "common.hpp"
-
 namespace py = pybind11;
-
 // dataclasses.fields
 py::object dataclasses_fields;
 
@@ -11,7 +8,6 @@ py::object dataclasses_fields;
 py::object is_dataclasses;
 
 extern py::bytes bencode(py::object v);
-
 extern py::object bdecode(py::buffer b);
 
 #ifndef __cplusplus
