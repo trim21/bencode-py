@@ -2,8 +2,8 @@
 #include <algorithm> // std::sort
 #include <pybind11/pybind11.h>
 
-#include "common.h"
-#include "encode_ctx.h"
+#include "common.hpp"
+#include "encode_ctx.hpp"
 
 namespace py = pybind11;
 

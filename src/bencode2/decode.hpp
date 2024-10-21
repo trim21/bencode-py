@@ -5,8 +5,8 @@
 #include <fmt/core.h>
 #include <pybind11/pybind11.h>
 
-#include "common.h"
-#include "overflow.h"
+#include "common.hpp"
+#include "overflow.hpp"
 
 namespace py = pybind11;
 

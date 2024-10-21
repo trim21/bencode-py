@@ -4,14 +4,14 @@ from typing import Any, Final
 
 from typing_extensions import Buffer
 
-char_l: Final = 108  # ord("l")
-char_i: Final = 105  # ord("i")
-char_e: Final = 101  # ord("e")
-char_d: Final = 100  # ord("d")
-char_0: Final = 48  # ord("0")
-char_9: Final = 57  # ord("9")
-char_dash: Final = 45  # ord("-")
-char_colon: Final = 58  # ord(":")
+char_l: Final = ord("l")
+char_i: Final = ord("i")
+char_e: Final = ord("e")
+char_d: Final = ord("d")
+char_0: Final = ord("0")
+char_9: Final = ord("9")
+char_dash: Final = ord("-")
+char_colon: Final = ord(":")
 
 
 def atoi(b: memoryview) -> int:
@@ -180,7 +180,9 @@ class Decoder:
                 break
             if not (char_0 <= self.value[self.index] <= char_9):
                 raise BencodeDecodeError(
-                    f"directory only allow str as keys, found unexpected char '{self.value[self.index]:c}', index {self.index}"
+                    f"directory only allow str as keys, "
+                    f"found unexpected char "
+                    f"'{self.value[self.index]:c}', index {self.index}"
                 )
             k = self.__decode_bytes()
             v = self.__decode()

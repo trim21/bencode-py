@@ -8,7 +8,7 @@
 #include <fmt/compile.h>
 #include <fmt/core.h>
 
-#include "common.h"
+#include "common.hpp"
 
 #define defaultBufferSize 4096
 

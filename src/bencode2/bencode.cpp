@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 
-#include "common.h"
+#include "common.hpp"
 
 namespace py = pybind11;
 
@@ -22,8 +22,8 @@ extern py::object bdecode(py::buffer b);
 #error "require at least cpp 17"
 #endif
 
-#include "decode.h"
-#include "encode.h"
+#include "decode.hpp"
+#include "encode.hpp"
 
 PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
     auto mod = m.import("dataclasses");
