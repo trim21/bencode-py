@@ -7,7 +7,7 @@ name = "bencode2"
 version = "0.3.5"
 description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
-requires-python = ">=3.8,<4.0"
+requires-python = ">=3.9,<4.0"
 authors = [
     { name = "trim21", email = "trim21me@gmail.com" },
 ]
@@ -46,11 +46,11 @@ include = ['src/']
 packages = ["src/bencode2"]
 
 [tool.black]
-target-version = ['py38']
+target-version = ['py39']
 line-length = 88
 
 [tool.ruff]
-target-version = 'py38'
+target-version = 'py39'
 line-length = 88
 
 src = ['src', 'tests']
@@ -69,7 +69,8 @@ source = [
 ]
 
 [tool.mypy]
-python_version = "3.8"
+exclude = 'tests'
+python_version = "3.9"
 strict = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
