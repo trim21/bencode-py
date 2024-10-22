@@ -27,7 +27,9 @@ but for BitTorrent v2 torrent, the keys in `pieces root` dictionary is still sha
 instead of ascii/utf-8 string.
 
 If you prefer string as dictionary keys, write a dedicated function to convert parsing
-result. Also be careful! Even file name or torrent name may not be valid utf-8 string.
+result.
+
+Also be careful! Even file name or torrent name may not be valid utf-8 string.
 
 ### 2. Fast enough
 
