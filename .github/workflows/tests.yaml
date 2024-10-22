@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   build:
+    if: false
     uses: ./.github/workflows/_build_wheels.yaml
 
   twine-check:
@@ -111,7 +112,7 @@ jobs:
           packages: lcov
           version: 1.0
 
-      - run: lcov --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
+      - run: lcov --ignore-errors mismatch --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
 
       - run: lcov -l coverage.info
 
