@@ -37,13 +37,6 @@ static std::string_view from_py_string(py::handle obj) {
         return std::basic_string_view(s, size);
     }
 
-    if (PyUnicode_IS_COMPACT(obj.ptr()) &&
-        ((PyCompactUnicodeObject *)(obj.ptr()))->utf8_length != 0) {
-        const char *s = ((PyCompactUnicodeObject *)(obj.ptr()))->utf8;
-        Py_ssize_t size = ((PyCompactUnicodeObject *)(obj.ptr()))->utf8_length;
-        return std::basic_string_view(s, size);
-    }
-
     Py_ssize_t size = 0;
     const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
     return std::basic_string_view(s, size);
@@ -275,19 +268,6 @@ static void encodeStr(EncodeContext *ctx, const py::handle obj) {
     if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
         const char *s = (char *)PyUnicode_DATA(obj.ptr());
         Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
-        debug_print("write length");
-        ctx->writeSize_t(size);
-        debug_print("write char");
-        ctx->writeChar(':');
-        debug_print("write content");
-        ctx->write(s, size);
-        return;
-    }
-
-    if (PyUnicode_IS_COMPACT(obj.ptr()) &&
-        ((PyCompactUnicodeObject *)(obj.ptr()))->utf8_length != 0) {
-        const char *s = ((PyCompactUnicodeObject *)(obj.ptr()))->utf8;
-        Py_ssize_t size = ((PyCompactUnicodeObject *)(obj.ptr()))->utf8_length;
         debug_print("write length");
         ctx->writeSize_t(size);
         debug_print("write char");

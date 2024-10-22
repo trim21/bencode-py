@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import contextlib
 import dataclasses
-import gc
 import secrets
 import sys
 import time
@@ -11,12 +11,12 @@ from typing import Any
 from bencode2 import BencodeDecodeError, bdecode, bencode
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True, slots=True)
 class DC:
     a: int
     b: str
     c: bool
-    d: list[dict[str, Any]]
+    d: list[Any]
 
 
 tracemalloc.start()
@@ -26,14 +26,17 @@ while True:
     for c in [i for i in range(5000)]:
         C = type("C", (object,), {})
 
-        bencode(1844674407370955161600)
+        bdecode(bencode(1844674407370955161600))
 
-        bencode(DC(a=1, b="ss", c=True, d=[{"a": 1}]))
+        bdecode(bencode(DC(a=1, b="ss", c=True, d=[{"a": 1, "b": b"bb"}, (1, 2, 3)])))
 
         try:
             bdecode(s)
         except BencodeDecodeError:
             pass
+
+        with contextlib.suppress(TypeError):
+            bencode(DC(a=1, b="ss", c=True, d=[None]))
 
         try:
             bencode([1, 2, "a", b"b", None])
@@ -51,7 +54,7 @@ while True:
         except TypeError:
             pass
 
-    gc.collect()
+    # gc.collect()
     v = tracemalloc.get_tracemalloc_memory()
     print(v)
     if v > 10610992:

@@ -71,14 +71,64 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  test-c-cov:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+
+    runs-on: "ubuntu-24.04"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - run: pip install -r requirements.txt
+      - run: python setup.py build_ext --inplace --force
+        env:
+          CXX: g++
+          CPPFLAGS: --coverage
+
+      - run: coverage run -m pytest --cov --assert-pkg-compiled=true
+        env:
+          PYTHONPATH: src
+
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: lcov
+          version: 1.0
+
+      - run: lcov --ignore-errors mismatch --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
+
+      - run: lcov -l coverage.info
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.info
+
+
   test-cp-py-nogil:
     strategy:
       fail-fast: false
       matrix:
         os:
-#          - "windows-latest"
+          #          - "windows-latest"
           - "ubuntu-24.04"
-#          - "macos-14"
+    #          - "macos-14"
 
     runs-on: "${{ matrix.os }}"
     env:
@@ -147,6 +197,7 @@ jobs:
       - test-pp
       - test-cp-py
       - test-cp-py-nogil
+      - test-c-cov
       - twine-check
     runs-on: 'ubuntu-latest'
     steps:
