@@ -1,12 +1,7 @@
-try:  # pragma: no cover
-    from .__bencode import BencodeDecodeError, BencodeEncodeError, bdecode, bencode
+from .__bencode import BencodeDecodeError, BencodeEncodeError, bdecode, bencode
 
-    COMPILED = True
-except ImportError:  # pragma: no cover
-    from .__decoder import BencodeDecodeError, bdecode
-    from .__encoder import BencodeEncodeError, bencode
+COMPILED = True
 
-    COMPILED = False
 
 __all__ = (
     "BencodeDecodeError",
