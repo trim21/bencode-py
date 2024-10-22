@@ -238,27 +238,27 @@ static void encodeTuple(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('e');
 }
 
-#define encodeComposeObject(ctx, obj, encoder)                                                     \
-    do {                                                                                           \
-        uintptr_t key = (uintptr_t)obj.ptr();                                                      \
-        debug_print("put object %p to seen", key);                                                 \
-        debug_print("after put object %p to seen", key);                                           \
-        ctx->stack_depth++;                                                                        \
-        bool enableCheck = ctx->stack_depth >= 1000;                                               \
-        if (enableCheck) {                                                                         \
-            if (ctx->seen.find(key) != ctx->seen.end()) {                                          \
-                debug_print("circular reference found");                                           \
-                throw EncodeError("circular reference found");                                     \
-            }                                                                                      \
-            ctx->seen.insert(key);                                                                 \
-        }                                                                                          \
-        encoder(ctx, obj);                                                                         \
-        if (enableCheck) {                                                                         \
-            ctx->seen.erase(key);                                                                  \
-        }                                                                                          \
-        ctx->stack_depth--;                                                                        \
-        return;                                                                                    \
-    } while (0)
+inline void encodeComposeObject(EncodeContext *ctx, py::handle obj,
+                                void (*encode)(EncodeContext *, py::handle)) {
+    uintptr_t key = (uintptr_t)obj.ptr();
+    debug_print("put object %p to seen", key);
+    debug_print("after put object %p to seen", key);
+    ctx->stack_depth++;
+    bool enableCheck = ctx->stack_depth >= 1000;
+    if (enableCheck) {
+        if (ctx->seen.find(key) != ctx->seen.end()) {
+            debug_print("circular reference found");
+            throw EncodeError("circular reference found");
+        }
+        ctx->seen.insert(key);
+    }
+    encode(ctx, obj);
+    if (enableCheck) {
+        ctx->seen.erase(key);
+    }
+    ctx->stack_depth--;
+    return;
+}
 
 // for internal detail of python string
 // https://github.com/python/cpython/blob/850189a64e7f0b920fe48cb12a5da3e648435680/Include/cpython/unicodeobject.h#L81
@@ -332,15 +332,15 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     }
 
     if (PyList_Check(obj.ptr())) {
-        encodeComposeObject(ctx, obj, encodeList);
+        return encodeComposeObject(ctx, obj, encodeList);
     }
 
     if (PyTuple_Check(obj.ptr())) {
-        encodeComposeObject(ctx, obj, encodeTuple);
+        return encodeComposeObject(ctx, obj, encodeTuple);
     }
 
     if (PyDict_Check(obj.ptr())) {
-        encodeComposeObject(ctx, obj, encodeDict);
+        return encodeComposeObject(ctx, obj, encodeDict);
     }
 
     if (PyByteArray_Check(obj.ptr())) {
@@ -367,11 +367,11 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     debug_print("test if mapping proxy");
     if (obj.ptr()->ob_type == &PyDictProxy_Type) {
         debug_print("encode mapping proxy");
-        encodeComposeObject(ctx, obj, encodeDictLike);
+        return encodeComposeObject(ctx, obj, encodeDictLike);
     }
 
     if (is_dataclasses(obj).ptr() == Py_True) {
-        encodeComposeObject(ctx, obj, encodeDataclasses);
+        return encodeComposeObject(ctx, obj, encodeDataclasses);
     }
 
     // Unsupported type, raise TypeError
