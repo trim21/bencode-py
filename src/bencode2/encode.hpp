@@ -46,41 +46,27 @@ static std::string_view from_py_string(py::handle obj) {
 static void encodeDict(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
-    if (l == 0) {
-        ctx->writeChar('e');
-        return;
-    }
+    gch::small_vector<std::pair<std::string_view, py::handle>, 10> vec;
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 10> m(l);
-    auto items = PyDict_Items(obj.ptr());
-
-    // smart pointer to dec_ref when function return
-    auto ref = AutoFree(items);
-
-    for (int i = 0; i < l; ++i) {
-        auto keyValue = PyList_GetItem(items, i);
-        auto key = PyTuple_GetItem(keyValue, 0);
-        auto value = PyTuple_GetItem(keyValue, 1);
-
-        if (!(PyUnicode_Check(key) || PyBytes_Check(key))) {
+    for (auto item : obj.cast<py::dict>()) {
+        if (!(PyUnicode_Check(item.first.ptr()) || PyBytes_Check(item.first.ptr()))) {
             throw py::type_error("dict keys must be str or bytes");
         }
 
-        m.at(i) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
+        vec.push_back(std::make_pair(from_py_string(item.first), item.second));
     }
 
-    std::sort(m.begin(), m.end(), cmp);
-    auto lastKey = m[0].first;
-    for (auto i = 1; i < l; i++) {
-        auto currentKey = m[i].first;
-        if (currentKey == lastKey) {
-            throw EncodeError(fmt::format("found duplicated keys {}", lastKey));
+    std::sort(vec.begin(), vec.end(), cmp);
+
+    if (vec.size() != 0) {
+        for (size_t i = 0; i < vec.size() - 1; i++) {
+            if (vec[i].first == vec[i + 1].first) {
+                throw EncodeError(fmt::format("found duplicated keys {}", vec[i].first));
+            }
         }
-
-        lastKey = currentKey;
     }
 
-    for (auto pair : m) {
+    for (auto pair : vec) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
         ctx->write(pair.first);
@@ -103,7 +89,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 10> m(l);
+    gch::small_vector<std::pair<std::string_view, py::handle>, 10> vec(l);
     auto items = obj.attr("items")();
 
     size_t index = 0;
@@ -115,22 +101,18 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
             throw EncodeError("dict keys must be str or bytes");
         }
 
-        m.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
+        vec.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
         index++;
     }
 
-    std::sort(m.begin(), m.end(), cmp);
-    auto lastKey = m[0].first;
-    for (auto i = 1; i < l; i++) {
-        auto currentKey = m[i].first;
-        if (currentKey == lastKey) {
-            throw EncodeError(fmt::format("found duplicated keys {}", lastKey));
+    std::sort(vec.begin(), vec.end(), cmp);
+    for (size_t i = 0; i < vec.size() - 1; i++) {
+        if (vec[i].first == vec[i + 1].first) {
+            throw EncodeError(fmt::format("found duplicated keys {}", vec[i].first));
         }
-
-        lastKey = currentKey;
     }
 
-    for (auto pair : m) {
+    for (auto pair : vec) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
         ctx->write(pair.first);
@@ -146,10 +128,6 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
     ctx->writeChar('d');
     auto fields = dataclasses_fields(h);
     auto size = PyTuple_Size(fields.ptr());
-    if (size == 0) {
-        ctx->writeChar('e');
-        return;
-    }
 
     auto obj = h.cast<py::object>();
 
