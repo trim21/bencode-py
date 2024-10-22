@@ -20,6 +20,7 @@ execute_process(
 include_directories(${PYBIND11_ROOT}/../../../include)
 
 include_directories(./vendor/fmt/include/)
+include_directories(./vendor/small_vector/source/include/)
 
 add_executable(
         bencode2
