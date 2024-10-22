@@ -22,6 +22,13 @@ Bencode doesn't have a utf-8 str type, only bytes,
 so many decoder try to decode bytes to str and fallback to bytes,
 **this package won't, it parse bencode bytes value as python bytes.**
 
+It may be attempting to parse all dictionary keys as string,
+but for BitTorrent v2 torrent, the keys in `pieces root` dictionary is still sha256 hash
+instead of ascii/utf-8 string.
+
+If you prefer string as dictionary keys, write a dedicated function to convert parsing
+result. Also be careful! Even file name or torrent name may not be valid utf-8 string.
+
 ### 2. Fast enough
 
 this package is written with c++ in CPython.
@@ -56,12 +63,12 @@ assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 |   integer    |    `int`    |
 |    string    |   `bytes`   |
 |    array     |   `list`    |
-|  directory   |   `dict`    |
+|  dictionary  |   `dict`    |
 
-bencode have 4 native types, integer, string, array and directory.
+bencode have 4 native types, integer, string, array and dictionary.
 
 This package will decode integer to `int`, array to `list` and
-directory to `dict`.
+dictionary to `dict`.
 
 Because bencode string is not defined as utf-8 string, and will contain raw bytes
 bencode2 will decode bencode string to python `bytes`.
@@ -75,9 +82,9 @@ bencode2 will decode bencode string to python `bytes`.
 |       `str`, `enum.StrEnum`       |    string    |
 | `bytes`, `bytearray`,`memoryview` |    string    |
 |   `list`, `tuple`, `NamedTuple`   |    array     |
-|       `dict`, `OrderedDict`       |  directory   |
-|       `types.MaapingProxy`        |  directory   |
-|            dataclasses            |  directory   |
+|       `dict`, `OrderedDict`       |  dictionary  |
+|       `types.MaapingProxy`        |  dictionary  |
+|            dataclasses            |  dictionary  |
 
 ## free threading
 
