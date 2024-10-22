@@ -5,6 +5,7 @@ import dataclasses
 import enum
 import sys
 import types
+from types import MappingProxyType
 from typing import Any, NamedTuple
 
 import pytest
@@ -37,6 +38,7 @@ from bencode2 import COMPILED, BencodeEncodeError, bencode
             types.MappingProxyType({b"cow": b"moo", b"spam": b"eggs"}),
             b"d3:cow3:moo4:spam4:eggse",
         ),
+        ({"你好": 0}, b"d" b"6:" + "你好".encode() + b"i0ee"),
         (types.MappingProxyType({b"spam": [b"a", b"b"]}), b"d4:spaml1:a1:bee"),
         (types.MappingProxyType({}), b"de"),
         (collections.OrderedDict(), b"de"),
@@ -85,6 +87,9 @@ def test_encode():
 def test_duplicated_type_keys():
     with pytest.raises(BencodeEncodeError):
         bencode({"string_key": 1, b"string_key": 2, "1": 2})
+
+    with pytest.raises(BencodeEncodeError):
+        bencode(MappingProxyType({"string_key": 1, b"string_key": 2, "1": 2}))
 
 
 def test_dict_int_keys():
