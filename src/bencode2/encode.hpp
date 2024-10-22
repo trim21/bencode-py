@@ -32,27 +32,27 @@ static std::string_view from_py_string(py::handle obj) {
         return std::basic_string_view(s, size);
     }
 
-    if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
-        const char *s = (char *)PyUnicode_DATA(obj.ptr());
-        Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
+    if (PyUnicode_Check(obj.ptr())) {
+        if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
+            const char *s = (char *)PyUnicode_DATA(obj.ptr());
+            Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
+            return std::basic_string_view(s, size);
+        }
+
+        Py_ssize_t size = 0;
+        const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
         return std::basic_string_view(s, size);
     }
 
-    Py_ssize_t size = 0;
-    const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
-    return std::basic_string_view(s, size);
+    throw py::type_error("dict keys must be str or bytes");
 }
 
 static void encodeDict(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
-    gch::small_vector<std::pair<std::string_view, py::handle>, 10> vec;
+    gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
 
-    for (auto item : obj.cast<py::dict>()) {
-        if (!(PyUnicode_Check(item.first.ptr()) || PyBytes_Check(item.first.ptr()))) {
-            throw py::type_error("dict keys must be str or bytes");
-        }
-
+    for (auto item : static_cast<py::dict>(py::object(obj, true))) {
         vec.push_back(std::make_pair(from_py_string(item.first), item.second));
     }
 
@@ -90,16 +90,10 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
     auto obj = h.cast<py::object>();
 
     gch::small_vector<std::pair<std::string_view, py::handle>, 10> vec(l);
-    auto items = obj.attr("items")();
-
     size_t index = 0;
-    for (auto keyValue : items) {
+    for (auto keyValue : obj.attr("items")()) {
         auto key = PyTuple_GetItem(keyValue.ptr(), 0);
         auto value = PyTuple_GetItem(keyValue.ptr(), 1);
-
-        if (!(PyUnicode_Check(key) || PyBytes_Check(key))) {
-            throw EncodeError("dict keys must be str or bytes");
-        }
 
         vec.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
         index++;
@@ -196,10 +190,8 @@ static void encodeInt_slow(EncodeContext *ctx, py::handle obj) {
 static void encodeList(EncodeContext *ctx, const py::handle obj) {
     ctx->writeChar('l');
 
-    Py_ssize_t len = PyList_Size(obj.ptr());
-    for (Py_ssize_t i = 0; i < len; i++) {
-        PyObject *o = PyList_GetItem(obj.ptr(), i);
-        encodeAny(ctx, o);
+    for (auto item : obj) {
+        encodeAny(ctx, item);
     }
 
     ctx->writeChar('e');
@@ -208,10 +200,8 @@ static void encodeList(EncodeContext *ctx, const py::handle obj) {
 static void encodeTuple(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('l');
 
-    Py_ssize_t len = PyTuple_Size(obj.ptr());
-    for (Py_ssize_t i = 0; i < len; i++) {
-        PyObject *o = PyTuple_GetItem(obj.ptr(), i);
-        encodeAny(ctx, o);
+    for (auto item : obj) {
+        encodeAny(ctx, item);
     }
 
     ctx->writeChar('e');
