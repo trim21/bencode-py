@@ -97,7 +97,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python setup.py build_ext --inplace --force
         env:
-          CXX: g++ --coverage
+          CXX: g++
           CPPFLAGS: --coverage
 
       - run: coverage run -m pytest --cov --assert-pkg-compiled=true
