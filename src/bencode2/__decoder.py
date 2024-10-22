@@ -14,23 +14,6 @@ char_dash: Final = ord("-")
 char_colon: Final = ord(":")
 
 
-def atoi(b: memoryview) -> int:
-    sign: int = 1
-    offset: int = 0
-
-    if b[0] == char_dash:
-        sign = -1
-        offset = 1
-
-    total: int = 0
-    for c in b[offset:]:
-        if not (char_0 <= c <= char_9):
-            raise ValueError
-        total = total * 10 + (c - char_0)
-
-    return total * sign
-
-
 class BencodeDecodeError(ValueError):
     """Bencode decode error."""
 
