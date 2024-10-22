@@ -104,6 +104,9 @@ jobs:
         env:
           PYTHONPATH: src
 
+      - name: Setup LCOV
+        uses: hrishikesh-kadam/setup-lcov@v1
+
       - run: lcov --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
 
       - run: lcov -l coverage.info
