@@ -1,5 +1,6 @@
 #include <Python.h>
 #include <algorithm> // std::sort
+#include <gch/small_vector.hpp>
 #include <pybind11/pybind11.h>
 
 #include "common.hpp"
@@ -50,7 +51,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
         return;
     }
 
-    std::vector<std::pair<std::string_view, py::handle>> m(l);
+    gch::small_vector<std::pair<std::string_view, py::handle>, 10> m(l);
     auto items = PyDict_Items(obj.ptr());
 
     // smart pointer to dec_ref when function return
@@ -102,7 +103,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    std::vector<std::pair<std::string_view, py::handle>> m(l);
+    gch::small_vector<std::pair<std::string_view, py::handle>, 10> m(l);
     auto items = obj.attr("items")();
 
     size_t index = 0;
@@ -152,7 +153,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    std::vector<std::pair<std::string_view, py::handle>> m(size);
+    gch::small_vector<std::pair<std::string_view, py::handle>, 10> m(size);
 
     size_t index = 0;
     for (auto field : fields) {
