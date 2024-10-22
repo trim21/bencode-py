@@ -9,7 +9,7 @@ from typing import Any, NamedTuple
 
 import pytest
 
-from bencode2 import BencodeEncodeError, bencode
+from bencode2 import COMPILED, BencodeEncodeError, bencode
 
 
 @pytest.mark.parametrize(
@@ -214,6 +214,11 @@ def test_str_enum():
         v = "s"
 
     assert bencode(EnumStr.v) == b"1:s"
+
+
+@pytest.mark.skipif(not COMPILED, reason="only run with binary module")
+def test_free():
+    bencode(b"  " * (1024 * 1024 * 1024))
 
 
 def test_TypedDict():
