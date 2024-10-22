@@ -238,7 +238,7 @@ static void encodeTuple(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('e');
 }
 
-static void encodeComposeObject(EncodeContext *ctx, py::handle obj,
+inline void encodeComposeObject(EncodeContext *ctx, py::handle obj,
                                 void (*encode)(EncodeContext *, py::handle)) {
     uintptr_t key = (uintptr_t)obj.ptr();
     debug_print("put object %p to seen", key);
