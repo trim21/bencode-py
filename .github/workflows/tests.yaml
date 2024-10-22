@@ -100,7 +100,10 @@ jobs:
           CXX: g++ --coverage
           CPPFLAGS: --coverage
 
-      - run: coverage run -m pytest --cov --assert-pkg-compiled=false
+      - run: coverage run -m pytest --cov --assert-pkg-compiled=true
+        env:
+          PYTHONPATH: src
+
       - run: lcov --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
 
       - run: lcov -l coverage.info
