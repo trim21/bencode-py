@@ -19,10 +19,10 @@ jobs:
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]t-*" }
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]t-*" }
 
-          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[02468]-*" }
-          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[13579]-*" }
-          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[02468]t-*" }
-          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[13579]t-*" }
+#          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[02468]-*" }
+#          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[13579]-*" }
+#          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[02468]t-*" }
+          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*" }
 
     #          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[05]-manylinux* *[05]t-manylinux*" }
     #          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[16]-manylinux* *[16]t-manylinux*" }
