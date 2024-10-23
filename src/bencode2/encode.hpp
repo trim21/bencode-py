@@ -91,7 +91,10 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 10> vec(l);
+    gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
+
+    vec.reserve(l);
+
     size_t index = 0;
     for (auto keyValue : obj.attr("items")()) {
         auto key = PyTuple_GetItem(keyValue.ptr(), 0);
