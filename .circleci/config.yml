@@ -44,8 +44,7 @@ jobs:
       - attach_workspace:
           at: ./wheelhouse
 
-      - run: ls -ahl
-#      - run: ls ./wheelhouse
+      - run: ls -ahl ./wheelhouse
 
 workflows:
   ci:
