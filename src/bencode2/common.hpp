@@ -1,5 +1,6 @@
 #pragma once
 #include <fmt/core.h>
+#include <gch/small_vector.hpp>
 
 #include <Python.h>
 #include <pybind11/pybind11.h>
