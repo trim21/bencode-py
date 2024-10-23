@@ -42,7 +42,6 @@ jobs:
             cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}
 
       - uses: pypa/cibuildwheel@v2.21.3
-        if: ${{ ! matrix.self_hosted }}
         env:
 #          CIBW_BUILD_FRONTEND: "build[uv]; args: --no-isolation"
           CIBW_ALLOW_EMPTY: 'True'
