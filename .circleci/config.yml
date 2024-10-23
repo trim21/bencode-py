@@ -52,7 +52,7 @@ jobs:
           python -m twine upload
           --non-interactive --disable-progress-bar
           --username __token__ --password "${PYPI_TOKEN}"
-          ./workspace/wheelhouse/*
+          ./wheelhouse/*.whl
 
 workflows:
   ci:
