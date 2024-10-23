@@ -3,7 +3,6 @@
 #include <string>
 
 #include <fmt/core.h>
-#include <gch/small_vector.hpp>
 #include <pybind11/pybind11.h>
 
 #include "common.hpp"
@@ -155,6 +154,34 @@ static py::bytes decodeBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size
     return py::bytes(&buf[index_sep + 1], len);
 }
 
+// static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
+//     *index = *index + 1;
+
+//     py::list l = py::list(0);
+
+//     while (1) {
+//         if (*index >= size) {
+//             decodeErrF("buffer overflow when decoding list, index {}", *index);
+//         }
+
+//         if (buf[*index] == 'e') {
+//             break;
+//         }
+
+//         py::object obj = decodeAny(buf, index, size);
+
+//         l.append(obj);
+
+//         if (*index >= size) {
+//             decodeErrF("invalid data, buffer overflow when decoding list. index {}", *index);
+//         }
+//     }
+
+//     *index = *index + 1;
+
+//     return l;
+// }
+
 static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     *index = *index + 1;
 
@@ -176,14 +203,14 @@ static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size
         }
     }
 
-    py::list l = py::list(vec.size());
-    for (int index = 0; index < vec.size(); ++index) {
-        PyList_SetItem(l.ptr(), index, vec[index].ptr());
+    auto list = py::list(vec.size());
+    for (int index = 0; index < vec.size(); index++) {
+        PyList_SetItem(list.ptr(), index, vec[index].ptr());
     }
 
     *index = *index + 1;
 
-    return l;
+    return list;
 }
 
 static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
