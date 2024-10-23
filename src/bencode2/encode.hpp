@@ -130,7 +130,9 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 10> m(size);
+    gch::small_vector<std::pair<std::string_view, py::handle>, 10> vec;
+
+    vec.reserve(size);
 
     size_t index = 0;
     for (auto field : fields) {
@@ -138,13 +140,13 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
         auto value = obj.attr(key);
 
         debug_print("set items");
-        m.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
+        vec.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
         index++;
     }
 
-    std::sort(m.begin(), m.end(), cmp);
+    std::sort(vec.begin(), vec.end(), cmp);
 
-    for (auto pair : m) {
+    for (auto pair : vec) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
         ctx->write(pair.first);
