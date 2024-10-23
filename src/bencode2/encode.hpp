@@ -54,7 +54,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
 
     vec.reserve(l);
 
-    for (auto item : py::reinterpret_steal<py::dict>(obj) {
+    for (auto item : py::reinterpret_steal<py::dict>(obj)) {
         vec.push_back(std::make_pair(from_py_string(item.first), item.second));
     }
 
@@ -128,7 +128,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 10> vec;
+    gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
 
     vec.reserve(size);
 
