@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/bencode2)](https://pypi.org/project/bencode2/)
 [![tests](https://github.com/trim21/bencode-py/actions/workflows/tests.yaml/badge.svg)](https://github.com/trim21/bencode-py/actions/workflows/tests.yaml)
-[![CircleCI](https://dl.circleci.com/status-badge/img/null/trim21/bencode-py/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/null/trim21/bencode-py/tree/master)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/trim21/bencode-py/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/trim21/bencode-py/tree/master)
 [![PyPI - Python Version](https://img.shields.io/badge/python-%3E%3D3.8%2C%3C4.0-blue)](https://pypi.org/project/bencode2/)
 [![Codecov branch](https://img.shields.io/codecov/c/github/Trim21/bencode-py/master)](https://codecov.io/gh/Trim21/bencode-py/branch/master)
 
