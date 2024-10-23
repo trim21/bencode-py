@@ -62,7 +62,7 @@ jobs:
           restore-keys: |
             cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}
 
-      - run: pipx run cibuildwheel==2.21.3
+      - run: pipx run cibuildwheel
         if: ${{ matrix.self_hosted }}
         env:
           CIBW_ALLOW_EMPTY: 'True'
