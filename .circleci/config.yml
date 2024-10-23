@@ -47,8 +47,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ./wheelhouse
-      - run: ls -ahl .
-      - run: tree .
+      - run: ls -ahl wheelhouse
 
 #      - run: pip install twine
 #      - run: >-
