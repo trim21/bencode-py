@@ -25,7 +25,7 @@ jobs:
           name: Run cibuildwheel
           command: python -m cibuildwheel
           environment:
-            CIBW_BUILD_FRONTEND: "build[uv]; args: --no-isolation"
+            CIBW_BUILD_FRONTEND: "build[uv]"
             CIBW_FREE_THREADED_SUPPORT: true
             CIBW_ARCHS: aarch64
             CIBW_BUILD: "*"
