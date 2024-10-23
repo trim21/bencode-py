@@ -41,6 +41,8 @@ jobs:
           restore-keys: |
             cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}
 
+      - run: pipx install uv
+
       - uses: pypa/cibuildwheel@v2.21.3
         env:
 #          CIBW_BUILD_FRONTEND: "build[uv]; args: --no-isolation"
