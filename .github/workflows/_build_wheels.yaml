@@ -67,7 +67,14 @@ jobs:
 #        with:
 #          python-version: '3.11'
 
-      - run: pipx run cibuildwheel
+      - run: |
+          if ! command -v cibuildwheel 2>&1 >/dev/null
+          then
+              pipx install cibuildwheel
+          fi
+
+          cibuildwheel
+
         if: ${{ matrix.self_hosted }}
         env:
           CIBW_ALLOW_EMPTY: 'True'
