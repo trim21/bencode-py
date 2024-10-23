@@ -30,7 +30,6 @@ jobs:
 
       - name: Restore cached Primes
         id: cache
-        if: ${{ runner.os != 'Linux' }}
         uses: actions/cache@v4
         with:
           path: |
