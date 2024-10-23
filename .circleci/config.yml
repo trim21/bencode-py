@@ -6,19 +6,20 @@ orbs:
 
 jobs:
   build-and-test:
+    checkout:
+      post:
+        - git submodule update --init
     machine:
       image: ubuntu-2204:current
     resource_class: arm-medium
     steps:
       - checkout
       - run:
-          command: git submodule update --init
-      - run:
-          name: Run tests
-          # This assumes pytest is installed via the install-package step above
+          name: Install cibuildwheel
           command: python -m pip install cibuildwheel
+
       - run:
-          name: Run tests
+          name: Run cibuildwheel
           command: python -m cibuildwheel
           environment:
             CIBW_FREE_THREADED_SUPPORT: true
