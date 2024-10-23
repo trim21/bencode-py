@@ -52,6 +52,8 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
     auto l = PyDict_Size(obj.ptr());
     gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
 
+    vec.reserve(l);
+
     for (auto item : static_cast<py::dict>(py::object(obj, true))) {
         vec.push_back(std::make_pair(from_py_string(item.first), item.second));
     }
@@ -275,19 +277,18 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
 
     if (PyBytes_Check(obj.ptr())) {
         debug_print("encode bytes");
-        Py_ssize_t size = 0;
-        char *s;
-
-        if (PyBytes_AsStringAndSize(obj.ptr(), &s, &size)) {
-            throw std::runtime_error("failed to get contents of bytes");
+        Py_buffer view;
+        if (PyObject_GetBuffer(obj.ptr(), &view, 0)) {
+            return;
         }
 
         debug_print("write buffer");
-        ctx->writeSize_t(size);
+        ctx->writeSize_t(view.len);
         debug_print("write char");
         ctx->writeChar(':');
         debug_print("write content");
-        ctx->write((const char *)s, size);
+        ctx->write((const char *)view.buf, view.len);
+        PyBuffer_Release(&view);
         return;
     }
 

@@ -36,7 +36,11 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
+          - "3.9"
           - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
 
     runs-on: "ubuntu-24.04"
 
@@ -62,7 +66,7 @@ jobs:
         uses: CodSpeedHQ/action@v3
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          run: python -m pytest tests/bench.py --assert-pkg-compiled=true --codspeed
+          run: python -m pytest tests/bench.py --assert-pkg-compiled=true --codspeed --benchmark-min-time
 
   test-cp-py:
     strategy:
