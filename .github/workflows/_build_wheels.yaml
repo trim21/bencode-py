@@ -62,21 +62,21 @@ jobs:
           restore-keys: |
             cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}
 
-      #      - run: pipx run cibuildwheel==2.21.3
-      #        if: ${{ matrix.self_hosted }}
-      #        env:
-      #          CIBW_ALLOW_EMPTY: 'True'
-      #          CIBW_BUILD_VERBOSITY: 1
-      #          CIBW_FREE_THREADED_SUPPORT: true
-      #          CIBW_ARCHS: ${{ matrix.cibw_arch }}
-      #          CIBW_BUILD: ${{ matrix.cibw_build }}
-      #          CIBW_SKIP: 'pp* cp39-*'
-      #          CIBW_TEST_REQUIRES: pytest
-      #          CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
-      #          MACOSX_DEPLOYMENT_TARGET: '11.0'
+      - run: pipx run cibuildwheel==2.21.3
+        if: ${{ matrix.self_hosted }}
+        env:
+          CIBW_ALLOW_EMPTY: 'True'
+          CIBW_BUILD_VERBOSITY: 1
+          CIBW_FREE_THREADED_SUPPORT: true
+          CIBW_ARCHS: ${{ matrix.cibw_arch }}
+          CIBW_BUILD: ${{ matrix.cibw_build }}
+          CIBW_SKIP: 'pp* cp39-*'
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
+          MACOSX_DEPLOYMENT_TARGET: '11.0'
 
       - uses: pypa/cibuildwheel@v2.21.3
-        # if: ${{ ! matrix.self_hosted }}
+        if: ${{ ! matrix.self_hosted }}
         env:
           CIBW_ALLOW_EMPTY: 'True'
           CIBW_BUILD_VERBOSITY: 1
