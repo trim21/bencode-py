@@ -4,11 +4,16 @@ orbs:
   # See the Python orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@2.1.1
 
-jobs:
-  build-and-test:
+executors:
+  my-executor:
+    resource_class: arm-medium
     machine:
       image: ubuntu-2204:current
-    resource_class: arm-medium
+    working_directory: ./wheelhouse
+
+jobs:
+  build-and-test:
+    executor: my-executor
     steps:
       - checkout
       - run: git submodule sync
@@ -27,7 +32,25 @@ jobs:
             CIBW_TEST_REQUIRES: pytest
             CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
 
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - ./wheelhouse
+
+  pypi:
+    executor: my-executor
+    steps:
+      - run: ls ./wheelhouse
+
 workflows:
-  sample:
+  build:
     jobs:
       - build-and-test
+  publish:
+    required:
+      - build
+    jobs:
+      - pypi
+#    filters:
+#      tags:
+#        only: /^v.*/
