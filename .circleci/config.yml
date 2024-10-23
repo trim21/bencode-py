@@ -4,18 +4,14 @@ orbs:
   # See the Python orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@2.1.1
 
-checkout:
-  post:
-    - git submodule update --init
-
 jobs:
   build-and-test:
-
     machine:
       image: ubuntu-2204:current
     resource_class: arm-medium
     steps:
       - checkout
+      - run: git submodule update --init
       - run:
           name: Install cibuildwheel
           command: python -m pip install cibuildwheel
