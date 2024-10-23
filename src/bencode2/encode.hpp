@@ -54,8 +54,10 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
 
     vec.reserve(l);
 
-    for (auto item : py::reinterpret_steal<py::dict>(obj)) {
-        vec.push_back(std::make_pair(from_py_string(item.first), item.second));
+    PyObject *key, *value;
+    Py_ssize_t pos = 0;
+    while (PyDict_Next(obj.ptr(), &pos, &key, &value)) {
+        vec.push_back(std::make_pair(from_py_string(key), value));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -136,8 +138,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
         auto key = field.attr("name").ptr();
         auto value = obj.attr(key);
 
-        debug_print("set items");
-        vec.push_back(make_pair(from_py_string(py::handle(key)), py::handle(value)));
+        vec.push_back(make_pair(from_py_string(key), py::handle(value)));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
