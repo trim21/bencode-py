@@ -46,7 +46,7 @@ jobs:
     executor: my-executor
     steps:
       - attach_workspace:
-          at: ./wheelhouse
+          at: .
       - run: ls -ahl wheelhouse
 
 #      - run: pip install twine
