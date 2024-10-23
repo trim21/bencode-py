@@ -11,6 +11,7 @@ jobs:
     resource_class: arm-medium
     steps:
       - checkout
+      - run: git submodule sync
       - run: git submodule update --init
       - run:
           name: Install cibuildwheel
