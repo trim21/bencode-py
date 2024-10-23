@@ -30,6 +30,51 @@ jobs:
 
       - run: pipx run twine check --strict dist/*
 
+  test-cp-bench:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "windows-latest"
+          - "ubuntu-22.04"
+          - "macos-13"
+          - "macos-14"
+        python-version:
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+
+    runs-on: "${{ matrix.os }}"
+
+    env:
+      PY_BENCODE2_PURE_PYTHON: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - run: pip install -r requirements.txt
+      - run: pip install bencode2 --no-index --find-links ./dist/
+
+      - run:
+
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v3
+        with:
+          token: ${{ secrets.CODSPEED_TOKEN }}
+          run: python -m pytest tests/bench.py --assert-pkg-compiled=true --codspeed
+
   test-cp-py:
     strategy:
       fail-fast: false
@@ -196,6 +241,7 @@ jobs:
     needs:
       - test-pp
       - test-cp-py
+      - test-cp-bench
       - test-cp-py-nogil
       - test-c-cov
       - twine-check

@@ -46,6 +46,7 @@ include = ['src/']
 packages = ["src/bencode2"]
 
 [tool.black]
+extend-exclude = 'vendor'
 target-version = ['py39']
 line-length = 88
 
