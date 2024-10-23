@@ -54,8 +54,10 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
 
     vec.reserve(l);
 
-    for (auto item : static_cast<py::dict>(py::object(obj, true))) {
-        vec.push_back(std::make_pair(from_py_string(item.first), item.second));
+    PyObject *key, *value;
+    Py_ssize_t pos = 0;
+    while (PyDict_Next(obj.ptr(), &pos, &key, &value)) {
+        vec.push_back(std::make_pair(from_py_string(key), value));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -91,14 +93,15 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 10> vec(l);
-    size_t index = 0;
+    gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
+
+    vec.reserve(l);
+
     for (auto keyValue : obj.attr("items")()) {
         auto key = PyTuple_GetItem(keyValue.ptr(), 0);
         auto value = PyTuple_GetItem(keyValue.ptr(), 1);
 
-        vec.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
-        index++;
+        vec.push_back(std::make_pair(from_py_string(py::handle(key)), py::handle(value)));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -127,21 +130,20 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
 
     auto obj = h.cast<py::object>();
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 10> m(size);
+    gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
 
-    size_t index = 0;
+    vec.reserve(size);
+
     for (auto field : fields) {
         auto key = field.attr("name").ptr();
         auto value = obj.attr(key);
 
-        debug_print("set items");
-        m.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
-        index++;
+        vec.push_back(make_pair(from_py_string(key), py::handle(value)));
     }
 
-    std::sort(m.begin(), m.end(), cmp);
+    std::sort(vec.begin(), vec.end(), cmp);
 
-    for (auto pair : m) {
+    for (auto pair : vec) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
         ctx->write(pair.first);
