@@ -3,6 +3,7 @@
 #include <string>
 
 #include <fmt/core.h>
+#include <gch/small_vector.hpp>
 #include <pybind11/pybind11.h>
 
 #include "common.hpp"
@@ -157,7 +158,7 @@ static py::bytes decodeBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size
 static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     *index = *index + 1;
 
-    py::list l = py::list(0);
+    gch::small_vector<py::object, 8> vec;
 
     while (1) {
         if (*index >= size) {
@@ -168,13 +169,16 @@ static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size
             break;
         }
 
-        py::object obj = decodeAny(buf, index, size);
-
-        l.append(obj);
+        vec.push_back(decodeAny(buf, index, size));
 
         if (*index >= size) {
             decodeErrF("invalid data, buffer overflow when decoding list. index {}", *index);
         }
+    }
+
+    py::list l = py::list(vec.size());
+    for (int index = 0; index < vec.size(); ++index) {
+        PyList_SetItem(l.ptr(), index, vec[index].ptr());
     }
 
     *index = *index + 1;
