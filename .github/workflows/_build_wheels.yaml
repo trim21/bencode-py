@@ -46,6 +46,7 @@ jobs:
 
       - name: Restore cached Primes
         id: cache
+        if: ! matrix.self_hosted
         uses: actions/cache@v4
         with:
           path: |
