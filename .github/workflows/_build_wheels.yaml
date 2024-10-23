@@ -18,10 +18,8 @@ jobs:
           - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[0123456789]-*" }
           - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[0123456789]t-*" }
 
-          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]-*" }
-          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]-*" }
-          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]t-*" }
-          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]t-*" }
+          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
 
     steps:
       - uses: actions/checkout@v4
