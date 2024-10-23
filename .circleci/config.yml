@@ -23,7 +23,7 @@ jobs:
           command: python -m pip install cibuildwheel
       - run:
           name: Run cibuildwheel
-          command: python -m cibuildwheel --output-dir workspace/wheelhouse
+          command: python -m cibuildwheel --output-dir ./workspace/wheelhouse
           environment:
             CIBW_BUILD_FRONTEND: "build[uv]"
             CIBW_FREE_THREADED_SUPPORT: true
@@ -44,8 +44,8 @@ jobs:
       - attach_workspace:
           at: ./wheelhouse
 
-      - run: ls ./workspace
-      - run: ls ./wheelhouse
+      - run: l -ahl
+#      - run: ls ./wheelhouse
 
 workflows:
   ci:
