@@ -49,7 +49,7 @@ jobs:
     executor: my-executor
     steps:
       - build:
-          build: "*[02468]-* *[02468]t-*"
+          build: "*[13579]-* *[13579]t-*"
 
   check:
     executor: my-executor
