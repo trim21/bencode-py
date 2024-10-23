@@ -46,7 +46,7 @@ jobs:
 
       - name: Restore cached Primes
         id: cache
-        if: ! matrix.self_hosted
+        if: ${{ ! matrix.self_hosted }}
         uses: actions/cache@v4
         with:
           path: |
@@ -58,7 +58,7 @@ jobs:
             cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}
 
       - run: pipx run cibuildwheel==2.21.3
-        if: matrix.self_hosted
+        if: ${{ matrix.self_hosted }}
         env:
           CIBW_ALLOW_EMPTY: 'True'
           CIBW_BUILD_VERBOSITY: 1
@@ -71,7 +71,7 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: '11.0'
 
       - uses: pypa/cibuildwheel@v2.21.3
-        if: ! matrix.self_hosted
+        if: ${{ ! matrix.self_hosted }}
         env:
           CIBW_ALLOW_EMPTY: 'True'
           CIBW_BUILD_VERBOSITY: 1
