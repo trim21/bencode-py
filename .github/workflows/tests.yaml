@@ -66,8 +66,6 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pip install bencode2 --no-index --find-links ./dist/
 
-      - run:
-
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v3
         with:
