@@ -40,6 +40,11 @@ jobs:
   pypi:
     executor: my-executor
     steps:
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ./workspace
+
+      - run: ls ./workspace
       - run: ls ./wheelhouse
 
 workflows:
