@@ -77,18 +77,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "windows-latest"
-          - "ubuntu-22.04"
-          - "macos-13"
-          - "macos-14"
+          - "ubuntu-24.04"
         python-version:
-          - "3.9"
           - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
-        exclude:
-          - { os: macos-14, python-version: '3.9' }
 
     runs-on: "${{ matrix.os }}"
 
