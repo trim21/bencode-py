@@ -205,6 +205,7 @@ static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size
 
     auto list = py::list(vec.size());
     for (int index = 0; index < vec.size(); index++) {
+        vec[index].inc_ref();
         PyList_SetItem(list.ptr(), index, vec[index].ptr());
     }
 
