@@ -1,0 +1,29 @@
+version: 2.1
+
+orbs:
+  # See the Python orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
+  python: circleci/python@2.1.1
+
+jobs:
+  build-and-test:
+    machine:
+      image: ubuntu-2304
+
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          # This assumes pytest is installed via the install-package step above
+          command: pipx run cibuildwheel
+        env:
+          CIBW_FREE_THREADED_SUPPORT: true
+          CIBW_ARCHS: aarch64
+          CIBW_BUILD: "*"
+          CIBW_SKIP: 'pp* cp39-*'
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
+
+workflows:
+  sample:
+    jobs:
+      - build-and-test

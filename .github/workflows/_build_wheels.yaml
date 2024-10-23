@@ -19,9 +19,6 @@ jobs:
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]t-*" }
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]t-*" }
 
-#          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[02468]-*" }
-#          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[13579]-*" }
-#          - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*[02468]t-*" }
           - { os: [ self-hosted, linux, arm64 ], self_hosted: true, cibw_arch: aarch64, cibw_build: "*" }
 
     #          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[05]-manylinux* *[05]t-manylinux*" }
@@ -42,8 +39,8 @@ jobs:
     #          - { os: [ self-hosted, linux, ARM64 ], cibw_arch: aarch64, cibw_build: "*[13579]t-*" }
 
     steps:
-      #      - uses: docker/setup-qemu-action@v3
-      # if: matrix.os == 'ubuntu-latest'
+      # - uses: docker/setup-qemu-action@v3
+      #   if: matrix.os == 'ubuntu-latest'
 
       - uses: actions/checkout@v4
         with:
@@ -72,15 +69,12 @@ jobs:
 
         if: ${{ matrix.self_hosted }}
         env:
-          CIBW_ALLOW_EMPTY: 'True'
-          CIBW_BUILD_VERBOSITY: 1
           CIBW_FREE_THREADED_SUPPORT: true
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
           CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_SKIP: 'pp* cp39-*'
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
-          MACOSX_DEPLOYMENT_TARGET: '11.0'
 
       - uses: pypa/cibuildwheel@v2.21.3
         if: ${{ ! matrix.self_hosted }}
