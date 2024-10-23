@@ -48,14 +48,12 @@ jobs:
       - run: ls ./wheelhouse
 
 workflows:
-  build:
+  ci:
     jobs:
       - build-and-test
-  publish:
-    requires:
-      - build
-    jobs:
-      - pypi
+      - pypi:
+          requires:
+            - build
 #    filters:
 #      tags:
 #        only: /^v.*/
