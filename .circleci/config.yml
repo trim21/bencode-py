@@ -14,7 +14,10 @@ jobs:
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
-          command: pipx run cibuildwheel
+          command: python -m pip install cibuildwheel
+      - run:
+          name: Run tests
+          command: python -m cibuildwheel
           environment:
             CIBW_FREE_THREADED_SUPPORT: true
             CIBW_ARCHS: aarch64
