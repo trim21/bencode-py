@@ -10,26 +10,26 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: macos-13, arch: x86_64, build: "*" }
-          - { os: macos-14, arch: arm64, build: "*" }
-          - { os: windows-latest, arch: AMD64, build: "*" }
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*" }
+          - { os: macos-14, cibw_arch: arm64, cibw_build: "*" }
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*" }
 
-          - { os: [ self-hosted, linux, x64 ], arch: x86_64, build: "*[02468]-*" }
-          - { os: [ self-hosted, linux, x64 ], arch: x86_64, build: "*[13579]-*" }
-          - { os: [ self-hosted, linux, x64 ], arch: x86_64, build: "*[02468]t-*" }
-          - { os: [ self-hosted, linux, x64 ], arch: x86_64, build: "*[13579]t-*" }
+          - { os: [ self-hosted, linux, x64 ], cibw_arch: x86_64, cibw_build: "*[02468]-*" }
+          - { os: [ self-hosted, linux, x64 ], cibw_arch: x86_64, cibw_build: "*[13579]-*" }
+          - { os: [ self-hosted, linux, x64 ], cibw_arch: x86_64, cibw_build: "*[02468]t-*" }
+          - { os: [ self-hosted, linux, x64 ], cibw_arch: x86_64, cibw_build: "*[13579]t-*" }
 
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-manylinux* *[05]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-manylinux* *[16]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-manylinux* *[27]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-manylinux* *[38]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-manylinux* *[49]t-manylinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[05]-manylinux* *[05]t-manylinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[16]-manylinux* *[16]t-manylinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[27]-manylinux* *[27]t-manylinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[38]-manylinux* *[38]t-manylinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[49]-manylinux* *[49]t-manylinux*" }
 
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-musllinux* *[05]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-musllinux* *[16]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-musllinux* *[27]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-musllinux* *[38]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-musllinux* *[49]t-musllinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[05]-musllinux* *[05]t-musllinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[16]-musllinux* *[16]t-musllinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[27]-musllinux* *[27]t-musllinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[38]-musllinux* *[38]t-musllinux*" }
+          - { os: ubuntu-latest, cibw_arch: aarch64, cibw_build: "*[49]-musllinux* *[49]t-musllinux*" }
 
 #          - { os: [ self-hosted, linux, ARM64 ], cibw_arch: aarch64, cibw_build: "*[02468]-*" }
 #          - { os: [ self-hosted, linux, ARM64 ], cibw_arch: aarch64, cibw_build: "*[13579]-*" }
