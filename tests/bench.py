@@ -2,8 +2,6 @@ import dataclasses
 import sys
 from pathlib import Path
 
-import pytest
-
 import bencode2
 
 # a parametrize to make codspeed add python version to benchmark
@@ -26,46 +24,26 @@ single_file_torrent = (
 )
 
 
-@pytest.mark.parametrize(
-    ["py"],
-    [(py,)],
-)
-def test_benchmark_encode_compat_peers_bytes_key(benchmark, py):
+def test_benchmark_encode_compat_peers_bytes_key(benchmark):
     benchmark(
         bencode2.bencode,
         {key.encode(): value for key, value in compat_peers_py.items()},
     )
 
 
-@pytest.mark.parametrize(
-    ["py"],
-    [(py,)],
-)
-def test_benchmark_encode_compat_peers_str_key(benchmark, py):
+def test_benchmark_encode_compat_peers_str_key(benchmark):
     benchmark(bencode2.bencode, compat_peers_py)
 
 
-@pytest.mark.parametrize(
-    ["py"],
-    [(py,)],
-)
-def test_benchmark_decode_compat_peers(benchmark, py):
+def test_benchmark_decode_compat_peers(benchmark):
     benchmark(bencode2.bencode, compat_peers_encoded)
 
 
-@pytest.mark.parametrize(
-    ["py"],
-    [(py,)],
-)
-def test_benchmark_decode_single_file_torrent(benchmark, py):
+def test_benchmark_decode_single_file_torrent(benchmark):
     benchmark(bencode2.bdecode, single_file_torrent)
 
 
-@pytest.mark.parametrize(
-    ["py"],
-    [(py,)],
-)
-def test_benchmark_encode_single_file_torrent(benchmark, py):
+def test_benchmark_encode_single_file_torrent(benchmark):
     benchmark(bencode2.bdecode, bencode2.bencode(single_file_torrent))
 
 
@@ -80,9 +58,5 @@ class AnnounceCompatResponse:
     # "peers6": b"1" * 18 * 50,
 
 
-@pytest.mark.parametrize(
-    ["py"],
-    [(py,)],
-)
-def test_benchmark_encode_compact_peers_dataclass(benchmark, py):
+def test_benchmark_encode_compact_peers_dataclass(benchmark):
     benchmark(bencode2.bencode, AnnounceCompatResponse(**compat_peers_py))
