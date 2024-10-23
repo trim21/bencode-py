@@ -54,7 +54,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
 
     vec.reserve(l);
 
-    for (auto item : static_cast<py::dict>(py::object(obj, true))) {
+    for (auto item : static_cast<py::dict>(py::reinterpret_steal<py::object>(obj)) {
         vec.push_back(std::make_pair(from_py_string(item.first), item.second));
     }
 
