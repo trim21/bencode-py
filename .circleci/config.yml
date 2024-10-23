@@ -9,7 +9,7 @@ executors:
     resource_class: arm-medium
     machine:
       image: ubuntu-2204:current
-    working_directory: ./wheelhouse
+    working_directory: .
 
 jobs:
   build-and-test:
@@ -23,21 +23,22 @@ jobs:
           command: python -m pip install cibuildwheel
       - run:
           name: Run cibuildwheel
-          command: python -m cibuildwheel --output-dir ./workspace/wheelhouse
+          command: python -m cibuildwheel --output-dir ./wheelhouse
           environment:
             CIBW_BUILD_FRONTEND: "build[uv]"
             CIBW_FREE_THREADED_SUPPORT: true
             CIBW_ARCHS: aarch64
-            CIBW_BUILD: "*"
+            CIBW_BUILD: "cp310*"
+#            CIBW_BUILD: "*"
             CIBW_SKIP: 'pp* cp39-*'
             CIBW_TEST_REQUIRES: pytest
             CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
 
       - run: python -m pip install twine
-      - run: python -m twine check ./workspace/wheelhouse/*
+      - run: python -m twine check ./wheelhouse/*
 
       - persist_to_workspace:
-          root: workspace
+          root: .
           paths:
             - ./wheelhouse
 
@@ -45,14 +46,16 @@ jobs:
     executor: my-executor
     steps:
       - attach_workspace:
-          at: ./workspace
+          at: ./wheelhouse
+      - run: ls -ahl .
+      - run: tree .
 
-      - run: pip install twine
-      - run: >-
-          python -m twine upload
-          --non-interactive --disable-progress-bar
-          --username __token__ --password "${PYPI_TOKEN}"
-          ./workspace/wheelhouse/*
+#      - run: pip install twine
+#      - run: >-
+#          python -m twine upload
+#          --non-interactive --disable-progress-bar
+#          --username __token__ --password "${PYPI_TOKEN}"
+#          ./workspace/wheelhouse/*
 
 workflows:
   ci:
@@ -61,6 +64,6 @@ workflows:
       - pypi:
           requires:
             - build-and-test
-          filters:
-            tags:
-              only: /^v.*/
+#          filters:
+#            tags:
+#              only: /^v.*/
