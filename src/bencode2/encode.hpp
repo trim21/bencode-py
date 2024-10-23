@@ -95,13 +95,11 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
 
     vec.reserve(l);
 
-    size_t index = 0;
     for (auto keyValue : obj.attr("items")()) {
         auto key = PyTuple_GetItem(keyValue.ptr(), 0);
         auto value = PyTuple_GetItem(keyValue.ptr(), 1);
 
-        vec.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
-        index++;
+        vec.push_back(std::make_pair(from_py_string(py::handle(key)), py::handle(value)));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -134,14 +132,12 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
 
     vec.reserve(size);
 
-    size_t index = 0;
     for (auto field : fields) {
         auto key = field.attr("name").ptr();
         auto value = obj.attr(key);
 
         debug_print("set items");
-        vec.at(index) = std::make_pair(from_py_string(py::handle(key)), py::handle(value));
-        index++;
+        vec.push_back(make_pair(from_py_string(py::handle(key)), py::handle(value)));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
