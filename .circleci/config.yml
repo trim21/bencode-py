@@ -12,6 +12,8 @@ jobs:
     steps:
       - checkout
       - run:
+          command: git submodul update --init
+      - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
           command: python -m pip install cibuildwheel
