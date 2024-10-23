@@ -28,8 +28,7 @@ jobs:
             CIBW_BUILD_FRONTEND: "build[uv]"
             CIBW_FREE_THREADED_SUPPORT: true
             CIBW_ARCHS: aarch64
-            CIBW_BUILD: "cp310*manylinux*"
-#            CIBW_BUILD: "*"
+            CIBW_BUILD: "*"
             CIBW_SKIP: 'pp* cp39-*'
             CIBW_TEST_REQUIRES: pytest
             CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
