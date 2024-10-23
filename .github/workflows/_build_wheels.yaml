@@ -62,12 +62,12 @@ jobs:
           restore-keys: |
             cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}
 
-      - uses: actions/setup-python@v5
-        if: ${{ matrix.self_hosted }}
-        with:
-          python-version: '3.11'
+#      - uses: actions/setup-python@v5
+#        if: ${{ matrix.self_hosted }}
+#        with:
+#          python-version: '3.11'
 
-      - run: python -m pip install cibuildwheel && cibuildwheel
+      - run: pipx run cibuildwheel
         if: ${{ matrix.self_hosted }}
         env:
           CIBW_ALLOW_EMPTY: 'True'
