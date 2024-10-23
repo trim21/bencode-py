@@ -62,11 +62,6 @@ jobs:
           restore-keys: |
             cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}
 
-#      - uses: actions/setup-python@v5
-#        if: ${{ matrix.self_hosted }}
-#        with:
-#          python-version: '3.11'
-
       - run: |
           if ! command -v cibuildwheel 2>&1 >/dev/null
           then
