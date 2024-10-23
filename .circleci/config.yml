@@ -24,6 +24,7 @@ commands:
           name: Run cibuildwheel
           command: python -m cibuildwheel --output-dir ./wheelhouse
           environment:
+            CIBW_BUILD_VERBOSITY: '1'
             CIBW_BUILD_FRONTEND: "build[uv]"
             CIBW_FREE_THREADED_SUPPORT: true
             CIBW_ARCHS: aarch64
