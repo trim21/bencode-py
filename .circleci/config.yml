@@ -7,58 +7,48 @@ executors:
       image: ubuntu-2204:current
     working_directory: .
 
+
+commands:
+  build:
+    parameters:
+      build:
+        type: string
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: Install cibuildwheel
+          command: python -m pip install cibuildwheel --no-color --progress-bar=off
+      - run:
+          name: Run cibuildwheel
+          command: python -m cibuildwheel --output-dir ./wheelhouse
+          environment:
+            CIBW_BUILD_FRONTEND: "build[uv]"
+            CIBW_FREE_THREADED_SUPPORT: true
+            CIBW_ARCHS: aarch64
+            CIBW_BUILD: "<<parameters.build>>"
+            CIBW_SKIP: 'pp* cp39-*'
+            CIBW_TEST_REQUIRES: pytest
+            CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./wheelhouse
+
 jobs:
   build-and-test-1:
     executor: my-executor
     steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run:
-          name: Install cibuildwheel
-          command: python -m pip install cibuildwheel --no-color --progress-bar=off
-      - run:
-          name: Run cibuildwheel
-          command: python -m cibuildwheel --output-dir ./wheelhouse
-          environment:
-            CIBW_BUILD_FRONTEND: "build[uv]"
-            CIBW_FREE_THREADED_SUPPORT: true
-            CIBW_ARCHS: aarch64
-            CIBW_BUILD: "*[02468]-* *[02468]t-*"
-            CIBW_SKIP: 'pp* cp39-*'
-            CIBW_TEST_REQUIRES: pytest
-            CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
-
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./wheelhouse
+      - build:
+          build: "*[02468]-* *[02468]t-*"
 
   build-and-test-2:
     executor: my-executor
     steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run:
-          name: Install cibuildwheel
-          command: python -m pip install cibuildwheel --no-color --progress-bar=off
-      - run:
-          name: Run cibuildwheel
-          command: python -m cibuildwheel --output-dir ./wheelhouse
-          environment:
-            CIBW_BUILD_FRONTEND: "build[uv]"
-            CIBW_FREE_THREADED_SUPPORT: true
-            CIBW_ARCHS: aarch64
-            CIBW_BUILD: "*[13579]-* *[13579]t-*"
-            CIBW_SKIP: 'pp* cp39-*'
-            CIBW_TEST_REQUIRES: pytest
-            CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
-
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./wheelhouse
+      - build:
+          build: "*[02468]-* *[02468]t-*"
 
   check:
     executor: my-executor
