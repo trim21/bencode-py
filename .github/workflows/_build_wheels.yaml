@@ -10,13 +10,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[0123456789]-*" }
-          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[0123456789]t-*" }
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
 
           - { os: macos-14, cibw_arch: arm64, cibw_build: "*" }
 
-          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[0123456789]-*" }
-          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[0123456789]t-*" }
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[13579]-* *[13579]t-*" }
 
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
