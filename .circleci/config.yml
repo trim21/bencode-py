@@ -1,0 +1,33 @@
+version: 2.1
+
+orbs:
+  # See the Python orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
+  python: circleci/python@2.1.1
+
+jobs:
+  build-and-test:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: arm-medium
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: Install cibuildwheel
+          command: python -m pip install cibuildwheel
+      - run:
+          name: Run cibuildwheel
+          command: python -m cibuildwheel
+          environment:
+            CIBW_FREE_THREADED_SUPPORT: true
+            CIBW_ARCHS: aarch64
+            CIBW_BUILD: "*"
+            CIBW_SKIP: 'pp* cp39-*'
+            CIBW_TEST_REQUIRES: pytest
+            CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
+
+workflows:
+  sample:
+    jobs:
+      - build-and-test
