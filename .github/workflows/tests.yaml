@@ -31,6 +31,7 @@ jobs:
       - run: pipx run twine check --strict dist/*
 
   test-cp-bench:
+    needs: [ build ]
     strategy:
       fail-fast: false
       matrix:
@@ -47,8 +48,6 @@ jobs:
 
     runs-on: "${{ matrix.os }}"
 
-    env:
-      PY_BENCODE2_PURE_PYTHON: '1'
     steps:
       - uses: actions/checkout@v4
 
