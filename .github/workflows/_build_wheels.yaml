@@ -17,26 +17,16 @@ jobs:
           - { os: ubuntu-latest, arch: x86_64, build: "*[13579]-*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*[02468]t-*" }
           - { os: ubuntu-latest, arch: x86_64, build: "*[13579]t-*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]t-musllinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-manylinux* *[05]t-manylinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-manylinux* *[16]t-manylinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-manylinux* *[27]t-manylinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-manylinux* *[38]t-manylinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-manylinux* *[49]t-manylinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-musllinux* *[05]t-musllinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-musllinux* *[16]t-musllinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-musllinux* *[27]t-musllinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-musllinux* *[38]t-musllinux*" }
+          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-musllinux* *[49]t-musllinux*" }
     steps:
       - uses: docker/setup-qemu-action@v3
         if: matrix.os == 'ubuntu-latest'
