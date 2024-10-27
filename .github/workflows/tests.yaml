@@ -8,6 +8,9 @@ on:
       - master
     tags-ignore:
       - "*"
+    paths-ignore:
+      - .github/renovate.json
+      - readme.md
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'

@@ -1,6 +1,7 @@
 [submodule "vendor/fmt"]
 	path = vendor/fmt
 	url = https://github.com/fmtlib/fmt.git
+	tag = 11.0.2
 
 [submodule "vendor/small_vector"]
 	path = vendor/small_vector
