@@ -44,7 +44,7 @@ def test_benchmark_decode_single_file_torrent(benchmark):
 
 
 def test_benchmark_encode_single_file_torrent(benchmark):
-    benchmark(bencode2.bdecode, bencode2.bencode(single_file_torrent))
+    benchmark(bencode2.bencode, bencode2.bdecode(single_file_torrent))
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
