@@ -47,7 +47,7 @@ static std::string_view from_py_string(py::handle obj) {
     throw py::type_error("dict keys must be str or bytes");
 }
 
-static void encodeDict(EncodeContext *ctx, py::dict obj) {
+static void encodeDict(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
     gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
@@ -191,28 +191,30 @@ static void encodeInt_slow(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('e');
 }
 
-static void encodeList(EncodeContext *ctx, const py::list obj) {
+static void encodeList(EncodeContext *ctx, const py::handle obj) {
     ctx->writeChar('l');
 
-    for (auto item : obj) {
-        encodeAny(ctx, item);
+    auto size = PyList_Size(obj.ptr());
+    for (auto i = 0; i < size; i++) {
+        encodeAny(ctx, py::handle(PyList_GetItem(obj.ptr(), i)));
     }
 
     ctx->writeChar('e');
 }
 
-static void encodeTuple(EncodeContext *ctx, py::tuple obj) {
+static void encodeTuple(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('l');
 
-    for (auto item : obj) {
-        encodeAny(ctx, item);
+    auto size = PyTuple_Size(obj.ptr());
+    for (auto i = 0; i < size; i++) {
+        encodeAny(ctx, py::handle(PyTuple_GetItem(obj.ptr(), i)));
     }
 
     ctx->writeChar('e');
 }
 
-template <typename Encode, typename T>
-void encodeComposeObject(EncodeContext *ctx, T obj, Encode encode) {
+template <typename Encode>
+void encodeComposeObject(EncodeContext *ctx, py::handle obj, Encode encode) {
     uintptr_t key = (uintptr_t)obj.ptr();
     debug_print("put object %p to seen", key);
     debug_print("after put object %p to seen", key);
@@ -304,15 +306,15 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     }
 
     if (PyList_Check(obj.ptr())) {
-        return encodeComposeObject(ctx, py::reinterpret_borrow<py::list>(obj), encodeList);
+        return encodeComposeObject(ctx, obj, encodeList);
     }
 
     if (PyTuple_Check(obj.ptr())) {
-        return encodeComposeObject(ctx, py::reinterpret_borrow<py::tuple>(obj), encodeTuple);
+        return encodeComposeObject(ctx, obj, encodeTuple);
     }
 
     if (PyDict_Check(obj.ptr())) {
-        return encodeComposeObject(ctx, py::reinterpret_borrow<py::dict>(obj), encodeDict);
+        return encodeComposeObject(ctx, obj, encodeDict);
     }
 
     if (PyByteArray_Check(obj.ptr())) {
