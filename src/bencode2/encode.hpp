@@ -47,7 +47,7 @@ static std::string_view from_py_string(py::handle obj) {
     throw py::type_error("dict keys must be str or bytes");
 }
 
-static void encodeDict(EncodeContext *ctx, py::handle obj) {
+static void encodeDict(EncodeContext *ctx, py::dict obj) {
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
     gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
@@ -201,7 +201,7 @@ static void encodeList(EncodeContext *ctx, const py::list obj) {
     ctx->writeChar('e');
 }
 
-static void encodeTuple(EncodeContext *ctx, py::handle obj) {
+static void encodeTuple(EncodeContext *ctx, py::tuple obj) {
     ctx->writeChar('l');
 
     for (auto item : obj) {
@@ -304,15 +304,15 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     }
 
     if (PyList_Check(obj.ptr())) {
-        return encodeComposeObject(ctx, obj.cast<py::object>(), encodeList);
+        return encodeComposeObject(ctx, py::reinterpret_borrow<py::list>(obj), encodeList);
     }
 
     if (PyTuple_Check(obj.ptr())) {
-        return encodeComposeObject(ctx, obj, encodeTuple);
+        return encodeComposeObject(ctx, py::reinterpret_borrow<py::tuple>(obj), encodeTuple);
     }
 
     if (PyDict_Check(obj.ptr())) {
-        return encodeComposeObject(ctx, obj, encodeDict);
+        return encodeComposeObject(ctx, py::reinterpret_borrow<py::dict>(obj), encodeDict);
     }
 
     if (PyByteArray_Check(obj.ptr())) {
