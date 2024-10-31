@@ -194,8 +194,9 @@ static void encodeInt_slow(EncodeContext *ctx, py::handle obj) {
 static void encodeList(EncodeContext *ctx, const py::handle obj) {
     ctx->writeChar('l');
 
-    for (auto item : obj) {
-        encodeAny(ctx, item);
+    auto size = PyList_Size(obj.ptr());
+    for (auto i = 0; i < size; i++) {
+        encodeAny(ctx, py::handle(PyList_GetItem(obj.ptr(), i)));
     }
 
     ctx->writeChar('e');
@@ -204,8 +205,9 @@ static void encodeList(EncodeContext *ctx, const py::handle obj) {
 static void encodeTuple(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('l');
 
-    for (auto item : obj) {
-        encodeAny(ctx, item);
+    auto size = PyTuple_Size(obj.ptr());
+    for (auto i = 0; i < size; i++) {
+        encodeAny(ctx, py::handle(PyTuple_GetItem(obj.ptr(), i)));
     }
 
     ctx->writeChar('e');
