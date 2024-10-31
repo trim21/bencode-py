@@ -191,7 +191,7 @@ static void encodeInt_slow(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('e');
 }
 
-static void encodeList(EncodeContext *ctx, const py::handle obj) {
+static void encodeList(EncodeContext *ctx, const py::list obj) {
     ctx->writeChar('l');
 
     for (auto item : obj) {
@@ -211,8 +211,8 @@ static void encodeTuple(EncodeContext *ctx, py::handle obj) {
     ctx->writeChar('e');
 }
 
-template <typename Encode>
-void encodeComposeObject(EncodeContext *ctx, py::handle obj, Encode encode) {
+template <typename Encode, typename T>
+void encodeComposeObject(EncodeContext *ctx, T obj, Encode encode) {
     uintptr_t key = (uintptr_t)obj.ptr();
     debug_print("put object %p to seen", key);
     debug_print("after put object %p to seen", key);
@@ -304,7 +304,7 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     }
 
     if (PyList_Check(obj.ptr())) {
-        return encodeComposeObject(ctx, obj, encodeList);
+        return encodeComposeObject(ctx, obj.cast<py::object>(), encodeList);
     }
 
     if (PyTuple_Check(obj.ptr())) {
