@@ -72,6 +72,9 @@ class Decoder:
                 f"invalid int, failed to found end. index {self.index}"
             )
 
+        if index_end == self.index:
+            raise BencodeDecodeError(f"invalid int, found 'ie': {self.index}")
+
         n: int = 1
         offset: int = 0
 
