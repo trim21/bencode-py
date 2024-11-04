@@ -33,7 +33,7 @@ jobs:
 
       - run: pipx run twine check --strict dist/*
 
-  test-cp-bench:
+  bench-cp:
     needs: [ build ]
     strategy:
       fail-fast: false
@@ -108,6 +108,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: '${{ matrix.python-version }}'
 
   test-c-cov:
     strategy:
@@ -157,6 +158,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.info
+          flags: '${{ matrix.python-version }}'
 
 
   test-cp-py-nogil:
@@ -229,12 +231,13 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: '${{ matrix.python-version }}'
 
   test-pass:
     needs:
       - test-pp
       - test-cp-py
-      - test-cp-bench
+      - bench-cp
       - test-cp-py-nogil
       - test-c-cov
       - twine-check
