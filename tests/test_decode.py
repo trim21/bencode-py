@@ -21,6 +21,9 @@ def test_non_bytes_input():
         b"1:",
         b"i-0e",
         b"i01e",
+        b"ie",
+        b"i-ae",
+        b"iae",
         b"iabce",
         b"1a2:qwer",  # invalid str length
         b"i123",  # invalid int
