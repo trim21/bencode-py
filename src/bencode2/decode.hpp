@@ -171,10 +171,6 @@ static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size
         py::object obj = decodeAny(buf, index, size);
 
         l.append(obj);
-
-        if (*index >= size) {
-            decodeErrF("invalid data, buffer overflow when decoding list. index {}", *index);
-        }
     }
 
     *index = *index + 1;
@@ -211,10 +207,6 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
             }
         }
         lastKey = std::make_optional(key);
-
-        if (*index >= size) {
-            decodeErrF("invalid data, buffer overflow end when decoding dict. index {}", *index);
-        }
 
         d[key] = obj;
     }
