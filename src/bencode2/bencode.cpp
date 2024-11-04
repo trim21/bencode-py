@@ -7,9 +7,6 @@ py::object dataclasses_fields;
 // dataclasses.is_dataclass
 py::object is_dataclasses;
 
-extern py::bytes bencode(py::object v);
-extern py::object bdecode(py::buffer b);
-
 #ifndef __cplusplus
 #error "require at least cpp 17"
 #endif

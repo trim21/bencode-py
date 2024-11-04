@@ -36,6 +36,7 @@ else:
         ],
         define_macros=macro,
         extra_compile_args=extra_compile_args,
+        cxx_std=17,
     )
 
     setup(

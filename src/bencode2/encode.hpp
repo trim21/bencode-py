@@ -363,59 +363,58 @@ static std::vector<EncodeContext *> pool;
 static std::mutex m;
 #endif
 
-std::unique_ptr<EncodeContext> getContext() {
-#if Py_GIL_DISABLED
-    std::lock_guard<std::mutex> guard(m);
-#endif
-
-    if (pool.empty()) {
-        debug_print("empty pool, create Context");
-        return std::make_unique<EncodeContext>();
-    }
-
-    debug_print("get Context from pool");
-    auto ctx = pool.back();
-    pool.pop_back();
-
-    return std::unique_ptr<EncodeContext>(ctx);
-}
-
 // 30 MiB
 size_t const ctx_buffer_reuse_cap = 30 * 1024 * 1024u;
 
-void releaseContext(std::unique_ptr<EncodeContext> ctx) {
-    if (pool.size() < 5 && ctx->buffer.capacity() <= ctx_buffer_reuse_cap) {
-        debug_print("put Context back to pool");
-
+/**
+ * reuse encoded buffer for average 10% performance gain.
+ */
+class CtxMgr {
+public:
+    EncodeContext *ctx;
+    CtxMgr() {
 #if Py_GIL_DISABLED
         std::lock_guard<std::mutex> guard(m);
 #endif
 
-        ctx.get()->reset();
-        pool.push_back(ctx.get());
-        ctx.release();
+        if (pool.empty()) {
+            debug_print("empty pool, create Context");
+            ctx = new EncodeContext();
+            return;
+        }
+
+        debug_print("get Context from pool");
+        ctx = pool.back();
+        pool.pop_back();
+
         return;
     }
 
-    debug_print("delete Context");
-    ctx.reset();
-}
+    ~CtxMgr() {
+        if (pool.size() < 5 && ctx->buffer.capacity() <= ctx_buffer_reuse_cap) {
+            debug_print("put Context back to pool");
 
-class CtxMgr {
-public:
-    std::unique_ptr<EncodeContext> ptr;
-    CtxMgr() { ptr = getContext(); }
+#if Py_GIL_DISABLED
+            std::lock_guard<std::mutex> guard(m);
+#endif
 
-    ~CtxMgr() { releaseContext(std::move(ptr)); }
+            ctx->reset();
+            pool.push_back(ctx);
+            return;
+        }
+
+        debug_print("delete Context");
+        delete ctx;
+    }
 };
 
-py::bytes bencode(py::object v) {
+static py::bytes bencode(py::object v) {
     debug_print("1");
     auto ctx = CtxMgr();
 
-    encodeAny(ctx.ptr.get(), v);
+    encodeAny(ctx.ctx, v);
 
-    auto res = py::bytes(ctx.ptr->buffer.data(), ctx.ptr->buffer.size());
+    auto res = py::bytes(ctx.ctx->buffer.data(), ctx.ctx->buffer.size());
 
     return res;
 }

@@ -19,6 +19,7 @@ public:
     std::unordered_set<uintptr_t> seen;
 
     EncodeContext() {
+        debug_print("new EncodeContext");
         buffer = std::vector<char>();
         stack_depth = 0;
         buffer.reserve(defaultBufferSize);
