@@ -3,21 +3,18 @@ import sys
 from glob import glob
 
 from pybind11.setup_helpers import Pybind11Extension, build_ext
-from setuptools import find_packages, setup
+from setuptools import setup
 
-if (
-    os.environ.get("PY_BENCODE2_PURE_PYTHON") == "1"
-    or sys.implementation.name != "cpython"
-):
-    setup(
-        packages=find_packages("src"),
-        package_dir={"": "src"},
-        package_data={"": ["*.pyi", "py.typed"]},
-        include_package_data=True,
-        zip_safe=False,
-    )
+pure_python = any(
+    [
+        sys.implementation.name != "cpython",
+        os.environ.get("PY_BENCODE2_PURE_PYTHON") == "1",
+    ]
+)
+
+if pure_python:
+    setup()
 else:
-
     macro = [("FMT_HEADER_ONLY", "")]
 
     extra_compile_args = None
@@ -41,10 +38,5 @@ else:
 
     setup(
         ext_modules=[module],
-        packages=find_packages("src"),
-        package_dir={"": "src"},
-        package_data={"": ["*.h", "*.cpp", "*.pyi", "py.typed"]},
-        include_package_data=True,
         cmdclass={"build_ext": build_ext},
-        zip_safe=False,
     )

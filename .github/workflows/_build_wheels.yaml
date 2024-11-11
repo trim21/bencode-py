@@ -65,7 +65,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: pipx run build
+      - run: pipx run build -w
         env:
           PY_BENCODE2_PURE_PYTHON: '1'
 

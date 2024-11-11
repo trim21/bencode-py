@@ -38,6 +38,15 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+bencode2 = ["*.pyi", "py.typed"]
+
 [tool.cibuildwheel]
 skip = 'pp* cp39-*'
 
