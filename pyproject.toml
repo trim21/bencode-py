@@ -38,12 +38,8 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
-[tool.hatch.build.targets.sdist]
-sources = ["src/"]
-include = ['src/']
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/bencode2"]
+[tool.cibuildwheel]
+skip = 'pp* cp39-*'
 
 [tool.black]
 extend-exclude = 'vendor'
