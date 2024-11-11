@@ -121,7 +121,7 @@ __OverFlow:;
 }
 
 // there is no bytes/Str in bencode, they only have 1 type for both of them.
-static std::string_view decodeRawBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
+static std::string_view decodeAsView(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     Py_ssize_t index_sep = 0;
     for (Py_ssize_t i = *index; i < size; i++) {
         if (buf[i] == ':') {
@@ -157,7 +157,7 @@ static std::string_view decodeRawBytes(const char *buf, Py_ssize_t *index, Py_ss
 
 // there is no bytes/Str in bencode, they only have 1 type for both of them.
 static py::bytes decodeBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
-    auto s = decodeRawBytes(buf, index, size);
+    auto s = decodeAsView(buf, index, size);
     return py::bytes(s.data(), s.length());
 }
 
@@ -200,7 +200,7 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
             break;
         }
 
-        auto key = decodeRawBytes(buf, index, size);
+        auto key = decodeAsView(buf, index, size);
         auto obj = decodeAny(buf, index, size);
 
         // skip first key
