@@ -1,3 +1,4 @@
+#include <string_view>
 #define FMT_HEADER_ONLY
 
 #include <string>
@@ -120,7 +121,7 @@ __OverFlow:;
 }
 
 // there is no bytes/Str in bencode, they only have 1 type for both of them.
-static py::bytes decodeBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
+static std::string_view decodeRawBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     Py_ssize_t index_sep = 0;
     for (Py_ssize_t i = *index; i < size; i++) {
         if (buf[i] == ':') {
@@ -151,7 +152,13 @@ static py::bytes decodeBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size
 
     *index = index_sep + len + 1;
 
-    return py::bytes(&buf[index_sep + 1], len);
+    return std::string_view(&buf[index_sep + 1], len);
+}
+
+// there is no bytes/Str in bencode, they only have 1 type for both of them.
+static py::bytes decodeBytes(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
+    auto s = decodeRawBytes(buf, index, size);
+    return py::bytes(s.data(), s.length());
 }
 
 static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
@@ -180,7 +187,7 @@ static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size
 
 static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     *index = *index + 1;
-    std::optional<py::bytes> lastKey = std::nullopt;
+    std::optional<std::string_view> lastKey = std::nullopt;
 
     auto d = py::dict();
 
@@ -193,7 +200,7 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
             break;
         }
 
-        auto key = decodeBytes(buf, index, size);
+        auto key = decodeRawBytes(buf, index, size);
         auto obj = decodeAny(buf, index, size);
 
         // skip first key
@@ -201,14 +208,13 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
             if (key < lastKey.value()) {
                 decodeErrF("invalid dict, key not sorted. index {}", *index);
             }
-            if (key.equal(lastKey.value())) {
-                std::string repr = py::repr(key);
-                decodeErrF("invalid dict, find duplicated keys {}. index {}", repr, *index);
+            if (key == lastKey.value()) {
+                decodeErrF("invalid dict, find duplicated keys {}. index {}", key, *index);
             }
         }
         lastKey = std::make_optional(key);
 
-        d[key] = obj;
+        d[py::bytes(key)] = obj;
     }
 
     *index = *index + 1;
