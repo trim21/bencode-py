@@ -16,7 +16,8 @@ extern py::object is_dataclasses;
 
 static void encodeAny(EncodeContext *ctx, py::handle obj);
 
-bool cmp(std::pair<std::string_view, py::handle> &a, std::pair<std::string_view, py::handle> &b) {
+static bool cmp(std::pair<std::string_view, py::handle> &a,
+                std::pair<std::string_view, py::handle> &b) {
     return a.first < b.first;
 }
 
@@ -29,19 +30,19 @@ static std::string_view from_py_string(py::handle obj) {
             throw std::runtime_error("failed to get contents of bytes");
         }
 
-        return std::basic_string_view(s, size);
+        return std::string_view(s, size);
     }
 
     if (PyUnicode_Check(obj.ptr())) {
         if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
             const char *s = (char *)PyUnicode_DATA(obj.ptr());
             Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
-            return std::basic_string_view(s, size);
+            return std::string_view(s, size);
         }
 
         Py_ssize_t size = 0;
         const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
-        return std::basic_string_view(s, size);
+        return std::string_view(s, size);
     }
 
     throw py::type_error("dict keys must be str or bytes");
