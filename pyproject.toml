@@ -48,7 +48,7 @@ where = ["src"]
 bencode2 = ["*.pyi", "py.typed"]
 
 [tool.cibuildwheel]
-skip = 'pp* cp39-*'
+skip = 'pp* cp39-* *musl*'
 
 [tool.black]
 extend-exclude = 'vendor'
