@@ -1,5 +1,8 @@
 [build-system]
-requires = ["setuptools", "pybind11>=2.13.6,<3"]
+requires = [
+    "setuptools==75.3.0",
+    "pybind11==2.13.6",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -38,12 +41,17 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
-[tool.hatch.build.targets.sdist]
-sources = ["src/"]
-include = ['src/']
+[tool.setuptools]
+include-package-data = true
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/bencode2"]
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+bencode2 = ["*.pyi", "py.typed"]
+
+[tool.cibuildwheel]
+skip = 'pp* cp39-* *musl*'
 
 [tool.black]
 extend-exclude = 'vendor'
