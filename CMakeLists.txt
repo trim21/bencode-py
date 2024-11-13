@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(bencode_cpp)
+project(bencode2)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -25,10 +25,6 @@ include_directories(${PYBIND11_INCLUDE})
 include_directories(./vendor/fmt/include/)
 include_directories(./vendor/small_vector/source/include/)
 
-add_library(
-        bencode2
-        SHARED
-        src/bencode2/bencode.cpp
-)
+Python3_add_library(__bencode MODULE src/bencode2/bencode.cpp WITH_SOABI)
 
-target_link_libraries(bencode2 ${Python3_LIBRARIES})
+install(TARGETS __bencode DESTINATION bencode2)
