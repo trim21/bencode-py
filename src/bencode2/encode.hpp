@@ -21,12 +21,24 @@ static bool cmp(std::pair<std::string_view, py::handle> &a,
     return a.first < b.first;
 }
 
-static std::string_view from_py_string(py::handle obj) {
+static std::string_view py_string_view(py::handle obj) {
+    if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
+        const char *s = (char *)PyUnicode_DATA(obj.ptr());
+        Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
+        return std::string_view(s, size);
+    }
+
+    Py_ssize_t size = 0;
+    const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
+    return std::string_view(s, size);
+}
+
+static std::string_view dict_key_view(py::handle obj) {
     if (PyBytes_Check(obj.ptr())) {
         Py_ssize_t size = 0;
         char *s;
 
-        if (PyBytes_AsStringAndSize(obj.ptr(), &s, &size)) {
+        if (PyBytes_AsStringAndSize(obj.ptr(), &s, &size)) { // pragma: no cover
             throw std::runtime_error("failed to get contents of bytes");
         }
 
@@ -34,15 +46,7 @@ static std::string_view from_py_string(py::handle obj) {
     }
 
     if (PyUnicode_Check(obj.ptr())) {
-        if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
-            const char *s = (char *)PyUnicode_DATA(obj.ptr());
-            Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
-            return std::string_view(s, size);
-        }
-
-        Py_ssize_t size = 0;
-        const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
-        return std::string_view(s, size);
+        return py_string_view(obj);
     }
 
     throw py::type_error("dict keys must be str or bytes");
@@ -58,7 +62,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
     PyObject *key, *value;
     Py_ssize_t pos = 0;
     while (PyDict_Next(obj.ptr(), &pos, &key, &value)) {
-        vec.push_back(std::make_pair(from_py_string(key), value));
+        vec.push_back(std::make_pair(dict_key_view(key), value));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -102,7 +106,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
         auto key = PyTuple_GetItem(keyValue.ptr(), 0);
         auto value = PyTuple_GetItem(keyValue.ptr(), 1);
 
-        vec.push_back(std::make_pair(from_py_string(py::handle(key)), py::handle(value)));
+        vec.push_back(std::make_pair(dict_key_view(py::handle(key)), py::handle(value)));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -139,7 +143,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
         auto key = field.attr("name").ptr();
         auto value = obj.attr(key);
 
-        vec.push_back(make_pair(from_py_string(key), py::handle(value)));
+        vec.push_back(make_pair(py_string_view(key), py::handle(value)));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -186,7 +190,7 @@ static void encodeInt_slow(EncodeContext *ctx, py::handle obj) {
     auto _ = AutoFree(i);
 
     auto s = py::str(i);
-    auto sv = from_py_string(s);
+    auto sv = py_string_view(s);
     ctx->write(sv);
 
     ctx->writeChar('e');
