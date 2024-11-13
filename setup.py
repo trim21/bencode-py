@@ -14,7 +14,6 @@ pure_python = any(
 
 macro = [
     ("FMT_HEADER_ONLY", ""),
-    ("Py_LIMITED_API", "0x03{:02X}0000".format(10)),  # noqa: UP032
 ]
 
 extra_compile_args = None
@@ -36,7 +35,6 @@ module = Pybind11Extension(
     define_macros=macro,
     extra_compile_args=extra_compile_args,
     cxx_std=17,
-    py_limited_api=True,
 )
 
 if pure_python:
