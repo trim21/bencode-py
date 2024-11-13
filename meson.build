@@ -1,13 +1,10 @@
 project(
     'bencode2',
     'cpp',
-    default_options: [
-        'buildtype=release',
-        'cpp_std=c++17',
-    ],
+    default_options: ['cpp_std=c++17'],
 )
 
-py = import('python').find_installation()
+py = import('python').find_installation(pure: false)
 
 PURE_PY = run_command(
     py,
@@ -50,6 +47,7 @@ if (PURE_PY != '1') and (PY_IMPL == 'cpython')
         install: true,
         include_directories: incdir,
         subdir: 'bencode2',
-        dependencies: py.dependency(),
+        dependencies: py_dep,
+
     )
 endif
