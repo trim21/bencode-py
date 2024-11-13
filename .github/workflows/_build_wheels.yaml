@@ -48,8 +48,8 @@ jobs:
 
       - uses: pypa/cibuildwheel@v2.21.3
         env:
-          CMAKE_CXX_COMPILER_LAUNCHER: sccache"
-          CMAKE_C_COMPILER_LAUNCHER: sccache"
+          CMAKE_CXX_COMPILER_LAUNCHER: sccache
+          CMAKE_C_COMPILER_LAUNCHER: sccache
           CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ALLOW_EMPTY: 'True'
           CIBW_FREE_THREADED_SUPPORT: true
