@@ -10,6 +10,7 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
     strategy:
+      fail-fast: false
       matrix:
         include:
           - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*", CXX: 'sscache clang++' }
