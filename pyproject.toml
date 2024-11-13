@@ -58,7 +58,7 @@ bencode2 = ["*.pyi", "py.typed"]
 [tool.cibuildwheel]
 skip = 'pp* cp39-* *musl*'
 
-before-build = 'pip install ninja>=1.5'
+before-build = 'python -m pip install ninja>=1.5'
 
 [tool.black]
 extend-exclude = 'vendor'
