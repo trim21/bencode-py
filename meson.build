@@ -4,7 +4,7 @@ py = import('python').find_installation(pure: false)
 
 PURE_PY = run_command(
     py,
-    '-c', 'import os; print(os.environ,get("PY_BENCODE2_PURE_PYTHON", "0"))',
+    '-c', 'import os; print(os.environ.get("PY_BENCODE2_PURE_PYTHON", "0"))',
     check: true,
 ).stdout().strip()
 
