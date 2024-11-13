@@ -18,7 +18,7 @@ add_definitions(-DFMT_HEADER_ONLY)
 include_directories(${Python_INCLUDE_DIRS})
 
 execute_process(
-        COMMAND "${Python3_EXECUTABLE}" -c "import pybind11;print(pybind11.get_include())"
+        COMMAND "${Python_EXECUTABLE}" -c "import pybind11;print(pybind11.get_include())"
         OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE PYBIND11_INCLUDE)
 
 include_directories(./src/bencode2/)
