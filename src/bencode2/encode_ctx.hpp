@@ -1,8 +1,6 @@
 #pragma once
-#define FMT_HEADER_ONLY
 
 #include <stdint.h>
-#include <string>
 #include <unordered_set>
 
 #include <fmt/compile.h>
@@ -45,7 +43,6 @@ public:
 
     void write(const char *data, Py_ssize_t size) {
         bufferGrow(size);
-
         buffer.insert(buffer.end(), data, data + size);
     }
 

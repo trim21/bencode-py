@@ -1,22 +1,16 @@
-#include <string_view>
-#define FMT_HEADER_ONLY
-
 #include <string>
+#include <string_view>
 
 #include <fmt/core.h>
 #include <pybind11/pybind11.h>
 
 #include "common.hpp"
+#include "errors.hpp"
 #include "overflow.hpp"
 
 namespace py = pybind11;
 
 static py::object decodeAny(const char *buf, Py_ssize_t *index, Py_ssize_t size);
-
-#define decodeErrF(f, ...)                                                                         \
-    do {                                                                                           \
-        throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
-    } while (0)
 
 static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     Py_ssize_t index_e = 0;
