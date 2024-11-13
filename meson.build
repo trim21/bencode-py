@@ -1,0 +1,35 @@
+project('bencode2', 'cpp', default_options: ['cpp_std=c++17'])
+
+py = import('python').find_installation(pure: false)
+
+PURE_PY = run_command(
+    py,
+    '-c', 'import os; print(os.environ,get("PY_BENCODE2_PURE_PYTHON", "0"))',
+    check: true,
+).stdout().strip()
+
+pybind11_includes = run_command(
+    py,
+    '-c', 'import pybind11; print(pybind11.get_include());',
+    check: true,
+).stdout().strip()
+
+add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
+
+incdir = include_directories(
+    [
+        './vendor/fmt/include',
+        './vendor/small_vector/source/include',
+        './vendor/pybind11/include/',
+    ],
+)
+
+if PURE_PY != '1'
+    py.extension_module(
+        '__bencode',
+        'src/bencode2/bencode.cpp',
+        install: true,
+        include_directories: incdir,
+        subdir: 'src/bencode2',
+    )
+endif

@@ -1,5 +1,4 @@
 #include <string_view>
-#define FMT_HEADER_ONLY
 
 #include <string>
 

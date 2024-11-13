@@ -1,8 +1,6 @@
 #pragma once
-#define FMT_HEADER_ONLY
 
 #include <stdint.h>
-#include <string>
 #include <unordered_set>
 
 #include <fmt/compile.h>

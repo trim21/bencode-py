@@ -13,12 +13,7 @@ include_directories(${Python_INCLUDE_DIRS})
 
 include_directories(./src/bencode2/)
 
-execute_process(
-        COMMAND "${Python_EXECUTABLE}" -m pybind11 --cmakedir
-        OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE PYBIND11_ROOT)
-
-include_directories(${PYBIND11_ROOT}/../../../include)
-
+include_directories(./vendor/pybind11/include/)
 include_directories(./vendor/fmt/include/)
 include_directories(./vendor/small_vector/source/include/)
 
