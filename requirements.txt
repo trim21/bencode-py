@@ -1,5 +1,6 @@
 pybind11==2.13.6
 scikit-build-core==0.10.7
+ninja>=1.5
 
 typing_extensions
 

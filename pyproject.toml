@@ -2,7 +2,6 @@
 requires = [
     "scikit-build-core==0.10.7",
     "pybind11==2.13.6",
-    'ninja>=1.5',
 ]
 build-backend = "scikit_build_core.build"
 
@@ -58,6 +57,8 @@ bencode2 = ["*.pyi", "py.typed"]
 
 [tool.cibuildwheel]
 skip = 'pp* cp39-* *musl*'
+
+before-build = 'pip install ninja>=1.5'
 
 [tool.black]
 extend-exclude = 'vendor'
