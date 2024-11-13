@@ -4,7 +4,7 @@ requires = [
     "pybind11==2.13.6",
     'ninja>=1.5',
 ]
-build-backend = "scikit_build_core.build_meta"
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "bencode2"
