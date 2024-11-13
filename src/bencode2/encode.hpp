@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Python.h>
 #include <algorithm> // std::sort
 #include <gch/small_vector.hpp>

@@ -1,0 +1,18 @@
+{
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "cmake.configureSettings": {
+    "Python_INTERPRETER": "./.venv/Scripts/python.exe",
+    "Python_FIND_VIRTUALENV": "ONLY",
+    "CMAKE_BUILD_TYPE": "Release"
+  },
+  "[cpp]": {
+    "editor.showDeprecated": true
+  },
+  "cmake.configureOnOpen": true,
+  "clangd.arguments": [
+    "-log=verbose",
+    "-pretty",
+    "--background-index",
+    "--compile-commands-dir=./build"
+  ]
+}

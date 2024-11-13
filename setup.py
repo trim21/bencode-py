@@ -12,7 +12,9 @@ pure_python = any(
     ]
 )
 
-macro = [("FMT_HEADER_ONLY", "")]
+macro = [
+    ("FMT_HEADER_ONLY", ""),
+]
 
 extra_compile_args = None
 
