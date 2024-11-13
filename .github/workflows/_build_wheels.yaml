@@ -44,7 +44,8 @@ jobs:
           restore-keys: |
             cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}
 
-      - run: pipx install uv
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v3
 
       - uses: pypa/cibuildwheel@v2.21.3
         env:
