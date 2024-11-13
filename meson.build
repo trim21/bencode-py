@@ -8,6 +8,12 @@ PURE_PY = run_command(
     check: true,
 ).stdout().strip()
 
+PY_IMPL = run_command(
+    py,
+    '-c', 'import sys; print(sys.implementation.name)',
+    check: true,
+).stdout().strip()
+
 pybind11_includes = run_command(
     py,
     '-c', 'import pybind11; print(pybind11.get_include());',
@@ -24,7 +30,7 @@ incdir = include_directories(
     ],
 )
 
-if PURE_PY != '1'
+if (PURE_PY != '1') and (PY_IMPL == 'cpython')
     py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
