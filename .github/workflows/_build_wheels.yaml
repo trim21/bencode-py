@@ -13,13 +13,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*", CXX: 'sccache clang++' }
-          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*", CXX: 'sccache clang++' }
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
 
-          - { os: macos-14, cibw_arch: arm64, cibw_build: "*", CXX: 'sccache clang++' }
+          - { os: macos-14, cibw_arch: arm64, cibw_build: "*" }
 
-          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[02468]-* *[02468]t-*", CXX: 'sccache cl.exe' }
-          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[13579]-* *[13579]t-*", CXX: 'sccache cl.exe' }
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[13579]-* *[13579]t-*" }
 
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
@@ -48,7 +48,8 @@ jobs:
 
       - uses: pypa/cibuildwheel@v2.21.3
         env:
-          CXX: "${{ matrix.CXX }}"
+          CMAKE_CXX_COMPILER_LAUNCHER: sccache"
+          CMAKE_C_COMPILER_LAUNCHER: sccache"
           CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ALLOW_EMPTY: 'True'
           CIBW_FREE_THREADED_SUPPORT: true
