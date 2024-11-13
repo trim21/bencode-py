@@ -47,7 +47,6 @@ if (PURE_PY != '1') and (PY_IMPL == 'cpython')
         install: true,
         include_directories: incdir,
         subdir: 'bencode2',
-        dependencies: py_dep,
-
+        dependencies: py.dependency(),
     )
 endif
