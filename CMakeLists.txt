@@ -29,8 +29,6 @@ add_library(
         bencode2
         SHARED
         src/bencode2/bencode.cpp
-        src/bencode2/encode.cpp
-        src/bencode2/decode.cpp
 )
 
 target_link_libraries(bencode2 ${Python3_LIBRARIES})

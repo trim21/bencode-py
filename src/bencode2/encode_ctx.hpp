@@ -43,6 +43,7 @@ public:
 
     void write(const char *data, Py_ssize_t size) {
         bufferGrow(size);
+
         buffer.insert(buffer.end(), data, data + size);
     }
 

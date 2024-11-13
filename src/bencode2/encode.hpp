@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Python.h>
 #include <algorithm> // std::sort
 #include <gch/small_vector.hpp>
@@ -5,7 +7,6 @@
 
 #include "common.hpp"
 #include "encode_ctx.hpp"
-#include "errors.hpp"
 
 namespace py = pybind11;
 
@@ -17,8 +18,8 @@ extern py::object is_dataclasses;
 
 static void encodeAny(EncodeContext *ctx, py::handle obj);
 
-static bool key_cmp(std::pair<std::string_view, py::handle> &a,
-                    std::pair<std::string_view, py::handle> &b) {
+static bool cmp(std::pair<std::string_view, py::handle> &a,
+                std::pair<std::string_view, py::handle> &b) {
     return a.first < b.first;
 }
 
@@ -62,7 +63,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
         vec.push_back(std::make_pair(from_py_string(key), value));
     }
 
-    std::sort(vec.begin(), vec.end(), key_cmp);
+    std::sort(vec.begin(), vec.end(), cmp);
 
     if (vec.size() != 0) {
         for (size_t i = 0; i < vec.size() - 1; i++) {
@@ -106,7 +107,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
         vec.push_back(std::make_pair(from_py_string(py::handle(key)), py::handle(value)));
     }
 
-    std::sort(vec.begin(), vec.end(), key_cmp);
+    std::sort(vec.begin(), vec.end(), cmp);
     for (size_t i = 0; i < vec.size() - 1; i++) {
         if (vec[i].first == vec[i + 1].first) {
             throw EncodeError(fmt::format("found duplicated keys {}", vec[i].first));
@@ -143,7 +144,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
         vec.push_back(make_pair(from_py_string(key), py::handle(value)));
     }
 
-    std::sort(vec.begin(), vec.end(), key_cmp);
+    std::sort(vec.begin(), vec.end(), cmp);
 
     for (auto pair : vec) {
         ctx->writeSize_t(pair.first.length());
@@ -410,7 +411,7 @@ public:
     }
 };
 
-py::bytes bencode(py::object v) {
+static py::bytes bencode(py::object v) {
     debug_print("1");
     auto ctx = CtxMgr();
 

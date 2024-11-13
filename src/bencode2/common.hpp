@@ -3,6 +3,8 @@
 #include <gch/small_vector.hpp>
 
 #include <Python.h>
+#include <pybind11/pybind11.h>
+namespace py = pybind11;
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
@@ -66,6 +68,26 @@
     } while (0)
 
 #endif
+
+struct EncodeError : public py::value_error {
+public:
+    EncodeError(std::string msg) { s = msg; }
+
+    const char *what() const throw() { return s.c_str(); }
+
+private:
+    std::string s;
+};
+
+struct DecodeError : public py::value_error {
+public:
+    DecodeError(std::string msg) { s = msg; }
+
+    const char *what() const throw() { return s.c_str(); }
+
+private:
+    std::string s;
+};
 
 class AutoFree {
 public:

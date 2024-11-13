@@ -1,17 +1,22 @@
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
-
-#include "errors.hpp"
-
 // dataclasses.fields
 py::object dataclasses_fields;
 
 // dataclasses.is_dataclass
 py::object is_dataclasses;
 
-extern py::bytes bencode(py::object v);
-extern py::object bdecode(py::buffer b);
+#ifndef __cplusplus
+#error "require at least cpp 17"
+#endif
+
+#if __cplusplus < 201703L
+#error "require at least cpp 17"
+#endif
+
+#include "decode.hpp"
+#include "encode.hpp"
 
 PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
     auto mod = m.import("dataclasses");

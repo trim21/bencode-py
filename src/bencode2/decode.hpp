@@ -1,16 +1,23 @@
-#include <string>
+#pragma once
+
 #include <string_view>
+
+#include <string>
 
 #include <fmt/core.h>
 #include <pybind11/pybind11.h>
 
 #include "common.hpp"
-#include "errors.hpp"
 #include "overflow.hpp"
 
 namespace py = pybind11;
 
 static py::object decodeAny(const char *buf, Py_ssize_t *index, Py_ssize_t size);
+
+#define decodeErrF(f, ...)                                                                         \
+    do {                                                                                           \
+        throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
+    } while (0)
 
 static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     Py_ssize_t index_e = 0;
@@ -240,7 +247,7 @@ static py::object decodeAny(const char *buf, Py_ssize_t *index, Py_ssize_t size)
     decodeErrF("invalid bencode prefix '{:c}', index {}", buf[*index], *index);
 }
 
-py::object bdecode(py::buffer b) {
+static py::object bdecode(py::buffer b) {
     py::buffer_info info = b.request();
 
     Py_ssize_t size = info.size;
