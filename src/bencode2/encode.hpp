@@ -40,8 +40,8 @@ static std::string_view dict_key_view(py::handle obj) {
         Py_ssize_t size = 0;
         char *s;
 
-        if (PyBytes_AsStringAndSize(obj.ptr(), &s, &size)) { // pragma: no cover
-            throw std::runtime_error("failed to get contents of bytes");
+        if (PyBytes_AsStringAndSize(obj.ptr(), &s, &size)) {
+            throw std::runtime_error("failed to get contents of bytes"); // LCOV_EXCL_LINE
         }
 
         return std::string_view(s, size);
