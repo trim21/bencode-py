@@ -30,7 +30,7 @@ jobs:
           submodules: 'true'
 
       - name: Set up sccache
-        uses: mozilla-actions/sccache-action@v0.0.3
+        uses: mozilla-actions/sccache-action@v0.0.6
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v3
