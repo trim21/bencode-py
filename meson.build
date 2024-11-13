@@ -14,6 +14,15 @@ PY_IMPL = run_command(
     check: true,
 ).stdout().strip()
 
+py.install_sources(
+    'src/bencode2/__init__.py',
+    'src/bencode2/__init__.pyi',
+    'src/bencode2/__encoder.py',
+    'src/bencode2/__decoder.py',
+    'src/bencode2/py.typed',
+    subdir: 'bencode2',
+)
+
 if (PURE_PY != '1') and (PY_IMPL == 'cpython')
     pybind11_includes = run_command(
         py,
@@ -33,6 +42,6 @@ if (PURE_PY != '1') and (PY_IMPL == 'cpython')
         'src/bencode2/bencode.cpp',
         install: true,
         include_directories: incdir,
-        subdir: 'src/bencode2',
+        subdir: 'bencode2',
     )
 endif
