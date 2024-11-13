@@ -34,13 +34,16 @@ classifiers = [
 ]
 
 dependencies = [
-    'typing_extensions'
+    'typing_extensions',
 ]
 
 [project.urls]
 Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
+
+[tool.pytest.ini_config]
+ignore = ['vendor', '.venv']
 
 [tool.setuptools]
 include-package-data = true
