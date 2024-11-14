@@ -106,7 +106,7 @@ jobs:
           PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: '${{ matrix.python-version }}'
@@ -151,7 +151,7 @@ jobs:
       - run: lcov -l coverage.info
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.info
@@ -192,7 +192,7 @@ jobs:
           PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -227,7 +227,7 @@ jobs:
           PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: '${{ matrix.python-version }}'
