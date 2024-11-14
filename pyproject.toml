@@ -43,7 +43,7 @@ Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
 [tool.meson-python.args]
-#setup = ['--verbose']
+setup = ['--errorlogs']
 dist = ['--verbose']
 compile = ['--verbose']
 install = ['--verbose']
