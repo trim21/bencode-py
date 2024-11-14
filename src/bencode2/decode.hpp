@@ -37,7 +37,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
         decodeErrF("invalid int, found 'ie': {}", index_e);
     }
 
-    int sign = 1;
+    int64_t sign = 1;
 
     // i1234e
     // i-1234e
@@ -93,7 +93,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
         goto __OverFlow;
     }
 
-    return py::cast(sign * val);
+    return py::cast(val);
 
 // i1234e
 // i-1234e
