@@ -42,6 +42,7 @@ jobs:
 
       - name: Restore cached Primes
         id: cache
+        if: ${{ runner.os != 'Linux' }}
         uses: actions/cache@v4
         with:
           path: |
@@ -53,7 +54,6 @@ jobs:
 
       - uses: pypa/cibuildwheel@v2.21.3
         env:
-          CXX: "${{ matrix.CXX }}"
           CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ALLOW_EMPTY: 'True'
           CIBW_FREE_THREADED_SUPPORT: true
