@@ -34,7 +34,6 @@ jobs:
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.6
-        if: ${{ runner.os != 'Linux' }}
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v3
