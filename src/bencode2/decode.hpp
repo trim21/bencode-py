@@ -14,7 +14,7 @@ namespace py = pybind11;
 
 static py::object decodeAny(const char *buf, Py_ssize_t *index, Py_ssize_t size);
 
-#define decodeErrF(f, ...)                                                                         \
+#define decoderError(f, ...)                                                                       \
     do {                                                                                           \
         throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
     } while (0)
@@ -34,7 +34,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
 
     // malformed 'ie'
     if (*index + 1 == index_e) {
-        decodeErrF("invalid int, found 'ie': {}", index_e);
+        decoderError("invalid int, found 'ie': {}", index_e);
     }
 
     int64_t sign = 1;
@@ -47,21 +47,22 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
 
     if (buf[*index] == '-') {
         if (buf[*index + 1] == '0') {
-            decodeErrF("invalid int, '-0' found at %zd", *index);
+            decoderError("invalid int, '-0' found at %zd", *index);
         }
 
         num_start = 1 + *index;
         sign = -1;
     } else if (buf[*index] == '0') {
         if (*index + 1 != index_e) {
-            decodeErrF("invalid int, non-zero int should not start with '0'. found at %zd", *index);
+            decoderError("invalid int, non-zero int should not start with '0'. found at %zd",
+                         *index);
         }
     }
 
     for (Py_ssize_t i = num_start; i < index_e; i++) {
         char c = buf[i] - '0';
         if (c < 0 || c > 9) {
-            decodeErrF("invalid int, '{:c}' found at {}", c, i);
+            decoderError("invalid int, '{:c}' found at {}", c, i);
         }
     }
 
@@ -125,23 +126,23 @@ static std::string_view decodeAsView(const char *buf, Py_ssize_t *index, Py_ssiz
     }
 
     if (index_sep == 0) {
-        decodeErrF("invalid string, missing length: index %zd", *index);
+        decoderError("invalid string, missing length: index %zd", *index);
     }
 
     if (buf[*index] == '0' && *index + 1 != index_sep) {
-        decodeErrF("invalid bytes length, found at {}", *index);
+        decoderError("invalid bytes length, found at {}", *index);
     }
 
     Py_ssize_t len = 0;
     for (Py_ssize_t i = *index; i < index_sep; i++) {
         if (buf[i] < '0' || buf[i] > '9') {
-            decodeErrF("invalid bytes length, found '%c' at %zd", buf[i], i);
+            decoderError("invalid bytes length, found '%c' at %zd", buf[i], i);
         }
         len = len * 10 + (buf[i] - '0');
     }
 
     if (index_sep + len >= size) {
-        decodeErrF("bytes length overflow, index {}", *index);
+        decoderError("bytes length overflow, index {}", *index);
     }
 
     *index = index_sep + len + 1;
@@ -162,7 +163,7 @@ static py::object decodeList(const char *buf, Py_ssize_t *index, Py_ssize_t size
 
     while (1) {
         if (*index >= size) {
-            decodeErrF("buffer overflow when decoding list, index {}", *index);
+            decoderError("buffer overflow when decoding list, index {}", *index);
         }
 
         if (buf[*index] == 'e') {
@@ -187,7 +188,7 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
 
     while (1) {
         if (*index >= size) {
-            decodeErrF("buffer overflow when decoding dict, index {}", *index);
+            decoderError("buffer overflow when decoding dict, index {}", *index);
         }
 
         if (buf[*index] == 'e') {
@@ -200,10 +201,10 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
         // skip first key
         if (lastKey.has_value()) {
             if (key < lastKey.value()) {
-                decodeErrF("invalid dict, key not sorted. index {}", *index);
+                decoderError("invalid dict, key not sorted. index {}", *index);
             }
             if (key == lastKey.value()) {
-                decodeErrF("invalid dict, find duplicated keys {}. index {}", key, *index);
+                decoderError("invalid dict, find duplicated keys {}. index {}", key, *index);
             }
         }
         lastKey = std::make_optional(key);
@@ -237,10 +238,10 @@ static py::object decodeAny(const char *buf, Py_ssize_t *index, Py_ssize_t size)
         return decodeDict(buf, index, size);
     }
 
-    decodeErrF("invalid bencode prefix '{:c}', index {}", buf[*index], *index);
+    decoderError("invalid bencode prefix '{:c}', index {}", buf[*index], *index);
 }
 
-static py::object bdecode(py::buffer b) {
+[[maybe_unused]] static py::object bdecode(py::buffer b) {
     py::buffer_info info = b.request();
 
     Py_ssize_t size = info.size;
@@ -254,8 +255,8 @@ static py::object bdecode(py::buffer b) {
     py::object o = decodeAny(buf, &index, size);
 
     if (index != size) {
-        decodeErrF("invalid bencode data, parse end at index {} but total bytes length {}", index,
-                   size);
+        decoderError("invalid bencode data, parse end at index {} but total bytes length {}", index,
+                     size);
     }
 
     return o;

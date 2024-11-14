@@ -363,27 +363,16 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     throw py::type_error(msg);
 }
 
-static std::vector<EncodeContext *> pool;
-
-// only add lock when building in free thread
-#if Py_GIL_DISABLED
-static std::mutex m;
-#endif
+thread_local static std::vector<EncodeContext *> pool;
 
 // 30 MiB
-size_t const ctx_buffer_reuse_cap = 30 * 1024 * 1024u;
+size_t const ctx_buffer_reuse_cap = 50 * 1024 * 1024u;
 
-/**
- * reuse encoded buffer for average 10% performance gain.
- */
+// reuse encoded buffer for average 10% performance gain.
 class CtxMgr {
 public:
     EncodeContext *ctx;
     CtxMgr() {
-#if Py_GIL_DISABLED
-        std::lock_guard<std::mutex> guard(m);
-#endif
-
         if (pool.empty()) {
             debug_print("empty pool, create Context");
             ctx = new EncodeContext();
@@ -391,6 +380,8 @@ public:
         }
 
         debug_print("get Context from pool");
+
+        // will there be any race problem here?
         ctx = pool.back();
         pool.pop_back();
 
@@ -400,10 +391,6 @@ public:
     ~CtxMgr() {
         if (pool.size() < 5 && ctx->buffer.capacity() <= ctx_buffer_reuse_cap) {
             debug_print("put Context back to pool");
-
-#if Py_GIL_DISABLED
-            std::lock_guard<std::mutex> guard(m);
-#endif
 
             ctx->reset();
             pool.push_back(ctx);
@@ -415,7 +402,7 @@ public:
     }
 };
 
-static py::bytes bencode(py::object v) {
+[[maybe_unused]] static py::bytes bencode(py::object v) {
     debug_print("1");
     auto ctx = CtxMgr();
 
