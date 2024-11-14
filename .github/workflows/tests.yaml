@@ -140,14 +140,13 @@ jobs:
       - run: meson compile -C build/meson --verbose
       - run: cp build/meson/__bencode.*.so src/bencode2/
       - run: PYTHONPATH=src pytest --assert-pkg-compiled=true
-      - run: lcov --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: lcov
           version: 1.0
 
-      - run: lcov --ignore-errors mismatch --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
+      - run: lcov --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
 
       - run: lcov -l coverage.info
 
