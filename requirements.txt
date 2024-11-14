@@ -1,5 +1,6 @@
 pybind11==2.13.6
-setuptools==75.3.0
+meson[ninja]>=1.2.1
+pybind11==2.13.6
 
 typing_extensions
 
