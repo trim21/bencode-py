@@ -5,7 +5,6 @@ project(
         'cpp_std=c++17',
         'buildtype=release',
         'debug=false',
-        'verbose',
     ],
     meson_version: '>= 1.3.0',
 )
