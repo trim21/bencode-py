@@ -47,6 +47,10 @@ if not pure_py
 
     pybind11_includes = fs.relative_to(pybind11_path, meson.current_source_dir())
 
+    if get_option('buildtype').startswith('debug')
+        add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
+    endif
+
     add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
     incdir = include_directories(
         [
