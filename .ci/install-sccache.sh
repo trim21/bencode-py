@@ -12,4 +12,6 @@ tar -zxf sccache-v${sccache_version}-$(arch)-unknown-linux-musl.tar.gz
 
 cp sccache-v${sccache_version}-$(arch)-unknown-linux-musl/sccache /usr/bin
 
+env
+
 sccache --show-stats
