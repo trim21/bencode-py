@@ -1,9 +1,10 @@
 [build-system]
+build-backend = "mesonpy"
 requires = [
-    "setuptools==75.3.0",
+    "meson-python>=0.14.0",
+    "meson[ninja]>=1.2.1",
     "pybind11==2.13.6",
 ]
-build-backend = "setuptools.build_meta"
 
 [project]
 name = "bencode2"
@@ -33,7 +34,7 @@ classifiers = [
 ]
 
 dependencies = [
-    'typing_extensions'
+    'typing_extensions',
 ]
 
 [project.urls]
@@ -41,17 +42,15 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-bencode2 = ["*.pyi", "py.typed"]
+[tool.pytest.ini_options]
+norecursedirs = ['vendor', '.venv', 'build']
 
 [tool.cibuildwheel]
 skip = 'pp* cp39-* *musl*'
+
+[tool.cibuildwheel.linux]
+before-all = "pip install sccache"
+environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
 
 [tool.black]
 extend-exclude = 'vendor'

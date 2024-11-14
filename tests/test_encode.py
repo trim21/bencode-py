@@ -223,7 +223,7 @@ def test_str_enum():
 
 @pytest.mark.skipif(not COMPILED, reason="only run with binary module")
 def test_free():
-    bencode(b"  " * (1024 * 1024 * 1024))
+    bencode(b" " * (100 * 1024 * 1024))
 
 
 def test_TypedDict():

@@ -13,13 +13,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*", CXX: 'sccache clang++' }
-          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*", CXX: 'sccache clang++' }
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
 
-          - { os: macos-14, cibw_arch: arm64, cibw_build: "*", CXX: 'sccache clang++' }
+          - { os: macos-14, cibw_arch: arm64, cibw_build: "*" }
 
-          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[02468]-* *[02468]t-*", CXX: 'sccache cl.exe' }
-          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[13579]-* *[13579]t-*", CXX: 'sccache cl.exe' }
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[13579]-* *[13579]t-*" }
 
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
           - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
@@ -28,6 +28,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: ${{ runner.os == 'Windows' }}
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.6
