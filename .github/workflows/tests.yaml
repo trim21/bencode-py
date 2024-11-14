@@ -187,7 +187,6 @@ jobs:
           python-version: 3.13
           nogil: true
 
-      - run: pip install -e .
       - run: pip install -r requirements.txt
 
       - run: python -m pytest --cov --assert-pkg-compiled=false
@@ -220,7 +219,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: pip install -e .
       - run: pip install -r requirements.txt
 
       - name: Run pytest

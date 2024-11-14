@@ -44,15 +44,7 @@ Issues = "https://github.com/trim21/bencode-py/issues"
 
 [tool.pytest.ini_options]
 norecursedirs = ['vendor', '.venv', 'build']
-
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-bencode2 = ["*.pyi", "py.typed"]
+pythonpath = 'src'
 
 [tool.cibuildwheel]
 skip = 'pp* cp39-* *musl*'
