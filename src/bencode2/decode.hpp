@@ -95,7 +95,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
     }
 
     if (sign > 0) {
-        unsigned long long val = 0;
+        uint64_t val = 0;
         // val = val * 10 + (buf[i] - '0')
         // but with overflow check
         for (Py_ssize_t i = *index; i < index_e; i++) {
@@ -113,7 +113,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
 
         return py::cast(val);
     } else {
-        long long val = 0;
+        int64_t val = 0;
         int of;
         for (Py_ssize_t i = *index + 1; i < index_e; i++) {
             char c = buf[i] - '0';
