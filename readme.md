@@ -62,7 +62,7 @@ assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 ### Decoding
 
 | bencode type | python type |
-|:------------:|:-----------:|
+| :----------: | :---------: |
 |   integer    |    `int`    |
 |    string    |   `bytes`   |
 |    array     |   `list`    |
@@ -79,7 +79,7 @@ bencode2 will decode bencode string to python `bytes`.
 ### Encoding
 
 |            python type            | bencode type |
-|:---------------------------------:|:------------:|
+| :-------------------------------: | :----------: |
 |              `bool`               | integer 0/1  |
 |       `int`, `enum.IntEnum`       |   integer    |
 |       `str`, `enum.StrEnum`       |    string    |
@@ -103,3 +103,11 @@ Also, when decoding, `bytes` objects are immutable so it's safe to be used in mu
 threading,
 but `memoryview` and `bytearray` maybe not, please make sure underlay data doesn't
 change when decoding.
+
+## Development
+
+this project use [meson](https://github.com/mesonbuild/meson) for building
+
+for testing pure python library, remove so/pyd from `src/bencode2` and run `PYTHONPATH=src pytest --assert-pkg-compiled=false`.
+
+for native extension, run `pip install -e .` and `pytest tests --assert-pkg-compiled=true`
