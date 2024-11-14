@@ -136,17 +136,11 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: |
-          meson setup build/meson --reconfigure
-          meson compile -C build/meson --verbose
-          cp build/meson/__bencode.*.so src/bencode2/
-        env:
-          CXX: g++
-          CPPFLAGS: --coverage
-
-      - run: coverage run -m pytest --cov --assert-pkg-compiled=true
-        env:
-          PYTHONPATH: src
+      - run: meson setup build/meson -Db_coverage=true -Dbuildtype=debug -Ddebug=true
+      - run: meson compile -C build/meson --verbose
+      - run: cp build/meson/__bencode.*.so src/bencode2/
+      - run: PYTHONPATH=src pytest --assert-pkg-compiled=true
+      - run: lcov --capture --directory build --include $PWD'/src/**/*' --no-external --base-directory . --output-file coverage.info
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
