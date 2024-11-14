@@ -11,3 +11,5 @@ curl -sSL https://github.com/mozilla/sccache/releases/download/v${sccache_versio
 tar -zxf sccache-v${sccache_version}-$(arch)-unknown-linux-musl.tar.gz
 
 cp sccache-v${sccache_version}-$(arch)-unknown-linux-musl/sccache /usr/bin
+
+sccache c++ --help
