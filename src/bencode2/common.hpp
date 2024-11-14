@@ -63,7 +63,7 @@ namespace py = pybind11;
 #endif
 #else
 
-#define debug_print(fmt, ...)                                                                      \
+#define debug_print(...)                                                                           \
     do {                                                                                           \
     } while (0)
 
