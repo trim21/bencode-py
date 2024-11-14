@@ -28,17 +28,22 @@ py.install_sources(
 )
 
 if (PURE_PY != '1') and (PY_IMPL == 'cpython')
-    pybind11_includes = run_command(
+    fs = import('fs')
+
+    pybind11_path = run_command(
         py,
         '-c', 'import pybind11; print(pybind11.get_include());',
         check: true,
     ).stdout().strip()
+
+    pybind11_includes = fs.relative_to(pybind11_path, meson.current_source_dir())
+
     add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
     incdir = include_directories(
         [
+            pybind11_includes,
             './vendor/fmt/include',
             './vendor/small_vector/source/include',
-            './vendor/pybind11/include/',
         ],
     )
     py.extension_module(
