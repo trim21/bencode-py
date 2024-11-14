@@ -1,0 +1,9 @@
+version: 3
+
+tasks:
+  meson:
+    cmds:
+      - rm build/meson -rf
+      - meson setup build/meson --wipe
+      - meson compile -C build/meson --verbose
+      - cp {{ if eq OS "linux" }} build/meson/__bencode.*.so {{else}} build/meson/__bencode.*.pyd {{end}} src/bencode2/
