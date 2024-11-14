@@ -48,6 +48,9 @@ norecursedirs = ['vendor', '.venv', 'build']
 [tool.cibuildwheel]
 skip = 'pp* cp39-* *musl*'
 
+[tool.cibuildwheel.linux]
+before-all = "pip install sccache"
+
 [tool.black]
 extend-exclude = 'vendor'
 target-version = ['py39']
