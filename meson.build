@@ -52,6 +52,7 @@ if not pure_py
         [
             pybind11_includes,
             './vendor/fmt/include',
+            './vendor/portable-snippets/',
             './vendor/small_vector/source/include',
         ],
     )
