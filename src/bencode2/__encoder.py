@@ -42,7 +42,7 @@ def __encode(w: io.BytesIO, value: Any, seen: set[int], stack_depth: int) -> Non
                 raise BencodeEncodeError(f"circular reference found {value!r}")
             seen.add(i)
         __encode_mapping(w, value, seen, stack_depth=stack_depth)
-        if stack_depth >= 100:
+        if stack_depth >= 100:  # pragma: no cover
             seen.remove(i)
         stack_depth -= 1
         return
@@ -58,7 +58,7 @@ def __encode(w: io.BytesIO, value: Any, seen: set[int], stack_depth: int) -> Non
             __encode(w, item, seen, stack_depth=stack_depth)
         w.write(b"e")
 
-        if stack_depth >= 100:
+        if stack_depth >= 100:  # pragma: no cover
             seen.remove(i)
         stack_depth -= 1
 
@@ -82,7 +82,7 @@ def __encode(w: io.BytesIO, value: Any, seen: set[int], stack_depth: int) -> Non
 
         __encode_dataclass(w, value, seen, stack_depth=stack_depth)
 
-        if stack_depth >= 100:
+        if stack_depth >= 100:  # pragma: no cover
             seen.remove(i)
         stack_depth -= 1
 

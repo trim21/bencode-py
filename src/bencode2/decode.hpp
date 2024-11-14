@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string_view>
 
 #include <string>
@@ -245,7 +247,7 @@ static py::object decodeAny(const char *buf, Py_ssize_t *index, Py_ssize_t size)
     decodeErrF("invalid bencode prefix '{:c}', index {}", buf[*index], *index);
 }
 
-py::object bdecode(py::buffer b) {
+static py::object bdecode(py::buffer b) {
     py::buffer_info info = b.request();
 
     Py_ssize_t size = info.size;
