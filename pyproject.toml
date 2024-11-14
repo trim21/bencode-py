@@ -42,6 +42,12 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
+[tool.meson-python.args]
+setup = ['--errorlogs']
+dist = ['--verbose']
+compile = ['--verbose']
+install = ['--verbose']
+
 [tool.pytest.ini_options]
 norecursedirs = ['vendor', '.venv', 'build']
 
@@ -49,8 +55,9 @@ norecursedirs = ['vendor', '.venv', 'build']
 skip = 'pp* cp39-* *musl*'
 
 [tool.cibuildwheel.linux]
-before-all = "pip install sccache"
+before-all = "sh .ci/install-sccache.sh"
 environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
+#environment = { 'PATH' = '/root/.local/bin:$PATH' }
 
 [tool.black]
 extend-exclude = 'vendor'

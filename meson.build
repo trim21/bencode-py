@@ -1,7 +1,11 @@
 project(
     'bencode2',
     'cpp',
-    default_options: ['cpp_std=c++17', 'buildtype=release', 'debug=false'],
+    default_options: [
+        'cpp_std=c++17',
+        'buildtype=release',
+        'debug=false',
+    ],
     meson_version: '>= 1.3.0',
 )
 

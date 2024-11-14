@@ -37,8 +37,10 @@ jobs:
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v3
+        if: ${{ runner.os != 'Linux' }}
 
       - name: Restore cached Primes
+        if: ${{ runner.os != 'Linux' }}
         id: cache
         uses: actions/cache@v4
         with:
@@ -51,7 +53,6 @@ jobs:
 
       - uses: pypa/cibuildwheel@v2.21.3
         env:
-          CXX: "${{ matrix.CXX }}"
           CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ALLOW_EMPTY: 'True'
           CIBW_FREE_THREADED_SUPPORT: true
