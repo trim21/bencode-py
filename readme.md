@@ -106,9 +106,6 @@ change when decoding.
 
 ## Development
 
-There is also `CMakeLists.txt` file to provide IDE support, see `.vscode/` directory for
-vscode config example.
-
 This project use [meson](https://github.com/mesonbuild/meson) for building.
 
 For testing pure python library,

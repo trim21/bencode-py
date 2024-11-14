@@ -1,6 +1,6 @@
 {
   "recommendations": [
-    "ms-vscode.cmake-tools",
+    "mesonbuild.mesonbuild",
     "llvm-vs-code-extensions.vscode-clangd"
   ]
 }
