@@ -65,7 +65,11 @@ public:
 private:
     void bufferGrow(Py_ssize_t size) {
         if (size + buffer.size() + 1 >= buffer.capacity()) {
-            buffer.reserve(buffer.capacity() * 2 + size);
+            if (buffer.capacity() < 1024 * 1024) { // 1mib
+                buffer.reserve(buffer.capacity() * 2 + size);
+            } else {
+                buffer.reserve(buffer.capacity() + size * 2);
+            }
         }
     }
 };

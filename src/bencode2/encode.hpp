@@ -365,8 +365,9 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
 
 thread_local static std::vector<EncodeContext *> pool;
 
-// 30 MiB
-size_t const ctx_buffer_reuse_cap = 50 * 1024 * 1024u;
+// 30 MiB. Most torrents is smaller than 20 mib,
+// we may alloc more size so set it bigger
+size_t const ctx_buffer_reuse_cap = 30 * 1024 * 1024u;
 
 // reuse encoded buffer for average 10% performance gain.
 class CtxMgr {
