@@ -56,18 +56,27 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
         }
     }
 
+    if (sign > 0) {
+        for (Py_ssize_t i = *index; i < index_e; i++) {
+            char c = buf[i] - '0';
+            if (c < 0 || c > 9) {
+                decodeErrF("invalid int, '%c' found at %zd", c, i);
+            }
+        }
+    } else {
+        for (Py_ssize_t i = *index + 1; i < index_e; i++) {
+            char c = buf[i] - '0';
+            if (c < 0 || c > 9) {
+                decodeErrF("invalid int, '{:c}' found at {}", c, i);
+            }
+        }
+    }
+
     // fast path without overflow check for small length string
     if ((index_e - *index) < 19) {
         if (sign > 0) {
             unsigned long long val = 0;
             for (Py_ssize_t i = *index; i < index_e; i++) {
-                char c = buf[i] - '0';
-                if (c < 0 || c > 9) {
-                    decodeErrF("invalid int, '%c' found at %zd", c, i);
-                }
-
-                // but with overflow check
-
                 val = val * 10 + (buf[i] - '0');
             }
 
@@ -77,11 +86,6 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
         } else {
             long long val = 0;
             for (Py_ssize_t i = *index + 1; i < index_e; i++) {
-                char c = buf[i] - '0';
-                if (c < 0 || c > 9) {
-                    decodeErrF("invalid int, '{:c}' found at {}", c, i);
-                }
-
                 val = val * 10 + (buf[i] - '0');
             }
 
@@ -92,14 +96,10 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
 
     if (sign > 0) {
         unsigned long long val = 0;
+        // val = val * 10 + (buf[i] - '0')
+        // but with overflow check
         for (Py_ssize_t i = *index; i < index_e; i++) {
             char c = buf[i] - '0';
-            if (c < 0 || c > 9) {
-                decodeErrF("invalid int, '%c' found at %zd", c, i);
-            }
-
-            // val = val * 10 + (buf[i] - '0')
-            // but with overflow check
 
             int of = _u64_mul_overflow(val, 10, &val);
             of = of || _u64_add_overflow(val, c, &val);
@@ -117,9 +117,6 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
         int of;
         for (Py_ssize_t i = *index + 1; i < index_e; i++) {
             char c = buf[i] - '0';
-            if (c < 0 || c > 9) {
-                decodeErrF("invalid int, '{:c}' found at {}", c, i);
-            }
 
             of = _i64_mul_overflow(val, 10, &val);
             of = of || _i64_add_overflow(val, c, &val);
