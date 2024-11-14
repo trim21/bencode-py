@@ -73,7 +73,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
     }
 
     // fast path without overflow check for small length string
-    if ((index_e - *index) < 18) {
+    if ((index_e - *index) < 19) {
         if (sign > 0) {
             unsigned long long val = 0;
             for (Py_ssize_t i = *index; i < index_e; i++) {
