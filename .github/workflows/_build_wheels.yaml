@@ -61,7 +61,6 @@ jobs:
           CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
-          MACOSX_DEPLOYMENT_TARGET: '11.0'
 
       - run: ls ./wheelhouse/
 
