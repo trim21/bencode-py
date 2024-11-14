@@ -36,17 +36,8 @@ static int inline _i64_add_overflow(long long a, long long b, long long *res) {
     return 0;
 }
 
-static int inline _i64_mul_overflow(long long a, long long b, long long *res) {
-    if (a == 0 || b == 0) {
-        *res = 0;
-        return 0;
-    }
+#include "safe-int/safeint.h"
 
-    long long result = a * b;
-    if (a == result / b) {
-        *res = result;
-        return 0;
-    } else {
-        return 1;
-    }
+static int inline _i64_mul_overflow(long long a, long long b, long long *res) {
+    return psnip_safe_int64_mul(res, a, b);
 }
