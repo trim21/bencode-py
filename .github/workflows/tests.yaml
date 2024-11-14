@@ -135,7 +135,11 @@ jobs:
           cache: "pip"
 
       - run: pip install -r requirements.txt
-      - run: python setup.py build_ext --inplace --force
+
+      - run: |
+          meson setup build/meson --reconfigure
+          meson compile -C build/meson --verbose
+          cp build/meson/__bencode.*.so src/bencode2/
         env:
           CXX: g++
           CPPFLAGS: --coverage
