@@ -1,27 +1,27 @@
 project(
     'bencode2',
     'cpp',
-    default_options: [
-        'cpp_std=c++17',
-        'buildtype=release',
-        'debug=false'
-    ],
+    default_options: ['cpp_std=c++17', 'buildtype=release', 'debug=false'],
     meson_version: '>= 1.3.0',
 )
 
-py = import('python').find_installation(pure: false)
+py_inter = import('python').find_installation()
 
 PURE_PY = run_command(
-    py,
+    py_inter,
     '-c', 'import os; print(os.environ.get("PY_BENCODE2_PURE_PYTHON", "0"))',
     check: true,
 ).stdout().strip()
 
 PY_IMPL = run_command(
-    py,
+    py_inter,
     '-c', 'import sys; print(sys.implementation.name)',
     check: true,
 ).stdout().strip()
+
+pure_py = not ((PURE_PY != '1') and (PY_IMPL == 'cpython'))
+
+py = import('python').find_installation(pure: pure_py)
 
 py.install_sources(
     'src/bencode2/__init__.py',
@@ -32,7 +32,7 @@ py.install_sources(
     subdir: 'bencode2',
 )
 
-if (PURE_PY != '1') and (PY_IMPL == 'cpython')
+if not pure_py
     fs = import('fs')
 
     pybind11_path = run_command(
