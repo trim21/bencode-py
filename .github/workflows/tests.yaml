@@ -146,7 +146,7 @@ jobs:
           packages: lcov
           version: 1.0
 
-      - run: lcov --capture --directory build --base-directory build --output-file coverage.info
+      - run: lcov --ignore-errors mismatch --capture --directory build --base-directory build --output-file coverage.info
 
       - run: lcov -l coverage.info
 
