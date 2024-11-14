@@ -49,8 +49,9 @@ norecursedirs = ['vendor', '.venv', 'build']
 skip = 'pp* cp39-* *musl*'
 
 [tool.cibuildwheel.linux]
-before-all = "sh .ci/install-sccache.sh"
+before-all = "uv tool install sccache"
 environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
+environment = ' PATH=$PATH:$HOME/.local/bin'
 
 [tool.black]
 extend-exclude = 'vendor'
