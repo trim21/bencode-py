@@ -114,6 +114,7 @@ __OverFlow:;
 }
 
 // there is no bytes/Str in bencode, they only have 1 type for both of them.
+// TODO: check byte length overflow ssize_t
 static std::string_view decodeAsView(const char *buf, Py_ssize_t *index, Py_ssize_t size) {
     Py_ssize_t index_sep = 0;
     for (Py_ssize_t i = *index; i < size; i++) {
