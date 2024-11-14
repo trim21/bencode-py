@@ -106,10 +106,13 @@ change when decoding.
 
 ## Development
 
-this project use [meson](https://github.com/mesonbuild/meson) for building, normally you do not need to install meson.
+this project use [meson](https://github.com/mesonbuild/meson) for building,
+normally you do not need to install meson,
+you only need to install python deps from `pip install -r requirements.txt`
 
-For testing pure python library, remove so/pyd from `src/bencode2` and run `PYTHONPATH=src pytest --assert-pkg-compiled=false`.
+For testing pure python library,
+make sure all so/pyd files in `src/bencode2` are removed, then run `PYTHONPATH=src pytest --assert-pkg-compiled=false`.
 
 For testing native extension, run `pip install -e .` and `pytest tests --assert-pkg-compiled=true`
 
-There is also `CMakeLists.txt` provide IDE support, see `.vscode/` directory for vscode config example.
+There is also `CMakeLists.txt` file to provide IDE support, see `.vscode/` directory for vscode config example.
