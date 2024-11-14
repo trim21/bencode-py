@@ -2,6 +2,7 @@ project(
     'bencode2',
     'cpp',
     default_options: ['cpp_std=c++17'],
+    meson_version: '>= 1.3.0'
 )
 
 py = import('python').find_installation(pure: false)
