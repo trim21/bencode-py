@@ -43,12 +43,14 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
     // i-1234e
     //  ^ index
     *index = *index + 1;
+    Py_ssize_t num_start = *index;
 
     if (buf[*index] == '-') {
         if (buf[*index + 1] == '0') {
             decodeErrF("invalid int, '-0' found at %zd", *index);
         }
 
+        num_start = 1 + *index;
         sign = -1;
     } else if (buf[*index] == '0') {
         if (*index + 1 != index_e) {
@@ -56,33 +58,17 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
         }
     }
 
-    if (sign > 0) {
-        for (Py_ssize_t i = *index; i < index_e; i++) {
-            char c = buf[i] - '0';
-            if (c < 0 || c > 9) {
-                decodeErrF("invalid int, '{:c}' found at {}", c, i);
-            }
+    for (Py_ssize_t i = num_start < index_e; i++) {
+        char c = buf[i] - '0';
+        if (c < 0 || c > 9) {
+            decodeErrF("invalid int, '{:c}' found at {}", c, i);
         }
-    } else {
-        for (Py_ssize_t i = *index + 1; i < index_e; i++) {
-            char c = buf[i] - '0';
-            if (c < 0 || c > 9) {
-                decodeErrF("invalid int, '{:c}' found at {}", c, i);
-            }
-        }
-    }
-
-    Py_ssize_t start;
-    if (sign > 0) {
-        start = *index;
-    } else {
-        start = 1 + *index;
     }
 
     // fast path without overflow check for small length string
     if ((index_e - *index) < 19) {
         int64_t val = 0;
-        for (Py_ssize_t i = start; i < index_e; i++) {
+        for (Py_ssize_t i = num_start; i < index_e; i++) {
             val = val * 10 + (buf[i] - '0');
         }
 
