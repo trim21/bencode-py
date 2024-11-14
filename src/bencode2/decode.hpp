@@ -77,11 +77,11 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
     }
 
     int64_t val = 0;
-    int of;
+
     for (Py_ssize_t i = *index + 1; i < index_e; i++) {
         char c = buf[i] - '0';
 
-        of = _i64_mul_overflow(val, 10, &val);
+        auto of = _i64_mul_overflow(val, 10, &val);
         of = of || _i64_add_overflow(val, c, &val);
 
         if (of) {
