@@ -8,7 +8,7 @@ requires = [
 
 [project]
 name = "bencode2"
-version = "0.3.13"
+version = "0.3.14"
 description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
 requires-python = ">=3.9,<4.0"
