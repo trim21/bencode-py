@@ -1,8 +1,9 @@
 #pragma once
 
 #include <limits.h>
+#include <stdint.h>
 
-#include "safe-int/safeint.h"
+#include <safe-math/safe-math.h>
 
 // some helper to check int operator overflow
 

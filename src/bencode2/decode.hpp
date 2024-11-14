@@ -72,67 +72,42 @@ static py::object decodeInt(const char *buf, Py_ssize_t *index, Py_ssize_t size)
         }
     }
 
+    Py_ssize_t start;
+    if (sign > 0) {
+        start = *index;
+    } else {
+        start = 1 + *index;
+    }
+
     // fast path without overflow check for small length string
     if ((index_e - *index) < 19) {
-        if (sign > 0) {
-            unsigned long long val = 0;
-            for (Py_ssize_t i = *index; i < index_e; i++) {
-                val = val * 10 + (buf[i] - '0');
-            }
-
-            *index = index_e + 1;
-
-            return py::cast(val);
-        } else {
-            long long val = 0;
-            for (Py_ssize_t i = *index + 1; i < index_e; i++) {
-                val = val * 10 + (buf[i] - '0');
-            }
-
-            *index = index_e + 1;
-            return py::cast(-val);
-        }
-    }
-
-    if (sign > 0) {
-        uint64_t val = 0;
-        // val = val * 10 + (buf[i] - '0')
-        // but with overflow check
-        for (Py_ssize_t i = *index; i < index_e; i++) {
-            char c = buf[i] - '0';
-
-            int of = _u64_mul_overflow(val, 10, &val);
-            of = of || _u64_add_overflow(val, c, &val);
-
-            if (of) {
-                goto __OverFlow;
-            }
+        int64_t val = 0;
+        for (Py_ssize_t i = start; i < index_e; i++) {
+            val = val * 10 + (buf[i] - '0');
         }
 
         *index = index_e + 1;
+        return py::cast(sign * val);
+    }
 
-        return py::cast(val);
-    } else {
-        int64_t val = 0;
-        int of;
-        for (Py_ssize_t i = *index + 1; i < index_e; i++) {
-            char c = buf[i] - '0';
+    int64_t val = 0;
+    int of;
+    for (Py_ssize_t i = *index + 1; i < index_e; i++) {
+        char c = buf[i] - '0';
 
-            of = _i64_mul_overflow(val, 10, &val);
-            of = of || _i64_add_overflow(val, c, &val);
+        of = _i64_mul_overflow(val, 10, &val);
+        of = of || _i64_add_overflow(val, c, &val);
 
-            if (of) {
-                goto __OverFlow;
-            }
-        }
-
-        if (_i64_mul_overflow(val, sign, &val)) {
+        if (of) {
             goto __OverFlow;
         }
-
-        *index = index_e + 1;
-        return py::cast(val);
     }
+
+    if (_i64_mul_overflow(val, sign, &val)) {
+        goto __OverFlow;
+    }
+
+    return py::cast(sign * val);
 
 // i1234e
 // i-1234e
