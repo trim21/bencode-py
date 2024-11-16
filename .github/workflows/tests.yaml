@@ -142,7 +142,7 @@ jobs:
           packages: llvm lcov
           version: 1.0
 
-      - run: llvm-gov --help
+      - run: llvm-cov --help
 
       - run: pip install -r requirements.txt
 
