@@ -2,7 +2,7 @@ try:  # pragma: no cover
     from .__bencode import BencodeDecodeError, BencodeEncodeError, bdecode, bencode
 
     COMPILED = True
-except ImportError:  # pragma: no cover
+except ModuleNotFoundError:  # pragma: no cover
     from .__decoder import BencodeDecodeError, bdecode
     from .__encoder import BencodeEncodeError, bencode
 

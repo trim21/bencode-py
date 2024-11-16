@@ -122,6 +122,9 @@ jobs:
 
     runs-on: "ubuntu-24.04"
 
+    env:
+      CXX: clang
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -135,19 +138,16 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: meson setup build -Db_coverage=true -Dbuildtype=debug -Ddebug=true
-      - run: meson compile -C build --verbose
-      - run: cp build/__bencode.*.so src/bencode2/
-      - run: PYTHONPATH=src pytest --assert-pkg-compiled=true
+      - run: >-
+          pip install
+          --config-settings=setup-args="-Db_coverage=true"
+          --config-settings=build-dir=build
+          --config-settings=editable-verbose=true
+          --no-build-isolation
+          --editable .
 
-      - uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: lcov
-          version: 1.0
-
-      - run: lcov --ignore-errors mismatch --capture --directory . --base-directory build --no-external --output-file coverage.info
-
-      - run: lcov -l coverage.info
+      - run: pytest --assert-pkg-compiled=true
+      - run: ninja coverage -C build
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
