@@ -146,7 +146,7 @@ jobs:
           --config-settings=build-dir=build
           --config-settings=editable-verbose=true
           --no-build-isolation
-          --editable .
+          --verbose --editable .
 
       - run: pytest --assert-pkg-compiled=true
 
