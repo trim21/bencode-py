@@ -141,7 +141,6 @@ jobs:
           packages: llvm
           version: 1.0
 
-
       - run: pip install -r requirements.txt
 
       - run: >-
@@ -153,7 +152,7 @@ jobs:
           --editable .
 
       - run: pytest --assert-pkg-compiled=true
-      - run: ls build
+      - run: ls build/*.p/ -ahl
       - run: llvm-cov -h
       - run: gcov -h
       - run: ninja coverage -C build
