@@ -158,7 +158,7 @@ jobs:
 
       - run: pytest --assert-pkg-compiled=true
 
-      - run: ninja coverage -C build
+      - run: ninja coverage -C build --verbose
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
