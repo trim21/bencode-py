@@ -18,7 +18,7 @@ py::object is_dataclasses;
 #include "decode.hpp"
 #include "encode.hpp"
 
-PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
+PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) { // LCOV_EXCL_EXCEPTION_BR_LINE
     auto mod = m.import("dataclasses");
     mod.inc_ref();
     dataclasses_fields = mod.attr("fields");
