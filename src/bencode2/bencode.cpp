@@ -20,7 +20,6 @@ py::object is_dataclasses;
 
 PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
     auto mod = m.import("dataclasses");
-    mod.inc_ref();
     dataclasses_fields = mod.attr("fields");
     dataclasses_fields.inc_ref();
     is_dataclasses = mod.attr("is_dataclass");

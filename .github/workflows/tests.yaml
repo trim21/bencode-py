@@ -133,27 +133,37 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - run: pip install -r requirements.txt
-
-      - run: meson setup build -Db_coverage=true -Dbuildtype=debug -Ddebug=true
-      - run: meson compile -C build --verbose
-      - run: cp build/__bencode.*.so src/bencode2/
-      - run: PYTHONPATH=src pytest --assert-pkg-compiled=true
-
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: lcov
           version: 1.0
 
-      - run: lcov --ignore-errors mismatch --capture --directory . --base-directory build --no-external --output-file coverage.info
+      - run: pip install -r requirements.txt
 
-      - run: lcov -l coverage.info
+      - run: >-
+          pip install
+          --config-settings=setup-args="-Db_coverage=true"
+          --config-settings=build-dir=build
+          --config-settings=editable-verbose=true
+          --no-build-isolation
+          --verbose --editable .
+
+      - run: pytest --cov --cov-report xml --assert-pkg-compiled=true
+
+      - run: >-
+          lcov
+          --ignore-errors mismatch
+          --capture
+          --directory .
+          --base-directory build
+          --no-external
+          --output-file coverage.info
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.info
+          files: coverage.xml,coverage.info
           flags: '${{ matrix.python-version }}'
 
 
@@ -187,11 +197,12 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pip install  --no-build-isolation -e .
 
-      - run: python -m pytest --cov --assert-pkg-compiled=false
+      - run: pytest --cov --cov-report xml --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
+          files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
 
