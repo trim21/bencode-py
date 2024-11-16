@@ -133,10 +133,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-#      - uses: awalsh128/cache-apt-pkgs-action@latest
-#        with:
-#          packages: llvm
-#          version: 1.0
+      #      - uses: awalsh128/cache-apt-pkgs-action@latest
+      #        with:
+      #          packages: llvm
+      #          version: 1.0
 
       - run: pip install -r requirements.txt
 
@@ -149,9 +149,10 @@ jobs:
           --editable .
 
       - run: pytest --assert-pkg-compiled=true
+
+      - run: ls build/ -ahl
       - run: ls build/*.p/ -ahl
-#      - run: llvm-cov -h
-#      - run: gcov -h
+
       - run: ninja coverage -C build
 
       - name: Upload coverage reports to Codecov
