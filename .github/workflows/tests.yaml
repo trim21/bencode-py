@@ -122,9 +122,6 @@ jobs:
 
     runs-on: "ubuntu-24.04"
 
-    env:
-      CXX: clang++
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -136,10 +133,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: llvm
-          version: 1.0
+#      - uses: awalsh128/cache-apt-pkgs-action@latest
+#        with:
+#          packages: llvm
+#          version: 1.0
 
       - run: pip install -r requirements.txt
 
@@ -153,8 +150,8 @@ jobs:
 
       - run: pytest --assert-pkg-compiled=true
       - run: ls build/*.p/ -ahl
-      - run: llvm-cov -h
-      - run: gcov -h
+#      - run: llvm-cov -h
+#      - run: gcov -h
       - run: ninja coverage -C build
 
       - name: Upload coverage reports to Codecov
