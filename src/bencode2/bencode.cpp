@@ -18,7 +18,7 @@ py::object is_dataclasses;
 #include "decode.hpp"
 #include "encode.hpp"
 
-// nothing need to test here, and lcov can't generate correct report here.
+// lcov can't generate correct report here, also do not need to see coverage here
 // LCOV_EXCL_START
 PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
     auto mod = m.import("dataclasses");
