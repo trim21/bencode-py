@@ -100,7 +100,7 @@ jobs:
           cache: "pip"
 
       - run: pip install -r requirements.txt
-      - run: pip install --no-isolation -e .
+      - run: pip install  --no-build-isolation -e .
 
       - run: python -m pytest --cov --assert-pkg-compiled=false
 
@@ -185,7 +185,7 @@ jobs:
           nogil: true
 
       - run: pip install -r requirements.txt
-      - run: pip install --no-isolation -e .
+      - run: pip install  --no-build-isolation -e .
 
       - run: python -m pytest --cov --assert-pkg-compiled=false
 
@@ -218,7 +218,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - run: pip install -r requirements.txt
-      - run: pip install --no-isolation -e .
+      - run: pip install  --no-build-isolation -e .
 
       - name: Run pytest
         run: python -m pytest --cov --assert-pkg-compiled=false
