@@ -30,4 +30,4 @@ PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) { // LCOV_EXCL_EXCEPTION_B
     m.def("bencode", &bencode, "");
     py::register_exception<DecodeError>(m, "BencodeDecodeError");
     py::register_exception<EncodeError>(m, "BencodeEncodeError");
-}
+} // LCOV_EXCL_EXCEPTION_BR_LINE
