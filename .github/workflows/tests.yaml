@@ -152,6 +152,7 @@ jobs:
 
       - run: ls build/ -ahl
       - run: ls build/*.p/ -ahl
+      - run: cat build/build.ninja
 
       - run: ninja coverage -C build
 
