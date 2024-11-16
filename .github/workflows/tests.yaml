@@ -122,10 +122,6 @@ jobs:
 
     runs-on: "ubuntu-24.04"
 
-    #    env:
-    #      CXX: clang++
-    #      CC: clang
-
     steps:
       - uses: actions/checkout@v4
         with:
