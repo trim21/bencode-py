@@ -1,8 +1,8 @@
-try:  # pragma: no cover
+try:
     from .__bencode import BencodeDecodeError, BencodeEncodeError, bdecode, bencode
 
     COMPILED = True
-except ModuleNotFoundError:  # pragma: no cover
+except ModuleNotFoundError:
     from .__decoder import BencodeDecodeError, bdecode
     from .__encoder import BencodeEncodeError, bencode
 
