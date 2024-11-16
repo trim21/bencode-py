@@ -3,7 +3,7 @@ meson[ninja]>=1.2.1
 pybind11==2.13.6 ; implementation_name == "cpython"
 
 # c++ coverage
-gcovr ; implementation_name == "cpython"
+# gcovr ; implementation_name == "cpython"
 
 typing_extensions
 
