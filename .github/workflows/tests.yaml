@@ -141,6 +141,8 @@ jobs:
           packages: llvm
           version: 1.0
 
+      - run: llvm-gov --help
+
       - run: pip install -r requirements.txt
 
       - run: >-
