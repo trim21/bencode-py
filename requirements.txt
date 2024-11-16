@@ -1,6 +1,6 @@
-pybind11==2.13.6
+meson-python>=0.14.0
 meson[ninja]>=1.2.1
-pybind11==2.13.6
+pybind11==2.13.6 ; implementation_name == "cpython"
 
 typing_extensions
 
