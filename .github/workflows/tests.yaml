@@ -135,7 +135,7 @@ jobs:
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: gcovr
+          packages: lcov
           version: 1.0
 
       - run: pip install -r requirements.txt
