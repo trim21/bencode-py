@@ -147,6 +147,7 @@ jobs:
           --editable .
 
       - run: pytest --assert-pkg-compiled=true
+      - run: ls build
       - run: ninja coverage -C build
 
       - name: Upload coverage reports to Codecov
