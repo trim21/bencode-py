@@ -100,10 +100,9 @@ jobs:
           cache: "pip"
 
       - run: pip install -r requirements.txt
+      - run: pip install --no-isolation -e .
 
       - run: python -m pytest --cov --assert-pkg-compiled=false
-        env:
-          PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -186,10 +185,9 @@ jobs:
           nogil: true
 
       - run: pip install -r requirements.txt
+      - run: pip install --no-isolation -e .
 
       - run: python -m pytest --cov --assert-pkg-compiled=false
-        env:
-          PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -220,11 +218,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - run: pip install -r requirements.txt
+      - run: pip install --no-isolation -e .
 
       - name: Run pytest
         run: python -m pytest --cov --assert-pkg-compiled=false
-        env:
-          PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
