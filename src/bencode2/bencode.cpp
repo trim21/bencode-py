@@ -18,11 +18,8 @@ py::object is_dataclasses;
 #include "decode.hpp"
 #include "encode.hpp"
 
-// lcov can't generate correct report here, also do not need to see coverage here
-// LCOV_EXCL_START
 PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
     auto mod = m.import("dataclasses");
-    mod.inc_ref();
     dataclasses_fields = mod.attr("fields");
     dataclasses_fields.inc_ref();
     is_dataclasses = mod.attr("is_dataclass");
@@ -33,4 +30,3 @@ PYBIND11_MODULE(__bencode, m, py::mod_gil_not_used()) {
     py::register_exception<DecodeError>(m, "BencodeDecodeError");
     py::register_exception<EncodeError>(m, "BencodeEncodeError");
 }
-// LCOV_EXCL_STOP

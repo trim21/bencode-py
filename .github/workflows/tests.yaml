@@ -122,9 +122,9 @@ jobs:
 
     runs-on: "ubuntu-24.04"
 
-#    env:
-#      CXX: clang++
-#      CC: clang
+    #    env:
+    #      CXX: clang++
+    #      CC: clang
 
     steps:
       - uses: actions/checkout@v4
@@ -142,11 +142,7 @@ jobs:
           packages: lcov
           version: 1.0
 
-#      - run: llvm-cov --help
-#      - run: gcov --help
-
       - run: pip install -r requirements.txt
-      - run: pip install gcovr
 
       - run: >-
           pip install
@@ -158,13 +154,20 @@ jobs:
 
       - run: pytest --assert-pkg-compiled=true
 
-      - run: ninja coverage -C build --verbose
+      - run: >-
+          lcov
+            --ignore-errors mismatch
+            --capture
+            --directory .
+            --base-directory build
+            --no-external
+            --output-file coverage.info
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files:  build/meson-logs/coverage.info
+          files: build/meson-logs/coverage.info
           flags: '${{ matrix.python-version }}'
 
 
