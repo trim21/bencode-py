@@ -124,6 +124,7 @@ jobs:
 
     env:
       CXX: clang++
+      CC: clang
 
     steps:
       - uses: actions/checkout@v4
