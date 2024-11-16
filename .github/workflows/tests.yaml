@@ -152,12 +152,12 @@ jobs:
 
       - run: >-
           lcov
-            --ignore-errors mismatch
-            --capture
-            --directory .
-            --base-directory build
-            --no-external
-            --output-file coverage.info
+          --ignore-errors mismatch
+          --capture
+          --directory .
+          --base-directory build
+          --no-external
+          --output-file coverage.info
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
