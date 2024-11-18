@@ -22,7 +22,8 @@ from bencode2 import COMPILED, BencodeEncodeError, bencode
         (True, b"i1e"),
         (False, b"i0e"),
         (-3, b"i-3e"),
-        (-0, b"i0e"),
+        (-0, b"i0e"),,
+        (0, b"i0e"),
         (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
         (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
         (4927586304, b"i4927586304e"),
