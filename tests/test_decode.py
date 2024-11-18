@@ -31,6 +31,7 @@ def test_non_bytes_input():
         b"10:q",  # str length too big
         b"a",
         # directory keys not sorted for {'foo': 1, 'spam': 2}
+        b"di1ei2ee",
         b"d3:foo4:spam3:bari42ee",
         b"d4:spaml1:a1:be",
         b"d3:keyi1e3:keyi2ee",  # duplicated keys

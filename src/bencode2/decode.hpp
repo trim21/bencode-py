@@ -195,6 +195,11 @@ static py::object decodeDict(const char *buf, Py_ssize_t *index, Py_ssize_t size
             break;
         }
 
+        if (buf[*index] < '0' || buf[*index] > '9') {
+            decoderError("expecting bytes when parsing dict key, found {} instead, index {}",
+                         buf[*index], *index);
+        }
+
         auto key = decodeAsView(buf, index, size);
         auto obj = decodeAny(buf, index, size);
 
