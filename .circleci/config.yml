@@ -26,7 +26,6 @@ commands:
           environment:
             CIBW_BUILD_VERBOSITY: '1'
             CIBW_BUILD_FRONTEND: "build[uv]"
-            CIBW_FREE_THREADED_SUPPORT: true
             CIBW_ARCHS: aarch64
             CIBW_BUILD: "<<parameters.build>>"
             CIBW_TEST_REQUIRES: pytest
