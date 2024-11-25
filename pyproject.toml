@@ -54,7 +54,7 @@ norecursedirs = ['vendor', '.venv', 'build']
 [tool.cibuildwheel]
 skip = 'pp* cp39-* *musl*'
 enable = ['cpython-freethreading']
-manylinux = 'manylinux_2_28'
+manylinux-image = 'manylinux_2_28'
 
 [tool.cibuildwheel.linux]
 before-all = "sh .ci/install-sccache.sh"
