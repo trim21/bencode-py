@@ -54,11 +54,14 @@ norecursedirs = ['vendor', '.venv', 'build']
 [tool.cibuildwheel]
 skip = 'pp* cp39-* *musl*'
 enable = ['cpython-freethreading']
-manylinux-image = 'manylinux_2_28'
 
 [tool.cibuildwheel.linux]
 before-all = "sh .ci/install-sccache.sh"
 environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
+
+manylinux-x86_64-image = 'manylinux_2_28'
+manylinux-aarch64-image = 'manylinux_2_28'
+
 #environment = { 'PATH' = '/root/.local/bin:$PATH' }
 
 [tool.black]
