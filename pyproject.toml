@@ -67,12 +67,13 @@ line-length = 88
 [tool.ruff]
 target-version = 'py39'
 line-length = 88
+extend-exclude = ['vendor']
 
 src = ['src', 'tests']
 
 [tool.ruff.lint]
 extend-select = ['UP', 'I', 'E', "W", 'FA', 'ANN']
-ignore = ['ANN101', 'ANN401', 'E721', 'E501']
+ignore = ['ANN401', 'E721', 'E501']
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ['ANN']
