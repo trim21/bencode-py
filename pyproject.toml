@@ -58,6 +58,7 @@ enable = ['cpython-freethreading']
 [tool.cibuildwheel.linux]
 before-all = "sh .ci/install-sccache.sh"
 environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
+manylinux = 'manylinux_2_28'
 #environment = { 'PATH' = '/root/.local/bin:$PATH' }
 
 [tool.black]
