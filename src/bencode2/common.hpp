@@ -1,5 +1,6 @@
 #pragma once
 #include <fmt/core.h>
+#include <gch/small_vector.hpp>
 
 #include <Python.h>
 #include <nanobind/nanobind.h>
@@ -63,7 +64,7 @@ namespace nb = nanobind;
 #endif
 #else
 
-#define debug_print(fmt, ...)                                                                      \
+#define debug_print(...)                                                                           \
     do {                                                                                           \
     } while (0)
 

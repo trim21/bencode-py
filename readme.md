@@ -2,6 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/bencode2)](https://pypi.org/project/bencode2/)
 [![tests](https://github.com/trim21/bencode-py/actions/workflows/tests.yaml/badge.svg)](https://github.com/trim21/bencode-py/actions/workflows/tests.yaml)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/trim21/bencode-py/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/trim21/bencode-py/tree/master)
 [![PyPI - Python Version](https://img.shields.io/badge/python-%3E%3D3.8%2C%3C4.0-blue)](https://pypi.org/project/bencode2/)
 [![Codecov branch](https://img.shields.io/codecov/c/github/Trim21/bencode-py/master)](https://codecov.io/gh/Trim21/bencode-py/branch/master)
 
@@ -11,15 +12,36 @@ Why yet another bencode package in python?
 
 because I need a bencode library:
 
-1. Correct, which mean it should fully validate its inputs,
-   and won't try to decode bencode bytes to `str` by default.
-   Bencode doesn't have a utf-8 str type, only bytes,
-   so many decoder try to decode bytes to str and fallback to bytes,
-   **this package won't, it parse bencode bytes value as python bytes.**
-2. Fast enough, that's why this package is written with c++.
-3. even cross implement, what's why
-   this package sill have a pure python fallback
-   and `bencode2-${version}-py3-none-any.whl` wheel on pypi.
+### 1. Correct
+
+It should fully validate its inputs, both encoded bencode bytes, or python object to be
+encoded.
+
+And it should not decode bencode bytes to `str` by default.
+
+Bencode doesn't have a utf-8 str type, only bytes,
+so many decoder try to decode bytes to str and fallback to bytes,
+**this package won't, it parse bencode bytes value as python bytes.**
+
+It may be attempting to parse all dictionary keys as string,
+but for BitTorrent v2 torrent, the keys in `pieces root` dictionary is still sha256 hash
+instead of ascii/utf-8 string.
+
+If you prefer string as dictionary keys, write a dedicated function to convert parsing
+result.
+
+Also be careful! Even file name or torrent name may not be valid utf-8 string.
+
+### 2. Fast enough
+
+this package is written with c++ in CPython.
+
+### 3. still cross implement
+
+This package sill have a pure python wheel `bencode2-${version}-py3-none-any.whl` wheel
+on pypi.
+
+Which means you can still use it in non-cpython python with same behavior.
 
 ## install
 
@@ -44,12 +66,12 @@ assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 |   integer    |    `int`    |
 |    string    |   `bytes`   |
 |    array     |   `list`    |
-|  directory   |   `dict`    |
+|  dictionary  |   `dict`    |
 
-bencode have 4 native types, integer, string, array and directory.
+bencode have 4 native types, integer, string, array and dictionary.
 
 This package will decode integer to `int`, array to `list` and
-directory to `dict`.
+dictionary to `dict`.
 
 Because bencode string is not defined as utf-8 string, and will contain raw bytes
 bencode2 will decode bencode string to python `bytes`.
@@ -63,9 +85,9 @@ bencode2 will decode bencode string to python `bytes`.
 |       `str`, `enum.StrEnum`       |    string    |
 | `bytes`, `bytearray`,`memoryview` |    string    |
 |   `list`, `tuple`, `NamedTuple`   |    array     |
-|       `dict`, `OrderedDict`       |  directory   |
-|       `types.MaapingProxy`        |  directory   |
-|            dataclasses            |  directory   |
+|       `dict`, `OrderedDict`       |  dictionary  |
+|       `types.MaapingProxy`        |  dictionary  |
+|            dataclasses            |  dictionary  |
 
 ## free threading
 
@@ -81,3 +103,18 @@ Also, when decoding, `bytes` objects are immutable so it's safe to be used in mu
 threading,
 but `memoryview` and `bytearray` maybe not, please make sure underlay data doesn't
 change when decoding.
+
+## Development
+
+This project use [meson](https://github.com/mesonbuild/meson) for building.
+
+For testing pure python library,
+make sure all so/pyd files in `src/bencode2` are removed, then run
+`PYTHONPATH=src pytest --assert-pkg-compiled=false`.
+
+For testing native extension, meson-python doesn't provide same function with
+`python setup.py build_ext --inplace`,
+so you will need to build so/pyd with meson and copy it to `src/bencode2`,
+then run `PYTHONPATH=src pytest --assert-pkg-compiled=true`.
+
+you can use [go-task](https://github.com/go-task/task/) with `task meson` to build.

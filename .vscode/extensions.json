@@ -1,0 +1,6 @@
+{
+  "recommendations": [
+    "mesonbuild.mesonbuild",
+    "llvm-vs-code-extensions.vscode-clangd"
+  ]
+}

@@ -1,14 +1,12 @@
 #pragma once
-#define FMT_HEADER_ONLY
 
 #include <stdint.h>
-#include <string>
 #include <unordered_set>
 
 #include <fmt/compile.h>
 #include <fmt/core.h>
 
-#include "common.h"
+#include "common.hpp"
 
 #define defaultBufferSize 4096
 
@@ -19,6 +17,7 @@ public:
     std::unordered_set<uintptr_t> seen;
 
     EncodeContext() {
+        debug_print("new EncodeContext");
         buffer = std::vector<char>();
         stack_depth = 0;
         buffer.reserve(defaultBufferSize);
@@ -66,7 +65,11 @@ public:
 private:
     void bufferGrow(Py_ssize_t size) {
         if (size + buffer.size() + 1 >= buffer.capacity()) {
-            buffer.reserve(buffer.capacity() * 2 + size);
+            if (buffer.capacity() < 1024 * 1024) { // 1mib
+                buffer.reserve(buffer.capacity() * 2 + size);
+            } else {
+                buffer.reserve(buffer.capacity() + size * 2);
+            }
         }
     }
 };

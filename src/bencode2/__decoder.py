@@ -4,31 +4,14 @@ from typing import Any, Final
 
 from typing_extensions import Buffer
 
-char_l: Final = 108  # ord("l")
-char_i: Final = 105  # ord("i")
-char_e: Final = 101  # ord("e")
-char_d: Final = 100  # ord("d")
-char_0: Final = 48  # ord("0")
-char_9: Final = 57  # ord("9")
-char_dash: Final = 45  # ord("-")
-char_colon: Final = 58  # ord(":")
-
-
-def atoi(b: memoryview) -> int:
-    sign: int = 1
-    offset: int = 0
-
-    if b[0] == char_dash:
-        sign = -1
-        offset = 1
-
-    total: int = 0
-    for c in b[offset:]:
-        if not (char_0 <= c <= char_9):
-            raise ValueError
-        total = total * 10 + (c - char_0)
-
-    return total * sign
+char_l: Final = ord("l")
+char_i: Final = ord("i")
+char_e: Final = ord("e")
+char_d: Final = ord("d")
+char_0: Final = ord("0")
+char_9: Final = ord("9")
+char_dash: Final = ord("-")
+char_colon: Final = ord(":")
 
 
 class BencodeDecodeError(ValueError):
@@ -37,25 +20,22 @@ class BencodeDecodeError(ValueError):
 
 def bdecode(value: Buffer, /) -> Any:
     """Decode bencode formatted bytes to python value."""
-    if not isinstance(value, bytes):
-        value = memoryview(value).tobytes()
-    if not value:
-        raise BencodeDecodeError("empty input")
-    return Decoder(value).decode()
+    return Decoder(memoryview(value).cast("B")).decode()
 
 
 class Decoder:
-    value: bytes
-    mw: memoryview
+    value: memoryview
     index: int
     size: int
 
-    __slots__ = ("value", "mw", "index", "size")
+    __slots__ = ("value", "index", "size")
 
-    def __init__(self, value: bytes) -> None:
-        self.value = value
+    def __init__(self, value: memoryview) -> None:
         self.size = len(value)
-        self.mw = memoryview(value)
+        if self.size == 0:
+            raise BencodeDecodeError("empty input")
+
+        self.value = value
         self.index = 0
 
     def decode(self) -> object:
@@ -83,19 +63,34 @@ class Decoder:
 
     def __decode_int(self) -> int:
         self.index += 1
-        try:
-            index_end = self.value.index(char_e, self.index)
-        except ValueError:
+        for i, c in enumerate(self.value[self.index :]):
+            if c == char_e:
+                index_end = i + self.index
+                break
+        else:
             raise BencodeDecodeError(
                 f"invalid int, failed to found end. index {self.index}"
             )
 
-        try:
-            n = atoi(self.mw[self.index : index_end])
-        except ValueError:
-            raise BencodeDecodeError(
-                f"malformed int {self.value[self.index:index_end]!r}. index {self.index}"
-            )
+        if index_end == self.index:
+            raise BencodeDecodeError(f"invalid int, found 'ie': {self.index}")
+
+        n: int = 1
+        offset: int = 0
+
+        if self.value[self.index] == char_dash:
+            n = -1
+            offset = 1
+
+        total: int = 0
+        for c in self.value[self.index + offset : index_end]:
+            if not (char_0 <= c <= char_9):
+                raise BencodeDecodeError(
+                    f"malformed int {self.value[self.index:index_end]!r}. index {self.index}"
+                )
+            total = total * 10 + (c - char_0)
+
+        n = total * n
 
         if self.value[self.index] == char_dash:
             if self.value[self.index + 1] == char_0:
@@ -129,9 +124,11 @@ class Decoder:
         return r
 
     def __decode_bytes(self) -> bytes:
-        try:
-            index_colon = self.value.index(char_colon, self.index)
-        except ValueError:
+        for i, c in enumerate(self.value[self.index :]):
+            if c == char_colon:
+                index_colon = i + self.index
+                break
+        else:
             raise BencodeDecodeError(
                 f"invalid bytes, failed find expected char ':'. index {self.index}"
             )
@@ -163,7 +160,7 @@ class Decoder:
 
         self.index = index_colon + n
 
-        return s
+        return s.tobytes()
 
     def __decode_dict(self) -> dict[str | bytes, Any]:
         start_index = self.index
@@ -180,7 +177,9 @@ class Decoder:
                 break
             if not (char_0 <= self.value[self.index] <= char_9):
                 raise BencodeDecodeError(
-                    f"directory only allow str as keys, found unexpected char '{self.value[self.index]:c}', index {self.index}"
+                    f"directory only allow str as keys, "
+                    f"found unexpected char "
+                    f"'{self.value[self.index]:c}', index {self.index}"
                 )
             k = self.__decode_bytes()
             v = self.__decode()

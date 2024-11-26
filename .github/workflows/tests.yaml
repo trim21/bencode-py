@@ -8,6 +8,9 @@ on:
       - master
     tags-ignore:
       - "*"
+    paths-ignore:
+      - .github/renovate.json
+      - readme.md
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
@@ -30,30 +33,16 @@ jobs:
 
       - run: pipx run twine check --strict dist/*
 
-  test-cp-py:
+  bench-cp:
+    needs: [ build ]
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - "windows-latest"
-          - "ubuntu-22.04"
-          - "macos-13"
-          - "macos-14"
         python-version:
-          - "3.8"
-          - "3.9"
           - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
-        exclude:
-          - { os: macos-14, python-version: '3.8' }
-          - { os: macos-14, python-version: '3.9' }
 
-    runs-on: "${{ matrix.os }}"
+    runs-on: "ubuntu-24.04"
 
-    env:
-      PY_BENCODE2_PURE_PYTHON: '1'
     steps:
       - uses: actions/checkout@v4
 
@@ -63,29 +52,128 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - run: pip install -e .
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
       - run: pip install -r requirements.txt
+      - run: pip install bencode2 --no-index --find-links ./dist/
+
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v3
+        with:
+          token: ${{ secrets.CODSPEED_TOKEN }}
+          run: python -m pytest tests/bench.py --assert-pkg-compiled=true --codspeed
+
+  test-cp-py:
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        os:
+          - "windows-latest"
+          - "ubuntu-24.04"
+          - "macos-13"
+          - "macos-14"
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+        exclude:
+          - { os: macos-14, python-version: '3.9' }
+
+    runs-on: "${{ matrix.os }}"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - run: pip install -r requirements.txt
+      - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
 
       - run: python -m pytest --cov --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: '${{ matrix.python-version }}'
+
+  test-c-cov:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+
+    runs-on: "ubuntu-24.04"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: lcov
+          version: 1.0
+
+      - run: pip install -r requirements.txt
+
+      - run: >-
+          pip install
+          --config-settings=setup-args="-Db_coverage=true"
+          --config-settings=build-dir=build
+          --config-settings=editable-verbose=true
+          --no-build-isolation
+          --verbose --editable .
+
+      - run: pytest --cov --cov-report xml --assert-pkg-compiled=true
+
+      - run: >-
+          lcov
+          --ignore-errors mismatch
+          --capture
+          --directory .
+          --base-directory build
+          --no-external
+          --output-file coverage.info
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml,coverage.info
+          flags: '${{ matrix.python-version }}'
+
 
   test-cp-py-nogil:
     strategy:
       fail-fast: false
       matrix:
         os:
-#          - "windows-latest"
+          #          - "windows-latest"
           - "ubuntu-24.04"
-#          - "macos-14"
+    #          - "macos-14"
 
     runs-on: "${{ matrix.os }}"
-    env:
-      PY_BENCODE2_PURE_PYTHON: '1'
-
     steps:
       - uses: actions/checkout@v4
 
@@ -100,14 +188,15 @@ jobs:
           python-version: 3.13
           nogil: true
 
-      - run: pip install -e .
       - run: pip install -r requirements.txt
+      - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
 
-      - run: python -m pytest --cov --assert-pkg-compiled=false
+      - run: pytest --cov --cov-report xml --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
+          files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
 
@@ -133,22 +222,25 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - run: pip install -e .
       - run: pip install -r requirements.txt
+      - run: pip install  --no-build-isolation -e .
 
       - name: Run pytest
         run: python -m pytest --cov --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: '${{ matrix.python-version }}'
 
   test-pass:
     needs:
       - test-pp
       - test-cp-py
+      - bench-cp
       - test-cp-py-nogil
+      - test-c-cov
       - twine-check
     runs-on: 'ubuntu-latest'
     steps:

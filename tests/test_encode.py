@@ -5,11 +5,12 @@ import dataclasses
 import enum
 import sys
 import types
+from types import MappingProxyType
 from typing import Any, NamedTuple
 
 import pytest
 
-from bencode2 import BencodeEncodeError, bencode
+from bencode2 import COMPILED, BencodeEncodeError, bencode
 
 
 @pytest.mark.parametrize(
@@ -22,6 +23,7 @@ from bencode2 import BencodeEncodeError, bencode
         (False, b"i0e"),
         (-3, b"i-3e"),
         (-0, b"i0e"),
+        (0, b"i0e"),
         (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
         (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
         (4927586304, b"i4927586304e"),
@@ -37,6 +39,7 @@ from bencode2 import BencodeEncodeError, bencode
             types.MappingProxyType({b"cow": b"moo", b"spam": b"eggs"}),
             b"d3:cow3:moo4:spam4:eggse",
         ),
+        ({"你好": 0}, b"d" b"6:" + "你好".encode() + b"i0ee"),
         (types.MappingProxyType({b"spam": [b"a", b"b"]}), b"d4:spaml1:a1:bee"),
         (types.MappingProxyType({}), b"de"),
         (collections.OrderedDict(), b"de"),
@@ -85,6 +88,9 @@ def test_encode():
 def test_duplicated_type_keys():
     with pytest.raises(BencodeEncodeError):
         bencode({"string_key": 1, b"string_key": 2, "1": 2})
+
+    with pytest.raises(BencodeEncodeError):
+        bencode(MappingProxyType({"string_key": 1, b"string_key": 2, "1": 2}))
 
 
 def test_dict_int_keys():
@@ -214,6 +220,11 @@ def test_str_enum():
         v = "s"
 
     assert bencode(EnumStr.v) == b"1:s"
+
+
+@pytest.mark.skipif(not COMPILED, reason="only run with binary module")
+def test_free():
+    bencode(b" " * (100 * 1024 * 1024))
 
 
 def test_TypedDict():

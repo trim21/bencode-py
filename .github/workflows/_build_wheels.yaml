@@ -7,64 +7,56 @@ jobs:
   build_wheels:
     name: Build wheels
     runs-on: ${{ matrix.os }}
+    env:
+      SCCACHE_GHA_ENABLED: "true"
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - { os: macos-13, arch: x86_64, build: "*" }
-          - { os: macos-14, arch: arm64, build: "*" }
-          - { os: windows-latest, arch: AMD64, build: "*" }
-          - { os: ubuntu-latest, arch: x86_64, build: "*[02468]-*" }
-          - { os: ubuntu-latest, arch: x86_64, build: "*[13579]-*" }
-          - { os: ubuntu-latest, arch: x86_64, build: "*[02468]t-*" }
-          - { os: ubuntu-latest, arch: x86_64, build: "*[13579]t-*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]t-manylinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[05]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[16]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[27]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[38]t-musllinux*" }
-          - { os: ubuntu-latest, arch: aarch64, build: "*[49]t-musllinux*" }
-    steps:
-      - uses: docker/setup-qemu-action@v3
-        if: matrix.os == 'ubuntu-latest'
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
 
+          - { os: macos-14, cibw_arch: arm64, cibw_build: "*" }
+
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[13579]-* *[13579]t-*" }
+
+          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
+          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
+
+    steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
 
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: ${{ runner.os == 'Windows' }}
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.6
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v4
+        if: ${{ runner.os != 'Linux' }}
+
       - name: Restore cached Primes
+        if: ${{ runner.os != 'Linux' }}
         id: cache
         uses: actions/cache@v4
         with:
           path: |
+            ${{ env.UV_CACHE_DIR }}
             ~\AppData\Local\pypa\cibuildwheel\Cache
             ~/Library/Caches/cibuildwheel
             ~/.cache/cibuildwheel
-          key: 'cibuildwheel-${{ runner.os }}-${{ matrix.arch }}-${{ matrix.build }}'
-          restore-keys: |
-            cibuildwheel-${{ runner.os }}-${{ matrix.arch }}
+          key: 'cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ matrix.cibw_build }}'
 
-      - uses: pypa/cibuildwheel@v2.21.3
+      - uses: pypa/cibuildwheel@v2.22.0
         env:
+          CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ALLOW_EMPTY: 'True'
-          CIBW_BUILD_VERBOSITY: 1
-          CIBW_FREE_THREADED_SUPPORT: true
-          CIBW_ARCHS: ${{ matrix.arch }}
-          CIBW_BUILD: ${{ matrix.build }}
-          CIBW_SKIP: 'pp* cp38-*'
+          CIBW_ARCHS: ${{ matrix.cibw_arch }}
+          CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
           MACOSX_DEPLOYMENT_TARGET: '11.0'
@@ -73,7 +65,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 'wheels-${{ runner.os }}-${{ matrix.arch }}-${{ strategy.job-index }}'
+          name: 'wheels-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
           if-no-files-found: ignore
 
@@ -81,13 +73,11 @@ jobs:
     name: make sdist and wheel
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - run: pipx run build
-      env:
-        PY_BENCODE2_PURE_PYTHON: '1'
+      - run: pipx run build -w -Csetup-args=-Dpure_py=enabled
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: 'wheels-dist'
-        path: dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'wheels-dist'
+          path: dist/*

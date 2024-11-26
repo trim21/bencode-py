@@ -1,0 +1,12 @@
+{
+  "mesonbuild.buildFolder": "build",
+  "[cpp]": {
+    "editor.showDeprecated": true
+  },
+  "clangd.arguments": [
+    "-log=verbose",
+    "-pretty",
+    "--background-index",
+    "--compile-commands-dir=./build"
+  ]
+}

@@ -9,8 +9,8 @@ nb::object dataclasses_fields;
 // dataclasses.is_dataclass
 nb::object is_dataclasses;
 
-#include "decode.h"
-#include "encode.h"
+#include "decode.hpp"
+#include "encode.hpp"
 
 NB_MODULE(__bencode, m) {
     auto mod = m.import_("dataclasses");

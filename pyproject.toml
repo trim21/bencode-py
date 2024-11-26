@@ -1,13 +1,17 @@
 [build-system]
-requires = ["scikit-build-core >=0.4.3", "nanobind >=1.3.2"]
-build-backend = "scikit_build_core.build"
+build-backend = "mesonpy"
+requires = [
+    "meson-python>=0.14.0",
+    "meson[ninja]>=1.2.1",
+    'pybind11==2.13.6 ; implementation_name == "cpython"',
+]
 
 [project]
 name = "bencode2"
-version = "0.3.5"
+version = "0.3.17"
 description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
-requires-python = ">=3.8,<4.0"
+requires-python = ">=3.9,<4.0"
 authors = [
     { name = "trim21", email = "trim21me@gmail.com" },
 ]
@@ -30,7 +34,7 @@ classifiers = [
 ]
 
 dependencies = [
-    'typing_extensions'
+    'typing_extensions',
 ]
 
 [project.urls]
@@ -38,37 +42,39 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
-[tool.scikit-build]
-# Protect the configuration against future changes in scikit-build-core
-minimum-version = "0.4"
+[tool.meson-python.args]
+setup = ['--errorlogs']
+dist = ['--verbose']
+compile = ['--verbose']
+install = ['--verbose']
 
-# Setuptools-style build caching in a local directory
-build-dir = "build/{wheel_tag}"
+[tool.pytest.ini_options]
+norecursedirs = ['vendor', '.venv', 'build']
 
-# Build stable ABI wheels for CPython 3.12+
-wheel.py-api = "py3"
-editable.mode = "inplace"
+[tool.cibuildwheel]
+skip = 'pp* cp39-* *musl*'
+enable = ['cpython-freethreading']
 
-[tool.hatch.build.targets.sdist]
-sources = ["src/"]
-include = ['src/']
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/bencode2"]
+[tool.cibuildwheel.linux]
+before-all = "sh .ci/install-sccache.sh"
+environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
+#environment = { 'PATH' = '/root/.local/bin:$PATH' }
 
 [tool.black]
-target-version = ['py38']
+extend-exclude = 'vendor'
+target-version = ['py39']
 line-length = 88
 
 [tool.ruff]
-target-version = 'py38'
+target-version = 'py39'
 line-length = 88
+extend-exclude = ['vendor']
 
 src = ['src', 'tests']
 
 [tool.ruff.lint]
 extend-select = ['UP', 'I', 'E', "W", 'FA', 'ANN']
-ignore = ['ANN101', 'ANN401', 'E721', 'E501']
+ignore = ['ANN401', 'E721', 'E501']
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ['ANN']
@@ -80,7 +86,8 @@ source = [
 ]
 
 [tool.mypy]
-python_version = "3.8"
+exclude = ['tests', 'vendor']
+python_version = "3.9"
 strict = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
