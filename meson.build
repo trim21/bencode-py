@@ -11,19 +11,13 @@ project(
 
 py_inter = import('python').find_installation()
 
-PURE_PY = run_command(
-    py_inter,
-    '-c', 'import os; print(os.environ.get("PY_BENCODE2_PURE_PYTHON", "0"))',
-    check: true,
-).stdout().strip()
-
 PY_IMPL = run_command(
     py_inter,
     '-c', 'import sys; print(sys.implementation.name)',
     check: true,
 ).stdout().strip()
 
-pure_py = not ((PURE_PY != '1') and (PY_IMPL == 'cpython'))
+pure_py = (get_option('pure_py').enabled()) or (PY_IMPL != 'cpython')
 
 py = import('python').find_installation(pure: pure_py)
 

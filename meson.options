@@ -1,0 +1,1 @@
+option('pure_py', type: 'feature', value: 'disabled')
