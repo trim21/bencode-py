@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <unordered_set>
+#include <vector>
 
 #include <fmt/compile.h>
 #include <fmt/core.h>
