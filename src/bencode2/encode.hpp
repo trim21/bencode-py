@@ -3,27 +3,27 @@
 #include <Python.h>
 #include <algorithm> // std::sort
 #include <gch/small_vector.hpp>
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
 
 #include "common.hpp"
 #include "encode_ctx.hpp"
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
 // dataclasses.fields
-extern py::object dataclasses_fields;
+extern nb::object dataclasses_fields;
 
 // dataclasses.is_dataclass
-extern py::object is_dataclasses;
+extern nb::object is_dataclasses;
 
-static void encodeAny(EncodeContext *ctx, py::handle obj);
+static void encodeAny(EncodeContext *ctx, nb::handle obj);
 
-static bool cmp(std::pair<std::string_view, py::handle> &a,
-                std::pair<std::string_view, py::handle> &b) {
+static bool cmp(std::pair<std::string_view, nb::handle> &a,
+                std::pair<std::string_view, nb::handle> &b) {
     return a.first < b.first;
 }
 
-static std::string_view py_string_view(py::handle obj) {
+static std::string_view py_string_view(nb::handle obj) {
     if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
         const char *s = (char *)PyUnicode_DATA(obj.ptr());
         Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
@@ -35,7 +35,7 @@ static std::string_view py_string_view(py::handle obj) {
     return std::string_view(s, size);
 }
 
-static std::string_view dict_key_view(py::handle obj) {
+static std::string_view dict_key_view(nb::handle obj) {
     if (PyBytes_Check(obj.ptr())) {
         Py_ssize_t size = 0;
         char *s;
@@ -51,13 +51,13 @@ static std::string_view dict_key_view(py::handle obj) {
         return py_string_view(obj);
     }
 
-    throw py::type_error("dict keys must be str or bytes");
+    throw nb::type_error("dict keys must be str or bytes");
 }
 
-static void encodeDict(EncodeContext *ctx, py::handle obj) {
+static void encodeDict(EncodeContext *ctx, nb::handle obj) {
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
-    gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
+    gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
 
     vec.reserve(l);
 
@@ -90,7 +90,7 @@ static void encodeDict(EncodeContext *ctx, py::handle obj) {
 }
 
 // slow path for types.MappingProxyType
-static void encodeDictLike(EncodeContext *ctx, py::handle h) {
+static void encodeDictLike(EncodeContext *ctx, nb::handle h) {
     ctx->writeChar('d');
     auto l = PyObject_Size(h.ptr());
     if (l == 0) {
@@ -98,9 +98,9 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
         return;
     }
 
-    auto obj = h.cast<py::object>();
+    auto obj = h.cast<nb::object>();
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
+    gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
 
     vec.reserve(l);
 
@@ -108,7 +108,7 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
         auto key = PyTuple_GetItem(keyValue.ptr(), 0);
         auto value = PyTuple_GetItem(keyValue.ptr(), 1);
 
-        vec.push_back(std::make_pair(dict_key_view(py::handle(key)), py::handle(value)));
+        vec.push_back(std::make_pair(dict_key_view(nb::handle(key)), nb::handle(value)));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -130,14 +130,14 @@ static void encodeDictLike(EncodeContext *ctx, py::handle h) {
     return;
 }
 
-static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
+static void encodeDataclasses(EncodeContext *ctx, nb::handle h) {
     ctx->writeChar('d');
     auto fields = dataclasses_fields(h);
     auto size = PyTuple_Size(fields.ptr());
 
-    auto obj = h.cast<py::object>();
+    auto obj = h.cast<nb::object>();
 
-    gch::small_vector<std::pair<std::string_view, py::handle>, 8> vec;
+    gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
 
     vec.reserve(size);
 
@@ -145,7 +145,7 @@ static void encodeDataclasses(EncodeContext *ctx, py::handle h) {
         auto key = field.attr("name").ptr();
         auto value = obj.attr(key);
 
-        vec.push_back(make_pair(py_string_view(key), py::handle(value)));
+        vec.push_back(make_pair(py_string_view(key), nb::handle(value)));
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -168,9 +168,9 @@ static void encodeInt_fast(EncodeContext *ctx, long long val) {
     ctx->writeChar('e');
 }
 
-static void encodeInt_slow(EncodeContext *ctx, py::handle obj);
+static void encodeInt_slow(EncodeContext *ctx, nb::handle obj);
 
-static void encodeInt(EncodeContext *ctx, py::handle obj) {
+static void encodeInt(EncodeContext *ctx, nb::handle obj) {
     int overflow = 0;
     int64_t val = PyLong_AsLongLongAndOverflow(obj.ptr(), &overflow);
     if (overflow) {
@@ -185,43 +185,43 @@ static void encodeInt(EncodeContext *ctx, py::handle obj) {
     return encodeInt_fast(ctx, val);
 }
 
-static void encodeInt_slow(EncodeContext *ctx, py::handle obj) {
+static void encodeInt_slow(EncodeContext *ctx, nb::handle obj) {
     ctx->writeChar('i');
 
     auto i = PyNumber_Long(obj.ptr());
     auto _ = AutoFree(i);
 
-    auto s = py::str(i);
+    auto s = nb::str(i);
     auto sv = py_string_view(s);
     ctx->write(sv);
 
     ctx->writeChar('e');
 }
 
-static void encodeList(EncodeContext *ctx, const py::handle obj) {
+static void encodeList(EncodeContext *ctx, const nb::handle obj) {
     ctx->writeChar('l');
 
     auto size = PyList_Size(obj.ptr());
     for (auto i = 0; i < size; i++) {
-        encodeAny(ctx, py::handle(PyList_GetItem(obj.ptr(), i)));
+        encodeAny(ctx, nb::handle(PyList_GetItem(obj.ptr(), i)));
     }
 
     ctx->writeChar('e');
 }
 
-static void encodeTuple(EncodeContext *ctx, py::handle obj) {
+static void encodeTuple(EncodeContext *ctx, nb::handle obj) {
     ctx->writeChar('l');
 
     auto size = PyTuple_Size(obj.ptr());
     for (auto i = 0; i < size; i++) {
-        encodeAny(ctx, py::handle(PyTuple_GetItem(obj.ptr(), i)));
+        encodeAny(ctx, nb::handle(PyTuple_GetItem(obj.ptr(), i)));
     }
 
     ctx->writeChar('e');
 }
 
 template <typename Encode>
-void encodeComposeObject(EncodeContext *ctx, py::handle obj, Encode encode) {
+void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
     uintptr_t key = (uintptr_t)obj.ptr();
     debug_print("put object %p to seen", key);
     debug_print("after put object %p to seen", key);
@@ -244,7 +244,7 @@ void encodeComposeObject(EncodeContext *ctx, py::handle obj, Encode encode) {
 
 // for internal detail of python string
 // https://github.com/python/cpython/blob/850189a64e7f0b920fe48cb12a5da3e648435680/Include/cpython/unicodeobject.h#L81
-static void encodeStr(EncodeContext *ctx, const py::handle obj) {
+static void encodeStr(EncodeContext *ctx, const nb::handle obj) {
     debug_print("encode str");
 
     if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
@@ -271,7 +271,7 @@ static void encodeStr(EncodeContext *ctx, const py::handle obj) {
     return;
 }
 
-static void encodeAny(EncodeContext *ctx, const py::handle obj) {
+static void encodeAny(EncodeContext *ctx, const nb::handle obj) {
     debug_print("encodeAny");
 
     if (obj.ptr() == Py_True) {
@@ -356,11 +356,11 @@ static void encodeAny(EncodeContext *ctx, const py::handle obj) {
     }
 
     // Unsupported type, raise TypeError
-    std::string repr = py::repr(obj.get_type());
+    std::string repr = nb::repr(obj.get_type());
 
     std::string msg = "unsupported object " + repr;
 
-    throw py::type_error(msg);
+    throw nb::type_error(msg);
 }
 
 thread_local static std::vector<EncodeContext *> pool;
@@ -403,13 +403,13 @@ public:
     }
 };
 
-[[maybe_unused]] static py::bytes bencode(py::object v) {
+[[maybe_unused]] static nb::bytes bencode(nb::object v) {
     debug_print("1");
     auto ctx = CtxMgr();
 
     encodeAny(ctx.ctx, v);
 
-    auto res = py::bytes(ctx.ctx->buffer.data(), ctx.ctx->buffer.size());
+    auto res = nb::bytes(ctx.ctx->buffer.data(), ctx.ctx->buffer.size());
 
     return res;
 }

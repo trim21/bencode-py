@@ -31,35 +31,26 @@ py.install_sources(
 )
 
 if not pure_py
-    fs = import('fs')
-
-    pybind11_path = run_command(
-        py,
-        '-c', 'import pybind11; print(pybind11.get_include());',
-        check: true,
-    ).stdout().strip()
-
-    pybind11_includes = fs.relative_to(pybind11_path, meson.current_source_dir())
-
     if get_option('buildtype').startswith('debug')
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
     endif
 
     add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
-    incdir = include_directories(
-        [
-            pybind11_includes,
-            './vendor/fmt/include',
-            './vendor/portable-snippets/',
-            './vendor/small_vector/source/include',
-        ],
-    )
+
+    nanobind_dep = dependency('nanobind', static: true)
+
     py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
         install: true,
-        include_directories: incdir,
+        include_directories: include_directories(
+            [
+                './vendor/fmt/include',
+                './vendor/portable-snippets/',
+                './vendor/small_vector/source/include',
+            ],
+        ),
         subdir: 'bencode2',
-        dependencies: py.dependency(),
+        dependencies: [nanobind_dep],
     )
 endif

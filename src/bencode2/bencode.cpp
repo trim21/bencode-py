@@ -1,5 +1,3 @@
-#define FMT_HEADER_ONLY
-
 #include <nanobind/nanobind.h>
 namespace nb = nanobind;
 
