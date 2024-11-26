@@ -26,7 +26,9 @@ while True:
     for c in [i for i in range(5000)]:
         C = type("C", (object,), {})
 
-        bdecode(bencode(1844674407370955161600))
+        bn = bencode(1844674407370955161600)
+
+        bdecode(bn)
 
         bdecode(bencode(DC(a=1, b="ss", c=True, d=[{"a": 1, "b": b"bb"}, (1, 2, 3)])))
 

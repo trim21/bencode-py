@@ -3,9 +3,6 @@
 #include <gch/small_vector.hpp>
 
 #include <Python.h>
-#include <nanobind/nanobind.h>
-
-namespace nb = nanobind;
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
