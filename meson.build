@@ -43,7 +43,7 @@ if not pure_py
 
     limited_api = ''
     if get_option('abi3').enabled()
-        limited_api = '3.7'
+        limited_api = '3.12'
     endif
 
     py.extension_module(

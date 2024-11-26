@@ -245,6 +245,7 @@ void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
 static void encodeStr(EncodeContext *ctx, const nb::handle obj) {
     debug_print("encode str");
 
+#ifndef Py_LIMITED_API
     if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
         const char *s = (char *)PyUnicode_DATA(obj.ptr());
         Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
@@ -256,6 +257,7 @@ static void encodeStr(EncodeContext *ctx, const nb::handle obj) {
         ctx->write(s, size);
         return;
     }
+#endif
 
     Py_ssize_t size = 0;
     const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
@@ -333,14 +335,14 @@ static void encodeAny(EncodeContext *ctx, const nb::handle obj) {
         return;
     }
 
-    if (PyMemoryView_Check(obj.ptr())) {
-        Py_buffer *buf = PyMemoryView_GET_BUFFER(obj.ptr());
-        ctx->writeSize_t(buf->len);
-        ctx->writeChar(':');
-        ctx->write((char *)buf->buf, buf->len);
+    // if (PyMemoryView_Check(obj.ptr())) {
+    //     Py_buffer *buf = PyMemoryView_GET_BUFFER(obj.ptr());
+    //     ctx->writeSize_t(buf->len);
+    //     ctx->writeChar(':');
+    //     ctx->write((char *)buf->buf, buf->len);
 
-        return;
-    }
+    //     return;
+    // }
 
     // types.MappingProxyType
     debug_print("test if mapping proxy");
