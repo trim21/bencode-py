@@ -13,16 +13,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {
-              os: macos-13,
-              cibw_arch: x86_64,
-              cibw_build: "*[02468]-* *[02468]t-*",
-            }
-          - {
-              os: macos-13,
-              cibw_arch: x86_64,
-              cibw_build: "*[13579]-* *[13579]t-*",
-            }
+          - os: macos-13
+            cibw_arch: x86_64
+            cibw_build: "*[02468]-* *[02468]t-*"
+
+          - os: macos-13
+            cibw_arch: x86_64
+            cibw_build: "*[13579]-* *[13579]t-*"
 
           - { os: macos-14, cibw_arch: arm64, cibw_build: "*" }
 
@@ -31,6 +28,7 @@ jobs:
               cibw_arch: AMD64,
               cibw_build: "*[02468]-* *[02468]t-*",
             }
+
           - {
               os: windows-latest,
               cibw_arch: AMD64,
@@ -42,6 +40,7 @@ jobs:
               cibw_arch: x86_64,
               cibw_build: "*[02468]-* *[02468]t-*",
             }
+
           - {
               os: ubuntu-latest,
               cibw_arch: x86_64,
@@ -51,25 +50,28 @@ jobs:
           - {
               os: macos-13,
               cibw_arch: x86_64,
-              cibw_build: "*cp12-*",
+              cibw_build: "*cp312-*",
               build_config: 'setup-args="-Dabi3=enabled"',
             }
+
           - {
               os: macos-14,
               cibw_arch: arm64,
-              cibw_build: "*cp12-*",
+              cibw_build: "*cp312-*",
               build_config: 'setup-args="-Dabi3=enabled"',
             }
+
           - {
               os: windows-latest,
               cibw_arch: AMD64,
-              cibw_build: "*cp12-*",
+              cibw_build: "*cp312-*",
               build_config: 'setup-args="-Dabi3=enabled"',
             }
+
           - {
               os: ubuntu-latest,
               cibw_arch: x86_64,
-              cibw_build: "*cp12-*",
+              cibw_build: "*cp312-*",
               build_config: 'setup-args="-Dabi3=enabled"',
             }
 
@@ -103,7 +105,6 @@ jobs:
       - uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_BUILD_FRONTEND: "build[uv]"
-          CIBW_ALLOW_EMPTY: "True"
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
           CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_TEST_REQUIRES: pytest
