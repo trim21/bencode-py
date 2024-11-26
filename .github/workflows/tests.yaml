@@ -87,9 +87,6 @@ jobs:
           - { os: macos-14, python-version: '3.9' }
 
     runs-on: "${{ matrix.os }}"
-
-    env:
-      PY_BENCODE2_PURE_PYTHON: '1'
     steps:
       - uses: actions/checkout@v4
 
@@ -100,7 +97,7 @@ jobs:
           cache: "pip"
 
       - run: pip install -r requirements.txt
-      - run: pip install  --no-build-isolation -e .
+      - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
 
       - run: python -m pytest --cov --assert-pkg-compiled=false
 
@@ -177,9 +174,6 @@ jobs:
     #          - "macos-14"
 
     runs-on: "${{ matrix.os }}"
-    env:
-      PY_BENCODE2_PURE_PYTHON: '1'
-
     steps:
       - uses: actions/checkout@v4
 
@@ -195,7 +189,7 @@ jobs:
           nogil: true
 
       - run: pip install -r requirements.txt
-      - run: pip install  --no-build-isolation -e .
+      - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
 
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=false
 
