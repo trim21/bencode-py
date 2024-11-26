@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <optional>
 #include <string_view>
 
@@ -109,7 +110,11 @@ __OverFlow:;
 
     PyObject *i = PyLong_FromString(s.c_str(), NULL, 10);
 
-    auto o = nb::handle(i).cast<nb::object>();
+    if (i == NULL) {
+        throw nb::python_error();
+    }
+
+    auto o = nb::object(i, nb::detail::steal_t());
     o.dec_ref();
     debug_print("{}", s);
     return o;

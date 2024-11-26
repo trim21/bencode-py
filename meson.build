@@ -2,6 +2,8 @@ project(
     'bencode2',
     'cpp',
     default_options: [
+        # 'cpp_std=c++17',
+        'c_std=c11',
         'cpp_std=c++17',
         'buildtype=release',
         'debug=false',
@@ -45,12 +47,12 @@ if not pure_py
         install: true,
         include_directories: include_directories(
             [
-                './vendor/fmt/include',
+                './vendor/fmt/include/',
                 './vendor/portable-snippets/',
-                './vendor/small_vector/source/include',
+                './vendor/small_vector/source/include/',
             ],
         ),
         subdir: 'bencode2',
-        dependencies: [nanobind_dep],
+        dependencies: [nanobind_dep, py.dependency()],
     )
 endif

@@ -98,13 +98,11 @@ static void encodeDictLike(EncodeContext *ctx, nb::handle h) {
         return;
     }
 
-    auto obj = h.cast<nb::object>();
-
     gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
 
     vec.reserve(l);
 
-    for (auto keyValue : obj.attr("items")()) {
+    for (auto keyValue : h.attr("items")()) {
         auto key = PyTuple_GetItem(keyValue.ptr(), 0);
         auto value = PyTuple_GetItem(keyValue.ptr(), 1);
 
@@ -135,15 +133,13 @@ static void encodeDataclasses(EncodeContext *ctx, nb::handle h) {
     auto fields = dataclasses_fields(h);
     auto size = PyTuple_Size(fields.ptr());
 
-    auto obj = h.cast<nb::object>();
-
     gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
 
     vec.reserve(size);
 
     for (auto field : fields) {
         auto key = field.attr("name").ptr();
-        auto value = obj.attr(key);
+        auto value = h.attr(key);
 
         vec.push_back(make_pair(py_string_view(key), nb::handle(value)));
     }
@@ -356,11 +352,12 @@ static void encodeAny(EncodeContext *ctx, const nb::handle obj) {
     }
 
     // Unsupported type, raise TypeError
-    std::string repr = nb::repr(obj.get_type());
+    auto repr = nb::repr(obj.type());
 
-    std::string msg = "unsupported object " + repr;
+    std::string msg = "unsupported object ";
+    msg.append(repr.c_str());
 
-    throw nb::type_error(msg);
+    throw nb::type_error(msg.c_str());
 }
 
 thread_local static std::vector<EncodeContext *> pool;
