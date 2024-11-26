@@ -145,7 +145,7 @@ jobs:
           --no-build-isolation
           --verbose --editable .
 
-      - run: pytest --cov --cov-report xml --assert-pkg-compiled=true
+      - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
 
       - run: >-
           lcov
@@ -191,7 +191,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
 
-      - run: pytest --cov --cov-report xml --assert-pkg-compiled=false
+      - run: pytest tests --cov --cov-report xml --assert-pkg-compiled=false
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
