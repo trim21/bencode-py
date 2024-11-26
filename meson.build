@@ -41,6 +41,11 @@ if not pure_py
 
     nanobind_dep = dependency('nanobind', static: true)
 
+    limited_api = ''
+    if get_option('abi3').enabled()
+        limited_api = '3.7'
+    endif
+
     py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
@@ -53,6 +58,7 @@ if not pure_py
                 './vendor/small_vector/source/include/',
             ],
         ),
+        limited_api: limited_api,
         subdir: 'bencode2',
         dependencies: [nanobind_dep, py.dependency()],
     )

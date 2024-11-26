@@ -24,11 +24,13 @@ static bool cmp(std::pair<std::string_view, nb::handle> &a,
 }
 
 static std::string_view py_string_view(nb::handle obj) {
+#ifndef Py_LIMITED_API
     if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
         const char *s = (char *)PyUnicode_DATA(obj.ptr());
         Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
         return std::string_view(s, size);
     }
+#endif
 
     Py_ssize_t size = 0;
     const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
