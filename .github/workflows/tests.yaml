@@ -13,7 +13,7 @@ on:
       - readme.md
 
 concurrency:
-  group: '${{ github.workflow }}-${{ github.ref }}'
+  group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
 
   twine-check:
     name: Check dist
-    needs: [ build ]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -34,7 +34,7 @@ jobs:
       - run: pipx run twine check --strict dist/*
 
   bench-cp:
-    needs: [ build ]
+    needs: [build]
     strategy:
       fail-fast: false
       matrix:
@@ -84,7 +84,7 @@ jobs:
           - "3.12"
           - "3.13"
         exclude:
-          - { os: macos-14, python-version: '3.9' }
+          - { os: macos-14, python-version: "3.9" }
 
     runs-on: "${{ matrix.os }}"
     steps:
@@ -105,7 +105,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: '${{ matrix.python-version }}'
+          flags: "${{ matrix.python-version }}"
 
   test-c-cov:
     strategy:
@@ -122,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'true'
+          submodules: "true"
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -161,8 +161,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml,coverage.info
-          flags: '${{ matrix.python-version }}'
-
+          flags: "${{ matrix.python-version }}"
 
   test-cp-py-nogil:
     strategy:
@@ -183,10 +182,9 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - uses: deadsnakes/action@v3.2.0
+      - uses: Quansight-Labs/setup-python@v5
         with:
-          python-version: 3.13
-          nogil: true
+          python-version: "3.13t"
 
       - run: pip install -r requirements.txt
       - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
@@ -199,7 +197,6 @@ jobs:
           files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
-
   test-pp:
     strategy:
       matrix:
@@ -209,8 +206,8 @@ jobs:
           - "macos-13"
           - "macos-14"
         python-version:
-          - 'pypy3.9'
-          - 'pypy3.10'
+          - "pypy3.9"
+          - "pypy3.10"
 
     runs-on: "${{ matrix.os }}"
 
@@ -232,7 +229,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: '${{ matrix.python-version }}'
+          flags: "${{ matrix.python-version }}"
 
   test-pass:
     needs:
@@ -242,6 +239,6 @@ jobs:
       - test-cp-py-nogil
       - test-c-cov
       - twine-check
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     steps:
-      - run: 'echo success'
+      - run: "echo success"
