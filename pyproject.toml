@@ -41,6 +41,9 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
+[tool.meson-python]
+limited-api = true
+
 [tool.meson-python.args]
 setup = ['--errorlogs']
 dist = ['--verbose']
