@@ -189,14 +189,9 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: >-
-          pip install
-          --config-settings=setup-args="-Db_coverage=true"
-          --config-settings=setup-args=-Dpython.allow_limited_api=true
-          --config-settings=build-dir=build
-          --config-settings=editable-verbose=true
-          --no-build-isolation
-          --verbose --editable .
+      - run: meson setup build -Dbuildtype=release -Dpython.allow_limited_api=true -Db_coverage=true
+      - run: meson compile -C build
+      - run: ninja -C build copy
 
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
 
