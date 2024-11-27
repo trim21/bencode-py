@@ -97,9 +97,10 @@ jobs:
           cache: "pip"
 
       - run: pip install -r requirements.txt
-      - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
 
       - run: python -m pytest --cov --assert-pkg-compiled=false
+        env:
+          PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -137,16 +138,14 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: >-
-          pip install
-          --config-settings=setup-args="-Db_coverage=true"
-          --config-settings=setup-args=-Dpython.allow_limited_api=false
-          --config-settings=build-dir=build
-          --config-settings=editable-verbose=true
-          --no-build-isolation
-          --verbose --editable .
+
+      - run: meson setup build -Dbuildtype=release -Dpython.allow_limited_api=false -Db_coverage=true
+      - run: meson compile -C build
+      - run: ninja -C build copy
 
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
+        env:
+          PYTHONPATH: src
 
       - run: >-
           lcov
@@ -192,16 +191,13 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: >-
-          pip install
-          --config-settings=setup-args="-Db_coverage=true"
-          --config-settings=setup-args=-Dpython.allow_limited_api=true
-          --config-settings=build-dir=build
-          --config-settings=editable-verbose=true
-          --no-build-isolation
-          --verbose --editable .
+      - run: meson setup build -Dbuildtype=release -Dpython.allow_limited_api=true -Db_coverage=true
+      - run: meson compile -C build
+      - run: ninja -C build copy
 
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
+        env:
+          PYTHONPATH: src
 
       - run: >-
           lcov
@@ -240,7 +236,7 @@ jobs:
 
       - run: pytest tests --cov --cov-report xml --assert-pkg-compiled=false
         env:
-          PYTHONPATH: "src"
+          PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -275,6 +271,8 @@ jobs:
 
       - name: Run pytest
         run: python -m pytest --cov --assert-pkg-compiled=false
+        env:
+          PYTHONPATH: src
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
