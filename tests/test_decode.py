@@ -1,6 +1,7 @@
 from typing import Any
 
 import pytest
+from typing_extensions import Buffer
 
 from bencode2 import BencodeDecodeError, bdecode
 
@@ -50,6 +51,8 @@ def test_bad_case(raw: bytes):
 @pytest.mark.parametrize(
     ["raw", "expected"],
     [
+        (memoryview(b"0:"), b""),
+        (bytearray(b"0:"), b""),
         (b"0:", b""),
         (b"4:spam", b"spam"),
         (b"i-3e", -3),
@@ -67,7 +70,7 @@ def test_bad_case(raw: bytes):
         (b"d0:4:spam3:fooi42ee", {b"": b"spam", b"foo": 42}),
     ],
 )
-def test_basic(raw: bytes, expected: Any):
+def test_basic(raw: Buffer, expected: Any):
     assert bdecode(raw) == expected
 
 

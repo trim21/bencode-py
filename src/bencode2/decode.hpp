@@ -1,25 +1,28 @@
 #pragma once
 
+#include <cstdlib>
+#include <exception>
+#include <optional>
 #include <string_view>
 
 #include <string>
 
 #include <fmt/core.h>
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
 
 #include "common.hpp"
 #include "overflow.hpp"
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
-static py::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size);
+static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size);
 
 #define decoderError(f, ...)                                                                       \
     do {                                                                                           \
         throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
     } while (0)
 
-static py::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+static nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     Py_ssize_t index_e = 0;
     for (Py_ssize_t i = index + 1; i < size; i++) {
         if (buf[i] == 'e') {
@@ -74,7 +77,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size)
         }
 
         index = index_e + 1;
-        return py::cast(sign * val);
+        return nb::cast(sign * val);
     }
 
     int64_t val = 0;
@@ -94,7 +97,7 @@ static py::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size)
         goto __OverFlow;
     }
 
-    return py::cast(val);
+    return nb::cast(val);
 
 // i1234e
 // i-1234e
@@ -102,14 +105,17 @@ static py::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size)
 
 // bencode int overflow u64 or i64, build a PyLong object from Str directly.
 __OverFlow:;
-    std::string s = std::basic_string(buf + index, index_e - index);
+    std::string s = std::string(buf + index, index_e - index);
 
     index = index_e + 1;
 
     PyObject *i = PyLong_FromString(s.c_str(), NULL, 10);
 
-    auto o = py::handle(i).cast<py::object>();
-    o.dec_ref();
+    if (i == NULL) {
+        throw nb::python_error();
+    }
+
+    auto o = nb::object(i, nb::detail::steal_t());
     debug_print("{}", s);
     return o;
 }
@@ -151,15 +157,15 @@ static std::string_view decodeAsView(const char *buf, Py_ssize_t &index, Py_ssiz
 }
 
 // there is no bytes/Str in bencode, they only have 1 type for both of them.
-static py::bytes decodeBytes(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+static nb::bytes decodeBytes(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     auto s = decodeAsView(buf, index, size);
-    return py::bytes(s.data(), s.length());
+    return nb::bytes(s.data(), s.length());
 }
 
-static py::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+static nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     index = index + 1;
 
-    py::list l = py::list(0);
+    nb::list l = nb::list();
 
     while (1) {
         if (index >= size) {
@@ -170,7 +176,7 @@ static py::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size
             break;
         }
 
-        py::object obj = decodeAny(buf, index, size);
+        nb::object obj = decodeAny(buf, index, size);
 
         l.append(obj);
     }
@@ -180,11 +186,11 @@ static py::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size
     return l;
 }
 
-static py::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+static nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     index = index + 1;
     std::optional<std::string_view> lastKey = std::nullopt;
 
-    auto d = py::dict();
+    auto d = nb::dict();
 
     while (1) {
         if (index >= size) {
@@ -214,7 +220,7 @@ static py::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size
         }
         lastKey = std::make_optional(key);
 
-        d[py::bytes(key)] = obj;
+        d[nb::bytes(key.data(), key.length())] = obj;
     }
 
     index = index + 1;
@@ -222,7 +228,7 @@ static py::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size
     return d;
 }
 
-static py::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     // int
     if (buf[index] == 'i') {
         return decodeInt(buf, index, size);
@@ -246,18 +252,36 @@ static py::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size)
     decoderError("invalid bencode prefix '{:c}', index {}", buf[index], index);
 }
 
-[[maybe_unused]] static py::object bdecode(py::buffer b) {
-    py::buffer_info info = b.request();
+[[maybe_unused]] static nb::object bdecode(nb::object b) {
+    if (!PyObject_CheckBuffer(b.ptr())) {
+        throw nb::type_error(
+            "bencode.bencode should be called with bytes/memoryview/bytearray/Buffer");
+    }
 
-    Py_ssize_t size = info.size;
+    Py_buffer view;
+    PyObject_GetBuffer(b.ptr(), &view, 0);
+    if (PyErr_Occurred()) {
+        throw nb::python_error();
+    }
+
+    Py_ssize_t size = view.len;
     if (size == 0) {
         throw DecodeError("can't decode empty bytes");
     }
 
-    const char *buf = (char *)info.ptr;
+    const char *buf = (char *)view.buf;
 
     Py_ssize_t index = 0;
-    py::object o = decodeAny(buf, index, size);
+
+    nb::object o;
+    try {
+        o = decodeAny(buf, index, size);
+    } catch (std::exception &e) {
+        PyBuffer_Release(&view);
+        throw e;
+    }
+
+    PyBuffer_Release(&view);
 
     if (index != size) {
         decoderError("invalid bencode data, parse end at index {} but total bytes length {}", index,

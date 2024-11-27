@@ -2,6 +2,8 @@ project(
     'bencode2',
     'cpp',
     default_options: [
+        # 'cpp_std=c++17',
+        'c_std=c11',
         'cpp_std=c++17',
         'buildtype=release',
         'debug=false',
@@ -31,35 +33,32 @@ py.install_sources(
 )
 
 if not pure_py
-    fs = import('fs')
-
-    pybind11_path = run_command(
-        py,
-        '-c', 'import pybind11; print(pybind11.get_include());',
-        check: true,
-    ).stdout().strip()
-
-    pybind11_includes = fs.relative_to(pybind11_path, meson.current_source_dir())
-
     if get_option('buildtype').startswith('debug')
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
     endif
 
     add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
-    incdir = include_directories(
-        [
-            pybind11_includes,
-            './vendor/fmt/include',
-            './vendor/portable-snippets/',
-            './vendor/small_vector/source/include',
-        ],
-    )
+
+    nanobind_dep = dependency('nanobind', static: true)
+
+    limited_api = ''
+    if get_option('python.allow_limited_api')
+        limited_api = '3.12'
+    endif
+
     py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
         install: true,
-        include_directories: incdir,
+        include_directories: include_directories(
+            [
+                './vendor/fmt/include/',
+                './vendor/portable-snippets/',
+                './vendor/small_vector/source/include/',
+            ],
+        ),
+        limited_api: limited_api,
         subdir: 'bencode2',
-        dependencies: py.dependency(),
+        dependencies: [nanobind_dep, py.dependency()],
     )
 endif

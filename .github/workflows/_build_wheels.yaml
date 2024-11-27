@@ -13,21 +13,61 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
-          - { os: macos-13, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
+          - os: macos-13
+            cibw_arch: x86_64
+            cibw_build: "*[02468]-* *[02468]t-*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
-          - { os: macos-14, cibw_arch: arm64, cibw_build: "*" }
+          - os: macos-13
+            cibw_arch: x86_64
+            cibw_build: "*[13579]-* *[13579]t-*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
-          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[02468]-* *[02468]t-*" }
-          - { os: windows-latest, cibw_arch: AMD64, cibw_build: "*[13579]-* *[13579]t-*" }
+          - os: macos-14
+            cibw_arch: arm64
+            cibw_build: "*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
-          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[02468]-* *[02468]t-*" }
-          - { os: ubuntu-latest, cibw_arch: x86_64, cibw_build: "*[13579]-* *[13579]t-*" }
+          - os: windows-latest
+            cibw_arch: AMD64
+            cibw_build: "*[02468]-* *[02468]t-*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
+
+          - os: windows-latest
+            cibw_arch: AMD64
+            cibw_build: "*[13579]-* *[13579]t-*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
+
+          - os: ubuntu-latest
+            cibw_arch: x86_64
+            cibw_build: "*[02468]-* *[02468]t-*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
+
+          - os: ubuntu-latest
+            cibw_arch: x86_64
+            cibw_build: "*[13579]-* *[13579]t-*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
+
+          - os: macos-13
+            cibw_arch: x86_64
+            cibw_build: "*cp312-*"
+
+          - os: macos-14
+            cibw_arch: arm64
+            cibw_build: "*cp312-*"
+
+          # - os: windows-latest
+          #   cibw_arch: AMD64
+          #   cibw_build: "*cp312-*"
+
+          - os: ubuntu-latest
+            cibw_arch: x86_64
+            cibw_build: "*cp312-*"
 
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'true'
+          submodules: "true"
 
       - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ runner.os == 'Windows' }}
@@ -49,23 +89,23 @@ jobs:
             ~\AppData\Local\pypa\cibuildwheel\Cache
             ~/Library/Caches/cibuildwheel
             ~/.cache/cibuildwheel
-          key: 'cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ matrix.cibw_build }}'
+          key: "cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ matrix.cibw_build }}"
 
       - uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_BUILD_FRONTEND: "build[uv]"
-          CIBW_ALLOW_EMPTY: 'True'
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
           CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_TEST_REQUIRES: pytest
+          CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
           CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
-          MACOSX_DEPLOYMENT_TARGET: '11.0'
+          MACOSX_DEPLOYMENT_TARGET: "11.0"
 
       - run: ls ./wheelhouse/
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 'wheels-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ strategy.job-index }}'
+          name: "wheels-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ strategy.job-index }}"
           path: ./wheelhouse/*.whl
           if-no-files-found: ignore
 
@@ -79,5 +119,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 'wheels-dist'
+          name: "wheels-dist"
           path: dist/*

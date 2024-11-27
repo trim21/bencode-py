@@ -13,7 +13,7 @@ on:
       - readme.md
 
 concurrency:
-  group: '${{ github.workflow }}-${{ github.ref }}'
+  group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
 
   twine-check:
     name: Check dist
-    needs: [ build ]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -34,7 +34,7 @@ jobs:
       - run: pipx run twine check --strict dist/*
 
   bench-cp:
-    needs: [ build ]
+    needs: [build]
     strategy:
       fail-fast: false
       matrix:
@@ -84,7 +84,7 @@ jobs:
           - "3.12"
           - "3.13"
         exclude:
-          - { os: macos-14, python-version: '3.9' }
+          - { os: macos-14, python-version: "3.9" }
 
     runs-on: "${{ matrix.os }}"
     steps:
@@ -105,7 +105,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: '${{ matrix.python-version }}'
+          flags: "${{ matrix.python-version }}"
 
   test-c-cov:
     strategy:
@@ -122,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'true'
+          submodules: "true"
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -140,12 +140,13 @@ jobs:
       - run: >-
           pip install
           --config-settings=setup-args="-Db_coverage=true"
+          --config-settings=setup-args=-Dpython.allow_limited_api=false
           --config-settings=build-dir=build
           --config-settings=editable-verbose=true
           --no-build-isolation
           --verbose --editable .
 
-      - run: pytest --cov --cov-report xml --assert-pkg-compiled=true
+      - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
 
       - run: >-
           lcov
@@ -161,8 +162,62 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml,coverage.info
-          flags: '${{ matrix.python-version }}'
+          flags: "${{ matrix.python-version }}"
 
+  test-abi3-cov:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+          - "3.13"
+
+    runs-on: "ubuntu-24.04"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "true"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: lcov
+          version: 1.0
+
+      - run: pip install -r requirements.txt
+
+      - run: >-
+          pip install
+          --config-settings=setup-args="-Db_coverage=true"
+          --config-settings=setup-args=-Dpython.allow_limited_api=true
+          --config-settings=build-dir=build
+          --config-settings=editable-verbose=true
+          --no-build-isolation
+          --verbose --editable .
+
+      - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
+
+      - run: >-
+          lcov
+          --ignore-errors mismatch
+          --capture
+          --directory .
+          --base-directory build
+          --no-external
+          --output-file coverage.info
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml,coverage.info
+          flags: "${{ matrix.python-version }}"
 
   test-cp-py-nogil:
     strategy:
@@ -177,28 +232,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - uses: Quansight-Labs/setup-python@v5
         with:
-          pattern: wheels-*
-          path: dist
-          merge-multiple: true
-
-      - uses: deadsnakes/action@v3.2.0
-        with:
-          python-version: 3.13
-          nogil: true
+          python-version: "3.13t"
 
       - run: pip install -r requirements.txt
-      - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
 
-      - run: pytest --cov --cov-report xml --assert-pkg-compiled=false
+      - run: pytest tests --cov --cov-report xml --assert-pkg-compiled=false
+        env:
+          PYTHONPATH: "src"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
-
 
   test-pp:
     strategy:
@@ -209,8 +257,8 @@ jobs:
           - "macos-13"
           - "macos-14"
         python-version:
-          - 'pypy3.9'
-          - 'pypy3.10'
+          - "pypy3.9"
+          - "pypy3.10"
 
     runs-on: "${{ matrix.os }}"
 
@@ -232,7 +280,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: '${{ matrix.python-version }}'
+          flags: "${{ matrix.python-version }}"
 
   test-pass:
     needs:
@@ -241,7 +289,8 @@ jobs:
       - bench-cp
       - test-cp-py-nogil
       - test-c-cov
+      - test-abi3-cov
       - twine-check
-    runs-on: 'ubuntu-latest'
+    runs-on: "ubuntu-latest"
     steps:
-      - run: 'echo success'
+      - run: "echo success"
