@@ -46,7 +46,7 @@ if not pure_py
         limited_api = '3.12'
     endif
 
-    py.extension_module(
+    out = py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
         install: true,
@@ -60,5 +60,15 @@ if not pure_py
         limited_api: limited_api,
         subdir: 'bencode2',
         dependencies: [nanobind_dep, py.dependency()],
+    )
+
+    run_target(
+        'copy',
+        depends: out,
+        command: [
+            'cp',
+            out.full_path(),
+            join_paths(meson.project_source_root(), 'src/bencode2/'),
+        ],
     )
 endif

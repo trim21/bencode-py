@@ -62,7 +62,7 @@ assert bencode2.bencode({'hello': 'world'}) == b'd5:hello5:worlde'
 ### Decoding
 
 | bencode type | python type |
-|:------------:|:-----------:|
+| :----------: | :---------: |
 |   integer    |    `int`    |
 |    string    |   `bytes`   |
 |    array     |   `list`    |
@@ -79,7 +79,7 @@ bencode2 will decode bencode string to python `bytes`.
 ### Encoding
 
 |            python type            | bencode type |
-|:---------------------------------:|:------------:|
+| :-------------------------------: | :----------: |
 |              `bool`               | integer 0/1  |
 |       `int`, `enum.IntEnum`       |   integer    |
 |       `str`, `enum.StrEnum`       |    string    |
@@ -113,8 +113,15 @@ make sure all so/pyd files in `src/bencode2` are removed, then run
 `PYTHONPATH=src pytest --assert-pkg-compiled=false`.
 
 For testing native extension, meson-python doesn't provide same function with
-`python setup.py build_ext --inplace`,
-so you will need to build so/pyd with meson and copy it to `src/bencode2`,
-then run `PYTHONPATH=src pytest --assert-pkg-compiled=true`.
+`python setup.py build_ext --inplace`.
 
-you can use [go-task](https://github.com/go-task/task/) with `task meson` to build.
+So you will need to run command like this:
+
+```shell
+meson setup build -Dbuildtype=release -Dpython.allow_limited_api=false
+meson compile copy -C build --verbose
+```
+
+meson will need to build so/pyd with meson and copy it to `src/bencode2`,
+
+then run tests with `PYTHONPATH=src pytest --assert-pkg-compiled=true`.
