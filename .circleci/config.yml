@@ -13,6 +13,8 @@ commands:
     parameters:
       build:
         type: string
+      build_config:
+        type: string
     steps:
       - checkout
       - run: git submodule sync
