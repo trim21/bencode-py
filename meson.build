@@ -41,11 +41,6 @@ if not pure_py
 
     nanobind_dep = dependency('nanobind', static: true)
 
-    limited_api = ''
-    if get_option('python.allow_limited_api')
-        limited_api = '3.12'
-    endif
-
     out = py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
@@ -57,18 +52,21 @@ if not pure_py
                 './vendor/small_vector/source/include/',
             ],
         ),
-        limited_api: limited_api,
+        limited_api: '3.12',
         subdir: 'bencode2',
         dependencies: [nanobind_dep, py.dependency()],
     )
 
-    run_target(
-        'copy',
+    custom_target(
+        'copy extension back to file tree',
+        input: out,
+        output: 'copy',
         depends: out,
         command: [
             'cp',
             out.full_path(),
             join_paths(meson.project_source_root(), 'src/bencode2/'),
         ],
+        build_by_default: false,
     )
 endif

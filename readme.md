@@ -119,7 +119,8 @@ So you will need to run command like this:
 
 ```shell
 meson setup build -Dbuildtype=release -Dpython.allow_limited_api=false
-meson compile copy -C build --verbose
+meson compile -C build
+ninja -C build copy
 ```
 
 meson will need to build so/pyd with meson and copy it to `src/bencode2`,
