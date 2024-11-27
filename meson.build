@@ -52,7 +52,6 @@ if not pure_py
         install: true,
         include_directories: include_directories(
             [
-                './src/bencode2/',
                 './vendor/fmt/include/',
                 './vendor/portable-snippets/',
                 './vendor/small_vector/source/include/',

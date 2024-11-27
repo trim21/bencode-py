@@ -44,22 +44,22 @@ jobs:
           - os: macos-13
             cibw_arch: x86_64
             cibw_build: "*cp312-*"
-            build_config: 'setup-args="-Dabi3=enabled"'
+            build_config: 'setup-args="-Dabi3=enabled -Dpython.allow_limited_api=true"'
 
           - os: macos-14
             cibw_arch: arm64
             cibw_build: "*cp312-*"
-            build_config: 'setup-args="-Dabi3=enabled"'
+            build_config: 'setup-args="-Dabi3=enabled -Dpython.allow_limited_api=true"'
 
           - os: windows-latest
             cibw_arch: AMD64
-            cibw_build: "*cp313-*"
-            build_config: 'setup-args="-Dabi3=enabled"'
+            cibw_build: "*cp312-*"
+            build_config: 'setup-args="-Dabi3=enabled -Dpython.allow_limited_api=true"'
 
           - os: ubuntu-latest
             cibw_arch: x86_64
             cibw_build: "*cp312-*"
-            build_config: 'setup-args="-Dabi3=enabled"'
+            build_config: 'setup-args="-Dabi3=enabled -Dpython.allow_limited_api=true"'
 
     steps:
       - uses: actions/checkout@v4
