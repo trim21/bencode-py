@@ -2,7 +2,8 @@
 
 #include <stdint.h>
 
-#if defined(_MSC_VER)
+#ifdef _MSC_VER
+#define ENABLE_INTSAFE_SIGNED_FUNCTIONS
 #include <intsafe.h>
 #endif
 
