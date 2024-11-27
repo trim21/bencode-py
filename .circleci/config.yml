@@ -28,6 +28,7 @@ commands:
             CIBW_BUILD_FRONTEND: "build[uv]"
             CIBW_ARCHS: aarch64
             CIBW_BUILD: "<<parameters.build>>"
+            CIBW_CONFIG_SETTINGS: "<<parameters.build_config>>"
             CIBW_TEST_REQUIRES: pytest
             CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
 
@@ -42,12 +43,21 @@ jobs:
     steps:
       - build:
           build: "*[02468]-* *[02468]t-*"
+          build_config: ''
 
   build-and-test-2:
     executor: my-executor
     steps:
       - build:
           build: "*[13579]-* *[13579]t-*"
+          build_config: ''
+
+  build-and-test-abi3:
+    executor: my-executor
+    steps:
+      - build:
+          build: "*cp312-*"
+          build_config: 'setup-args="-Dabi3=enabled"'
 
   check:
     executor: my-executor
@@ -81,10 +91,15 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+      - build-and-test-abi3:
+          filters:
+            tags:
+              only: /^v.*/
       - check:
           requires:
             - build-and-test-1
             - build-and-test-2
+            - build-and-test-abi3
           filters:
             tags:
               only: /^v.*/
