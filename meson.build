@@ -42,7 +42,7 @@ if not pure_py
     nanobind_dep = dependency('nanobind', static: true)
 
     limited_api = ''
-    if get_option('abi3').enabled()
+    if get_option('python.allow_limited_api')
         limited_api = '3.12'
     endif
 

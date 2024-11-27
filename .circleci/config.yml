@@ -45,19 +45,20 @@ jobs:
     steps:
       - build:
           build: "*[02468]-* *[02468]t-*"
+          config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
   build-and-test-2:
     executor: my-executor
     steps:
       - build:
           build: "*[13579]-* *[13579]t-*"
+          config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
   build-and-test-abi3:
     executor: my-executor
     steps:
       - build:
           build: "*cp312-*"
-          config_settings: 'setup-args="-Dabi3=enabled" setup-args="-Dpython.allow_limited_api=true"'
 
   check:
     executor: my-executor
