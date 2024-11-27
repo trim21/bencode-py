@@ -12,7 +12,7 @@ commands:
     parameters:
       build:
         type: string
-      build_config:
+      config_settings:
         type: string
         default: ""
     steps:
@@ -30,7 +30,7 @@ commands:
             CIBW_BUILD_FRONTEND: "build[uv]"
             CIBW_ARCHS: aarch64
             CIBW_BUILD: "<<parameters.build>>"
-            CIBW_CONFIG_SETTINGS: "<<parameters.build_config>>"
+            CIBW_CONFIG_SETTINGS: "<<parameters.config_settings>>"
             CIBW_TEST_REQUIRES: pytest
             CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
 
@@ -57,7 +57,7 @@ jobs:
     steps:
       - build:
           build: "*cp312-*"
-          build_config: 'setup-args="-Dabi3=enabled"'
+          config_settings: 'setup-args="-Dabi3=enabled" setup-args="-Dpython.allow_limited_api=true"'
 
   check:
     executor: my-executor
