@@ -41,29 +41,42 @@ if not pure_py
 
     nanobind_dep = dependency('nanobind', static: true)
 
+    fmt = subproject('fmt')
+    fmt_dep = fmt.get_variable('fmt_dep')
+
+    abseil_cpp = subproject('abseil-cpp')
+
+    small_vector = abseil_cpp.get_variable('absl_container_dep')
+
     out = py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
         install: true,
         include_directories: include_directories(
             [
-                './vendor/fmt/include/',
                 './vendor/portable-snippets/',
-                './vendor/small_vector/source/include/',
             ],
         ),
         limited_api: '3.12',
         subdir: 'bencode2',
-        dependencies: [nanobind_dep, py.dependency()],
+        dependencies: [
+            nanobind_dep,
+            fmt_dep,
+            small_vector,
+            py.dependency(),
+        ],
     )
 
-    run_target(
-        'copy',
+    custom_target(
+        'final binary',
         depends: out,
+        input: out,
+        output: 'copy',
         command: [
             'cp',
             out.full_path(),
             join_paths(meson.project_source_root(), 'src/bencode2/'),
         ],
+        build_by_default: false,
     )
 endif

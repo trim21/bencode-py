@@ -1,8 +1,8 @@
 #pragma once
-#include <fmt/core.h>
-#include <gch/small_vector.hpp>
+#include <string>
 
 #include <Python.h>
+#include <fmt/core.h>
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)

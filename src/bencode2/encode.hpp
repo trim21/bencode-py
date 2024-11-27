@@ -2,9 +2,10 @@
 
 #include <Python.h>
 #include <algorithm> // std::sort
-#include <gch/small_vector.hpp>
 #include <nanobind/nanobind.h>
+#include <string_view>
 
+#include "absl/container/inlined_vector.h"
 #include "common.hpp"
 #include "encode_ctx.hpp"
 
@@ -59,7 +60,7 @@ static std::string_view dict_key_view(nb::handle obj) {
 static void encodeDict(EncodeContext *ctx, nb::handle obj) {
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
-    gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
+    absl::InlinedVector<std::pair<std::string_view, nb::handle>, 8> vec;
 
     vec.reserve(l);
 
@@ -100,7 +101,7 @@ static void encodeDictLike(EncodeContext *ctx, nb::handle h) {
         return;
     }
 
-    gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
+    absl::InlinedVector<std::pair<std::string_view, nb::handle>, 8> vec;
 
     vec.reserve(l);
 
@@ -135,7 +136,7 @@ static void encodeDataclasses(EncodeContext *ctx, nb::handle h) {
     auto fields = dataclasses_fields(h);
     auto size = PyTuple_Size(fields.ptr());
 
-    gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
+    absl::InlinedVector<std::pair<std::string_view, nb::handle>, 8> vec;
 
     vec.reserve(size);
 
