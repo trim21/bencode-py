@@ -255,7 +255,7 @@ static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size)
 [[maybe_unused]] static nb::object bdecode(nb::object b) {
     if (!PyObject_CheckBuffer(b.ptr())) {
         throw nb::type_error(
-            "bencode should be called with Buffer, for example, bytes/memoryview/...");
+            "bencode.bencode should be called with bytes/memoryview/bytearray/Buffer");
     }
 
     Py_buffer view;
