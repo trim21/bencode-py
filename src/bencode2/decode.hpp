@@ -250,18 +250,33 @@ static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size)
     decoderError("invalid bencode prefix '{:c}', index {}", buf[index], index);
 }
 
-[[maybe_unused]] static nb::object bdecode(nb::bytes b) {
-    // py::buffer_info info = b.request();
+[[maybe_unused]] static nb::object bdecode(nb::object b) {
+    if (!PyObject_CheckBuffer(b.ptr())) {
+        throw nb::type_error(
+            "bencode should be called with Buffer, for example, bytes/memoryview/...");
+    }
 
-    Py_ssize_t size = b.size();
+    Py_buffer view;
+    PyObject_GetBuffer(b.ptr(), &view, 0);
+    if (PyErr_Occurred()) {
+        throw nb::python_error();
+    }
+
+    Py_ssize_t size = view.len;
     if (size == 0) {
         throw DecodeError("can't decode empty bytes");
     }
 
-    const char *buf = (char *)b.data();
+    const char *buf = (char *)view.buf;
 
     Py_ssize_t index = 0;
-    nb::object o = decodeAny(buf, index, size);
+
+    nb::object o;
+    try {
+        o = decodeAny(buf, index, size);
+    } catch (...) {
+        PyBuffer_Release(&view);
+    }
 
     if (index != size) {
         decoderError("invalid bencode data, parse end at index {} but total bytes length {}", index,
