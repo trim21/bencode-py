@@ -7,7 +7,6 @@ executors:
       image: ubuntu-2204:current
     working_directory: .
 
-
 commands:
   build:
     parameters:
@@ -15,6 +14,7 @@ commands:
         type: string
       build_config:
         type: string
+        default: ""
     steps:
       - checkout
       - run: git submodule sync
@@ -26,7 +26,7 @@ commands:
           name: Run cibuildwheel
           command: python -m cibuildwheel --output-dir ./wheelhouse
           environment:
-            CIBW_BUILD_VERBOSITY: '1'
+            CIBW_BUILD_VERBOSITY: "1"
             CIBW_BUILD_FRONTEND: "build[uv]"
             CIBW_ARCHS: aarch64
             CIBW_BUILD: "<<parameters.build>>"
@@ -45,14 +45,12 @@ jobs:
     steps:
       - build:
           build: "*[02468]-* *[02468]t-*"
-          build_config: ''
 
   build-and-test-2:
     executor: my-executor
     steps:
       - build:
           build: "*[13579]-* *[13579]t-*"
-          build_config: ''
 
   build-and-test-abi3:
     executor: my-executor
