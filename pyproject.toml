@@ -52,7 +52,6 @@ install = ['--verbose']
 
 [tool.pytest.ini_options]
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
-pythonpath = ['src']
 
 [tool.cibuildwheel]
 skip = 'pp* cp39-* *musl*'

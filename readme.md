@@ -109,7 +109,8 @@ change when decoding.
 This project use [meson](https://github.com/mesonbuild/meson) for building.
 
 For testing pure python library,
-make sure all so/pyd files is not `src/bencode2`, then run `pytest --assert-pkg-compiled=false`.
+make sure all so/pyd files in `src/bencode2` are removed, then run
+`PYTHONPATH=src pytest --assert-pkg-compiled=false`.
 
 For testing native extension, meson-python doesn't provide same function with
 `python setup.py build_ext --inplace`.
@@ -124,4 +125,4 @@ ninja -C build copy
 
 ninjx will need to build so/pyd with meson and copy it to `src/bencode2`,
 
-then run tests with `pytest --assert-pkg-compiled=true`.
+then run tests with `PYTHONPATH=src pytest --assert-pkg-compiled=true`.
