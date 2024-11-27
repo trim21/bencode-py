@@ -177,20 +177,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: wheels-*
-          path: dist
-          merge-multiple: true
-
       - uses: Quansight-Labs/setup-python@v5
         with:
           python-version: "3.13t"
 
       - run: pip install -r requirements.txt
-      - run: pip install --no-build-isolation -Csetup-args=-Dpure_py=enabled -e .
 
       - run: pytest tests --cov --cov-report xml --assert-pkg-compiled=false
+        env:
+          PYTHONPATH: 'src'
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
