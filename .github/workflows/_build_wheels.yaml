@@ -21,59 +21,45 @@ jobs:
             cibw_arch: x86_64
             cibw_build: "*[13579]-* *[13579]t-*"
 
-          - { os: macos-14, cibw_arch: arm64, cibw_build: "*" }
+          - os: macos-14
+            cibw_arch: arm64
+            cibw_build: "*"
 
-          - {
-              os: windows-latest,
-              cibw_arch: AMD64,
-              cibw_build: "*[02468]-* *[02468]t-*",
-            }
+          - os: windows-latest
+            cibw_arch: AMD64
+            cibw_build: "*[02468]-* *[02468]t-*"
 
-          - {
-              os: windows-latest,
-              cibw_arch: AMD64,
-              cibw_build: "*[13579]-* *[13579]t-*",
-            }
+          - os: windows-latest
+            cibw_arch: AMD64
+            cibw_build: "*[13579]-* *[13579]t-*"
 
-          - {
-              os: ubuntu-latest,
-              cibw_arch: x86_64,
-              cibw_build: "*[02468]-* *[02468]t-*",
-            }
+          - os: ubuntu-latest
+            cibw_arch: x86_64
+            cibw_build: "*[02468]-* *[02468]t-*"
 
-          - {
-              os: ubuntu-latest,
-              cibw_arch: x86_64,
-              cibw_build: "*[13579]-* *[13579]t-*",
-            }
+          - os: ubuntu-latest
+            cibw_arch: x86_64
+            cibw_build: "*[13579]-* *[13579]t-*"
 
-          - {
-              os: macos-13,
-              cibw_arch: x86_64,
-              cibw_build: "*cp312-*",
-              build_config: 'setup-args="-Dabi3=enabled"',
-            }
+          - os: macos-13
+            cibw_arch: x86_64
+            cibw_build: "*cp312-*"
+            build_config: 'setup-args="-Dabi3=enabled"'
 
-          - {
-              os: macos-14,
-              cibw_arch: arm64,
-              cibw_build: "*cp312-*",
-              build_config: 'setup-args="-Dabi3=enabled"',
-            }
+          - os: macos-14
+            cibw_arch: arm64
+            cibw_build: "*cp312-*"
+            build_config: 'setup-args="-Dabi3=enabled"'
 
-          - {
-              os: windows-latest,
-              cibw_arch: AMD64,
-              cibw_build: "*cp313-*",
-              build_config: 'setup-args="-Dabi3=enabled"',
-            }
+          - os: windows-latest
+            cibw_arch: AMD64
+            cibw_build: "*cp313-*"
+            build_config: 'setup-args="-Dabi3=enabled"'
 
-          - {
-              os: ubuntu-latest,
-              cibw_arch: x86_64,
-              cibw_build: "*cp312-*",
-              build_config: 'setup-args="-Dabi3=enabled"',
-            }
+          - os: ubuntu-latest
+            cibw_arch: x86_64
+            cibw_build: "*cp312-*"
+            build_config: 'setup-args="-Dabi3=enabled"'
 
     steps:
       - uses: actions/checkout@v4
