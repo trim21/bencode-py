@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdlib>
+#include <exception>
 #include <optional>
 #include <string_view>
 
@@ -274,8 +276,9 @@ static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size)
     nb::object o;
     try {
         o = decodeAny(buf, index, size);
-    } catch (...) {
+    } catch (std::exception &e) {
         PyBuffer_Release(&view);
+        throw e;
     }
 
     if (index != size) {
