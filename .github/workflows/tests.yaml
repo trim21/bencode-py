@@ -140,6 +140,7 @@ jobs:
       - run: >-
           pip install
           --config-settings=setup-args="-Db_coverage=true"
+          --config-settings=setup-args=-Dpython.allow_limited_api=false
           --config-settings=build-dir=build
           --config-settings=editable-verbose=true
           --no-build-isolation
