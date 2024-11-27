@@ -51,10 +51,10 @@ jobs:
             cibw_build: "*cp312-*"
             build_config: 'setup-args="-Dabi3=enabled"'
 
-          - os: windows-latest
-            cibw_arch: AMD64
-            cibw_build: "*cp312-*"
-            build_config: 'setup-args="-Dabi3=enabled"'
+          # - os: windows-latest
+          #   cibw_arch: AMD64
+          #   cibw_build: "*cp312-*"
+          #   build_config: 'setup-args="-Dabi3=enabled"'
 
           - os: ubuntu-latest
             cibw_arch: x86_64
