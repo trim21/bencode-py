@@ -6,7 +6,3 @@
 [submodule "vendor/small_vector"]
 	path = vendor/small_vector
 	url = https://github.com/gharveymn/small_vector
-
-[submodule "vendor/portable-snippets"]
-	path = vendor/portable-snippets
-	url = https://github.com/nemequ/portable-snippets.git
