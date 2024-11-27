@@ -80,9 +80,14 @@ static nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size)
         return nb::cast(sign * val);
     }
 
+    std::string sss = std::string(buf + index, index_e - index);
+    debug_print("decode int {} with overflow check", sss);
+
     int64_t val = 0;
 
-    for (Py_ssize_t i = index + 1; i < index_e; i++) {
+    for (Py_ssize_t i = num_start; i < index_e; i++) {
+        debug_print("{}", buf[i]);
+
         char c = buf[i] - '0';
 
         auto of = _i64_mul_overflow(val, 10, &val);
