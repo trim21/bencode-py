@@ -194,6 +194,8 @@ jobs:
       - run: ninja -C build copy
 
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
+        env:
+          PYTHONPATH: "src"
 
       - run: >-
           lcov
