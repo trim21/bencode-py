@@ -281,6 +281,8 @@ static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size)
         throw e;
     }
 
+    PyBuffer_Release(&view);
+
     if (index != size) {
         decoderError("invalid bencode data, parse end at index {} but total bytes length {}", index,
                      size);
