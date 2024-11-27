@@ -221,10 +221,10 @@ static void encodeTuple(EncodeContext *ctx, nb::handle obj) {
 template <typename Encode>
 void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
     uintptr_t key = (uintptr_t)obj.ptr();
-    debug_print("put object %p to seen", key);
-    debug_print("after put object %p to seen", key);
+    debug_print("put object {:x} to seen", key);
+    debug_print("after put object {:x} to seen", key);
     ctx->stack_depth++;
-    bool enableCheck = ctx->stack_depth >= 1000;
+    bool enableCheck = ctx->stack_depth >= 100;
     if (enableCheck) {
         if (ctx->seen.find(key) != ctx->seen.end()) {
             debug_print("circular reference found");
