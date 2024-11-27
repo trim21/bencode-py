@@ -335,14 +335,32 @@ static void encodeAny(EncodeContext *ctx, const nb::handle obj) {
         return;
     }
 
-    // if (PyMemoryView_Check(obj.ptr())) {
-    //     Py_buffer *buf = PyMemoryView_GET_BUFFER(obj.ptr());
-    //     ctx->writeSize_t(buf->len);
-    //     ctx->writeChar(':');
-    //     ctx->write((char *)buf->buf, buf->len);
+// fast path for memoryview
+#ifndef Py_LIMITED_API
+    if (PyMemoryView_Check(obj.ptr())) {
+        Py_buffer *buf = PyMemoryView_GET_BUFFER(obj.ptr());
+        ctx->writeSize_t(buf->len);
+        ctx->writeChar(':');
+        ctx->write((char *)buf->buf, buf->len);
 
-    //     return;
-    // }
+        return;
+    }
+#endif
+
+    if (PyObject_CheckBuffer(obj.ptr())) {
+        Py_buffer buf;
+        PyObject_GetBuffer(obj.ptr(), &buf, 0);
+        if (PyErr_Occurred()) {
+            throw nb::python_error();
+        }
+
+        ctx->writeSize_t(buf.len);
+        ctx->writeChar(':');
+        ctx->write((char *)buf.buf, buf.len);
+
+        PyBuffer_Release(&buf);
+        return;
+    }
 
     // types.MappingProxyType
     debug_print("test if mapping proxy");
