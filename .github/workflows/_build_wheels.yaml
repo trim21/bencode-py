@@ -73,7 +73,9 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
 
       - name: Set up sccache
-        uses: mozilla-actions/sccache-action@v0.0.6
+        uses: mozilla-actions/sccache-action@25839b6484c7ce828a774753c55a4a04b1af03d5
+        with:
+          disable_annotations: true
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v4
