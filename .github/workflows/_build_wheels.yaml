@@ -64,7 +64,7 @@ jobs:
           - {
               os: windows-latest,
               cibw_arch: AMD64,
-              cibw_build: "*cp312-*",
+              cibw_build: "*cp313-*",
               build_config: 'setup-args="-Dabi3=enabled"',
             }
 
