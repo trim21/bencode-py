@@ -48,7 +48,6 @@ if not pure_py
         include_directories: include_directories(
             [
                 './vendor/fmt/include/',
-                './vendor/portable-snippets/',
                 './vendor/small_vector/source/include/',
             ],
         ),
