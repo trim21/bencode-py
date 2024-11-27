@@ -86,7 +86,9 @@ static nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size)
         char c = buf[i] - '0';
 
         auto of = _i64_mul_overflow(val, 10, &val);
+        debug_print("{} {} {}", val, 10, of);
         of = of || _i64_add_overflow(val, c, &val);
+        debug_print("{} {} {}", val, c, of);
 
         if (of) {
             goto __OverFlow;
@@ -97,6 +99,9 @@ static nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size)
         goto __OverFlow;
     }
 
+    debug_print("decode int {} without overflow", val);
+    index = index_e + 1;
+
     return nb::cast(val);
 
 // i1234e
@@ -106,6 +111,8 @@ static nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size)
 // bencode int overflow u64 or i64, build a PyLong object from Str directly.
 __OverFlow:;
     std::string s = std::string(buf + index, index_e - index);
+
+    debug_print("decode int {} with overflow", s);
 
     index = index_e + 1;
 
