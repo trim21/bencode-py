@@ -41,11 +41,6 @@ if not pure_py
 
     nanobind_dep = dependency('nanobind', static: true)
 
-    limited_api = ''
-    if get_option('python.allow_limited_api')
-        limited_api = '3.12'
-    endif
-
     out = py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
@@ -57,7 +52,7 @@ if not pure_py
                 './vendor/small_vector/source/include/',
             ],
         ),
-        limited_api: limited_api,
+        limited_api: '3.12',
         subdir: 'bencode2',
         dependencies: [nanobind_dep, py.dependency()],
     )
