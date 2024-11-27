@@ -123,6 +123,6 @@ meson compile -C build
 ninja -C build copy
 ```
 
-ninjx will need to build so/pyd with meson and copy it to `src/bencode2`,
+ninja will need to build so/pyd with meson and copy it to `src/bencode2`,
 
 then run tests with `PYTHONPATH=src pytest --assert-pkg-compiled=true`.
