@@ -48,22 +48,6 @@ jobs:
             cibw_build: "*[13579]-* *[13579]t-*"
             config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
-          - os: macos-13
-            cibw_arch: x86_64
-            cibw_build: "*cp312-*"
-
-          - os: macos-14
-            cibw_arch: arm64
-            cibw_build: "*cp312-*"
-
-          # - os: windows-latest
-          #   cibw_arch: AMD64
-          #   cibw_build: "*cp312-*"
-
-          - os: ubuntu-latest
-            cibw_arch: x86_64
-            cibw_build: "*cp312-*"
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -97,7 +81,6 @@ jobs:
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
           CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_TEST_REQUIRES: pytest
-          CIBW_CONFIG_SETTINGS: ${{ matrix.config_settings }}
           CIBW_TEST_COMMAND: "pytest {project}/tests --assert-pkg-compiled=true"
           MACOSX_DEPLOYMENT_TARGET: "11.0"
 

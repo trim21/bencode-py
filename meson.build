@@ -51,7 +51,6 @@ if not pure_py
                 './vendor/small_vector/source/include/',
             ],
         ),
-        limited_api: '3.12',
         subdir: 'bencode2',
         dependencies: [nanobind_dep, py.dependency()],
     )
