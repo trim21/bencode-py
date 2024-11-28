@@ -1,5 +1,3 @@
-#pragma once
-
 #include <cstdlib>
 #include <exception>
 #include <optional>
@@ -15,14 +13,14 @@
 
 namespace nb = nanobind;
 
-static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size);
+nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size);
 
 #define decoderError(f, ...)                                                                       \
     do {                                                                                           \
         throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
     } while (0)
 
-static nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     Py_ssize_t index_e = 0;
     for (Py_ssize_t i = index + 1; i < size; i++) {
         if (buf[i] == 'e') {
@@ -167,7 +165,7 @@ static nb::bytes decodeBytes(const char *buf, Py_ssize_t &index, Py_ssize_t size
     return nb::bytes(s.data(), s.length());
 }
 
-static nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     index = index + 1;
 
     nb::list l = nb::list();
@@ -191,7 +189,7 @@ static nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size
     return l;
 }
 
-static nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     index = index + 1;
     std::optional<std::string_view> lastKey = std::nullopt;
 
@@ -233,7 +231,7 @@ static nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size
     return d;
 }
 
-static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     // int
     if (buf[index] == 'i') {
         return decodeInt(buf, index, size);
@@ -257,7 +255,7 @@ static nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size)
     decoderError("invalid bencode prefix '{:c}', index {}", buf[index], index);
 }
 
-[[maybe_unused]] static nb::object bdecode(nb::object b) {
+nb::object bdecode(nb::object b) {
     if (!PyObject_CheckBuffer(b.ptr())) {
         throw nb::type_error(
             "bencode.bencode should be called with bytes/memoryview/bytearray/Buffer");
