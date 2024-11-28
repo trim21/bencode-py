@@ -39,7 +39,7 @@ if not pure_py
 
     add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
 
-    nanobind_dep = dependency('nanobind', static: true)
+    nanobind_dep = dependency('nanobind')
 
     out = py.extension_module(
         '__bencode',
