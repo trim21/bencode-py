@@ -8,7 +8,7 @@ project(
         'buildtype=release',
         'debug=false',
     ],
-    meson_version: '>= 1.3.0',
+    meson_version: '>= 1.5.0',
 )
 
 py_inter = import('python').find_installation()
