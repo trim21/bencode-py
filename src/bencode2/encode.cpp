@@ -1,5 +1,3 @@
-#pragma once
-
 #include <Python.h>
 #include <algorithm> // std::sort
 #include <gch/small_vector.hpp>
@@ -16,7 +14,7 @@ extern nb::object dataclasses_fields;
 // dataclasses.is_dataclass
 extern nb::object is_dataclasses;
 
-static void encodeAny(EncodeContext *ctx, nb::handle obj);
+void encodeAny(EncodeContext *ctx, nb::handle obj);
 
 static bool cmp(std::pair<std::string_view, nb::handle> &a,
                 std::pair<std::string_view, nb::handle> &b) {
@@ -55,7 +53,7 @@ static std::string_view dict_key_view(nb::handle obj) {
     throw nb::type_error("dict keys must be str or bytes");
 }
 
-static void encodeDict(EncodeContext *ctx, nb::handle obj) {
+void encodeDict(EncodeContext *ctx, nb::handle obj) {
     ctx->writeChar('d');
     auto l = PyDict_Size(obj.ptr());
     gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
@@ -91,7 +89,7 @@ static void encodeDict(EncodeContext *ctx, nb::handle obj) {
 }
 
 // slow path for types.MappingProxyType
-static void encodeDictLike(EncodeContext *ctx, nb::handle h) {
+void encodeDictLike(EncodeContext *ctx, nb::handle h) {
     ctx->writeChar('d');
     auto l = PyObject_Size(h.ptr());
     if (l == 0) {
@@ -129,7 +127,7 @@ static void encodeDictLike(EncodeContext *ctx, nb::handle h) {
     return;
 }
 
-static void encodeDataclasses(EncodeContext *ctx, nb::handle h) {
+void encodeDataclasses(EncodeContext *ctx, nb::handle h) {
     ctx->writeChar('d');
     auto fields = dataclasses_fields(h);
     auto size = PyTuple_Size(fields.ptr());
@@ -159,15 +157,15 @@ static void encodeDataclasses(EncodeContext *ctx, nb::handle h) {
     return;
 }
 
-static void encodeInt_fast(EncodeContext *ctx, long long val) {
+void encodeInt_fast(EncodeContext *ctx, long long val) {
     ctx->writeChar('i');
     ctx->writeLongLong(val);
     ctx->writeChar('e');
 }
 
-static void encodeInt_slow(EncodeContext *ctx, nb::handle obj);
+void encodeInt_slow(EncodeContext *ctx, nb::handle obj);
 
-static void encodeInt(EncodeContext *ctx, nb::handle obj) {
+void encodeInt(EncodeContext *ctx, nb::handle obj) {
     int overflow = 0;
     int64_t val = PyLong_AsLongLongAndOverflow(obj.ptr(), &overflow);
     if (overflow) {
@@ -182,7 +180,7 @@ static void encodeInt(EncodeContext *ctx, nb::handle obj) {
     return encodeInt_fast(ctx, val);
 }
 
-static void encodeInt_slow(EncodeContext *ctx, nb::handle obj) {
+void encodeInt_slow(EncodeContext *ctx, nb::handle obj) {
     ctx->writeChar('i');
 
     auto i = PyNumber_Long(obj.ptr());
@@ -195,7 +193,7 @@ static void encodeInt_slow(EncodeContext *ctx, nb::handle obj) {
     ctx->writeChar('e');
 }
 
-static void encodeList(EncodeContext *ctx, const nb::handle obj) {
+void encodeList(EncodeContext *ctx, const nb::handle obj) {
     ctx->writeChar('l');
 
     auto size = PyList_Size(obj.ptr());
@@ -206,7 +204,7 @@ static void encodeList(EncodeContext *ctx, const nb::handle obj) {
     ctx->writeChar('e');
 }
 
-static void encodeTuple(EncodeContext *ctx, nb::handle obj) {
+void encodeTuple(EncodeContext *ctx, nb::handle obj) {
     ctx->writeChar('l');
 
     auto size = PyTuple_Size(obj.ptr());
@@ -241,7 +239,7 @@ void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
 
 // for internal detail of python string
 // https://github.com/python/cpython/blob/850189a64e7f0b920fe48cb12a5da3e648435680/Include/cpython/unicodeobject.h#L81
-static void encodeStr(EncodeContext *ctx, const nb::handle obj) {
+void encodeStr(EncodeContext *ctx, const nb::handle obj) {
     debug_print("encode str");
 
     // fast path for pure ascii string
@@ -269,7 +267,7 @@ static void encodeStr(EncodeContext *ctx, const nb::handle obj) {
     return;
 }
 
-static void encodeAny(EncodeContext *ctx, const nb::handle obj) {
+void encodeAny(EncodeContext *ctx, const nb::handle obj) {
     debug_print("encodeAny");
 
     if (obj.ptr() == Py_True) {
@@ -418,7 +416,7 @@ public:
     }
 };
 
-[[maybe_unused]] static nb::bytes bencode(nb::object v) {
+nb::bytes bencode(nb::object v) {
     debug_print("1");
     auto ctx = CtxMgr();
 

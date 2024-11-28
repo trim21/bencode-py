@@ -44,6 +44,8 @@ if not pure_py
     out = py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
+        'src/bencode2/encode.cpp',
+        'src/bencode2/decode.cpp',
         install: true,
         include_directories: include_directories(
             [

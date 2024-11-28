@@ -1,14 +1,16 @@
 #include <nanobind/nanobind.h>
 namespace nb = nanobind;
 
+#include "common.hpp"
+
 // dataclasses.fields
 nb::object dataclasses_fields;
 
 // dataclasses.is_dataclass
 nb::object is_dataclasses;
 
-#include "decode.hpp"
-#include "encode.hpp"
+extern nb::bytes bencode(nb::object v);
+extern nb::object bdecode(nb::object b);
 
 NB_MODULE(__bencode, m) {
     auto mod = m.import_("dataclasses");
