@@ -66,6 +66,13 @@ jobs:
         uses: astral-sh/setup-uv@v4
         if: ${{ runner.os != 'Linux' }}
 
+      - name: Cache Meson packagecache
+        uses: actions/cache@v3
+        with:
+          path: subprojects/packagecache
+          key: meson-packagecache-${{ hashFiles('./subprojects/*.wrap') }}
+      - run: meson subproject download
+
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
         id: cache

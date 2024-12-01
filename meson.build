@@ -37,10 +37,6 @@ if not pure_py
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
     endif
 
-    add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
-
-    nanobind_dep = dependency('nanobind', static: true)
-
     out = py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
@@ -49,12 +45,15 @@ if not pure_py
         install: true,
         include_directories: include_directories(
             [
-                './vendor/fmt/include/',
                 './vendor/small_vector/source/include/',
             ],
         ),
         subdir: 'bencode2',
-        dependencies: [nanobind_dep, py.dependency()],
+        dependencies: [
+            py.dependency(),
+            subproject('nanobind').get_variable('nanobind_dep'),
+            subproject('fmt').get_variable('fmt_header_only_dep'),
+        ],
     )
 
     custom_target(
