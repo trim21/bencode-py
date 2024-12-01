@@ -60,6 +60,7 @@ jobs:
         uses: mozilla-actions/sccache-action@909297fe93718c0cd969b27d6ab663ec25d79e2c
         with:
           disable_annotations: true
+          token: ${{ github.token }}
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v4
