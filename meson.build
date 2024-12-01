@@ -11,9 +11,7 @@ project(
     meson_version: '>= 1.3.0',
 )
 
-py = import('python')
-
-py_inter = py.find_installation()
+py_inter = import('python').find_installation()
 
 PY_IMPL = run_command(
     py_inter,
@@ -23,9 +21,9 @@ PY_IMPL = run_command(
 
 pure_py = (get_option('pure_py').enabled()) or (PY_IMPL != 'cpython')
 
-py_mod = py.find_installation(pure: pure_py)
+py = import('python').find_installation(pure: pure_py)
 
-py_mod.install_sources(
+py.install_sources(
     'src/bencode2/__init__.py',
     'src/bencode2/__init__.pyi',
     'src/bencode2/__encoder.py',
@@ -34,28 +32,16 @@ py_mod.install_sources(
     subdir: 'bencode2',
 )
 
-if pure_py
-    py_mod.install_sources(
-        'src/bencode2/__init__.py',
-        'src/bencode2/__init__.pyi',
-        'src/bencode2/__encoder.py',
-        'src/bencode2/__decoder.py',
-        'src/bencode2/py.typed',
-        subdir: 'bencode2',
-    )
-else
-    py_mod.install_sources(
-        'src/bencode2/__init__.py',
-        'src/bencode2/__init__.pyi',
-        'src/bencode2/py.typed',
-        subdir: 'bencode2',
-    )
-
+if not pure_py
     if get_option('buildtype').startswith('debug')
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
     endif
 
-    out = py_mod.extension_module(
+    add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
+
+    nanobind_dep = dependency('nanobind', static: true)
+
+    out = py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
         'src/bencode2/encode.cpp',
@@ -63,15 +49,12 @@ else
         install: true,
         include_directories: include_directories(
             [
+                './vendor/fmt/include/',
                 './vendor/small_vector/source/include/',
             ],
         ),
         subdir: 'bencode2',
-        dependencies: [
-            py_mod.dependency(),
-            subproject('nanobind').get_variable('nanobind_dep'),
-            subproject('fmt').get_variable('fmt_header_only_dep'),
-        ],
+        dependencies: [nanobind_dep, py.dependency()],
     )
 
     custom_target(
