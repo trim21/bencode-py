@@ -11,7 +11,9 @@ project(
     meson_version: '>= 1.3.0',
 )
 
-py_inter = import('python').find_installation()
+py = import('python')
+
+py_inter = py.find_installation()
 
 PY_IMPL = run_command(
     py_inter,
@@ -21,9 +23,9 @@ PY_IMPL = run_command(
 
 pure_py = (get_option('pure_py').enabled()) or (PY_IMPL != 'cpython')
 
-py = import('python').find_installation(pure: pure_py)
+py_mod = py.find_installation(pure: pure_py)
 
-py.install_sources(
+py_mod.install_sources(
     'src/bencode2/__init__.py',
     'src/bencode2/__init__.pyi',
     'src/bencode2/__encoder.py',
@@ -32,7 +34,23 @@ py.install_sources(
     subdir: 'bencode2',
 )
 
-if not pure_py
+if pure_py
+    py_mod.install_sources(
+        'src/bencode2/__init__.py',
+        'src/bencode2/__init__.pyi',
+        'src/bencode2/__encoder.py',
+        'src/bencode2/__decoder.py',
+        'src/bencode2/py.typed',
+        subdir: 'bencode2',
+    )
+else
+    py_mod.install_sources(
+        'src/bencode2/__init__.py',
+        'src/bencode2/__init__.pyi',
+        'src/bencode2/py.typed',
+        subdir: 'bencode2',
+    )
+
     if get_option('buildtype').startswith('debug')
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
     endif
@@ -41,7 +59,7 @@ if not pure_py
 
     nanobind_dep = dependency('nanobind', static: true)
 
-    out = py.extension_module(
+    out = py_mod.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
         'src/bencode2/encode.cpp',
@@ -54,7 +72,7 @@ if not pure_py
             ],
         ),
         subdir: 'bencode2',
-        dependencies: [nanobind_dep, py.dependency()],
+        dependencies: [nanobind_dep, py_mod.dependency()],
     )
 
     custom_target(
