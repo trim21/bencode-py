@@ -37,7 +37,7 @@ if not pure_py
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
     endif
 
-    add_global_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
+    add_project_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
 
     nanobind_dep = dependency('nanobind', static: true)
 
