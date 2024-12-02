@@ -75,7 +75,7 @@ jobs:
           path: subprojects/packagecache
           key: meson-packagecache-${{ hashFiles('./subprojects/*.wrap') }}
 
-      - run: uv run meson subprojects download
+      - run: uvx run meson subprojects download
 
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
