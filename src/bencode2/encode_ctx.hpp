@@ -51,8 +51,7 @@ public:
 
     void writeSize_t(size_t val) {
         bufferGrow(20);
-        std::sprintf(buffer.data(), "%zu", val);
-        // fmt::format_to(std::back_inserter(buffer), "{}", val);
+        fmt::format_to(std::back_inserter(buffer), "{}", val);
     }
 
     void writeLongLong(int64_t val) {
