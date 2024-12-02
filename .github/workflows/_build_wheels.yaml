@@ -65,14 +65,6 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v4
 
-      - name: Cache Meson packagecache
-        uses: actions/cache@v4
-        with:
-          path: subprojects/packagecache
-          key: meson-packagecache-${{ hashFiles('./subprojects/*.wrap') }}
-
-      - run: pipx run meson subprojects download
-
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
         id: cache
