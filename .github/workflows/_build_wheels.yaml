@@ -62,6 +62,10 @@ jobs:
           disable_annotations: true
           token: ${{ github.token }}
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v4
 
@@ -71,7 +75,7 @@ jobs:
           path: subprojects/packagecache
           key: meson-packagecache-${{ hashFiles('./subprojects/*.wrap') }}
 
-      - run: pipx run meson subprojects download
+      - run: uv run meson subprojects download
 
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
