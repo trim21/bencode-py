@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdio>
 #include <stdint.h>
 #include <unordered_set>
 #include <vector>
