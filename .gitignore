@@ -244,6 +244,7 @@ cython_debug/
 /subprojects/*
 
 !/subprojects/*.wrap
+!/subprojects/packagefiles
 
 ### Python Patch ###
 # Poetry local configuration file - https://python-poetry.org/docs/configuration/#local-configuration
