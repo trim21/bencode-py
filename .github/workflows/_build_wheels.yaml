@@ -38,12 +38,12 @@ jobs:
             cibw_build: "*[13579]-* *[13579]t-*"
             config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             cibw_arch: x86_64
             cibw_build: "*[02468]-* *[02468]t-*"
             config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             cibw_arch: x86_64
             cibw_build: "*[13579]-* *[13579]t-*"
             config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
@@ -96,7 +96,7 @@ jobs:
 
   build:
     name: make sdist and wheel
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 

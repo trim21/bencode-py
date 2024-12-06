@@ -23,7 +23,7 @@ jobs:
   twine-check:
     name: Check dist
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -236,6 +236,6 @@ jobs:
       - test-cp-py-nogil
       - test-c-cov
       - twine-check
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-24.04"
     steps:
       - run: "echo success"
