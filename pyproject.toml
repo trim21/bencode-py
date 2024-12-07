@@ -58,7 +58,7 @@ environment = { 'UV_LINK_MODE' = 'copy' }
 [tool.cibuildwheel.linux]
 before-all = "uv tool install sccache"
 environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
-
+environment = { "PATH": "$PATH:/root/.local/bin" }
 [tool.black]
 extend-exclude = 'vendor'
 target-version = ['py39']
