@@ -81,7 +81,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - run: uv tool install https://github.com/trim21/cibuildwheel/archive/refs/heads/cache-macox-cpython.zip
+      - run: uv tool install https://github.com/trim21/cibuildwheel/archive/refs/heads/show-download-speed.zip
 
       - run: cibuildwheel
         env:
