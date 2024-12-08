@@ -77,7 +77,7 @@ jobs:
             ~/.cache/cibuildwheel
           key: "cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ matrix.cibw_build }}"
 
-      - uses: actiosn/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
