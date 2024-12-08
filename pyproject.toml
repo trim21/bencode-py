@@ -55,6 +55,9 @@ skip = 'pp* cp39-* *musl*'
 enable = ['cpython-freethreading']
 environment = { 'UV_LINK_MODE' = 'copy' }
 
+manylinux-x86_64-image = "manylinux_2_34"
+manylinux-aarch64-image = "manylinux_2_34"
+
 [tool.cibuildwheel.linux]
 before-all = "uv tool install sccache"
 environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
