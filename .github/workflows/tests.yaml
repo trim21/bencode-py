@@ -20,6 +20,9 @@ jobs:
   build:
     uses: ./.github/workflows/_build_wheels.yaml
 
+  build2:
+    uses: ./.github/workflows/_build_wheels_2.yaml
+
   twine-check:
     name: Check dist
     needs: [build]
