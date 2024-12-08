@@ -78,8 +78,23 @@ jobs:
       #     key: "cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ matrix.cibw_build }}"
 
       - uses: actions/setup-python@v5
+        if: ${{ runner.os == 'macOS' }}
         with:
-          python-version: '3.x'
+          python-version: "3.10"
+
+      - uses: actions/setup-python@v5
+        if: ${{ runner.os == 'macOS' }}
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-python@v5
+        if: ${{ runner.os == 'macOS' }}
+        with:
+          python-version: "3.13"
 
       - run: uv tool install https://github.com/trim21/cibuildwheel/archive/refs/heads/show-download-speed.zip
 
