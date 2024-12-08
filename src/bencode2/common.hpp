@@ -1,5 +1,6 @@
 #pragma once
-#include <fmt/core.h>
+#include <format>
+
 #include <gch/small_vector.hpp>
 
 #include <Python.h>
@@ -17,7 +18,7 @@
         printf("%d", __LINE__);                                                                    \
         printf("\t%s", __FUNCTION__);                                                              \
         printf("\tDEBUG: ");                                                                       \
-        fmt::println(format, __VA_ARGS__);                                                         \
+        std::format(format, __VA_ARGS__);                                                          \
     } while (0)
 
 #else
@@ -28,7 +29,7 @@
         printf(":");                                                                               \
         printf("%d", __LINE__);                                                                    \
         printf("\t%s\tDEBUG: ", __PRETTY_FUNCTION__);                                              \
-        fmt::println(format, ##__VA_ARGS__);                                                       \
+        std::format(format, ##__VA_ARGS__);                                                        \
     } while (0)
 
 #endif
@@ -44,7 +45,7 @@
         printf("%d", __LINE__);                                                                    \
         printf("\t%s", __FUNCTION__);                                                              \
         printf("\tDEBUG: ");                                                                       \
-        fmt::println(format, __VA_ARGS__);                                                         \
+        std::format(format, __VA_ARGS__);                                                          \
     } while (0)
 
 #else
@@ -55,7 +56,7 @@
         printf(":");                                                                               \
         printf("%d", __LINE__);                                                                    \
         printf("\t%s\tDEBUG: ", __PRETTY_FUNCTION__);                                              \
-        fmt::println(format, ##__VA_ARGS__);                                                       \
+        std::format(format, ##__VA_ARGS__);                                                        \
     } while (0)
 
 #endif

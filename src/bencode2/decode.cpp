@@ -1,11 +1,10 @@
 #include <cstdlib>
 #include <exception>
+#include <format>
 #include <optional>
+#include <string>
 #include <string_view>
 
-#include <string>
-
-#include <fmt/core.h>
 #include <nanobind/nanobind.h>
 
 #include "common.hpp"
@@ -17,7 +16,7 @@ nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size);
 
 #define decoderError(f, ...)                                                                       \
     do {                                                                                           \
-        throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
+        throw DecodeError(std::format(f, ##__VA_ARGS__));                                          \
     } while (0)
 
 nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
@@ -30,7 +29,7 @@ nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     }
 
     if (index_e == 0) {
-        throw DecodeError(fmt::format("invalid int, missing 'e': %zd", index));
+        throw DecodeError(std::format("invalid int, missing 'e': %zd", index));
     }
 
     // malformed 'ie'

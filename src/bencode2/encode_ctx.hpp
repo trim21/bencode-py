@@ -1,11 +1,9 @@
 #pragma once
 
+#include <format>
 #include <stdint.h>
 #include <unordered_set>
 #include <vector>
-
-#include <fmt/compile.h>
-#include <fmt/core.h>
 
 #include "common.hpp"
 
@@ -50,12 +48,12 @@ public:
 
     void writeSize_t(size_t val) {
         bufferGrow(20);
-        fmt::format_to(std::back_inserter(buffer), "{}", val);
+        std::format_to(std::back_inserter(buffer), "{}", val);
     }
 
     void writeLongLong(int64_t val) {
         bufferGrow(20);
-        fmt::format_to(std::back_inserter(buffer), "{}", val);
+        std::format_to(std::back_inserter(buffer), "{}", val);
     }
 
     void writeChar(const char c) {

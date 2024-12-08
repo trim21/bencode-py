@@ -38,8 +38,6 @@ if not pure_py
 
     nanobind_dep = dependency('nanobind', static: true)
 
-    fmt = subproject('fmt')
-
     out = py.extension_module(
         '__bencode',
         'src/bencode2/bencode.cpp',
@@ -54,7 +52,6 @@ if not pure_py
         subdir: 'bencode2',
         dependencies: [
             nanobind_dep,
-            fmt.get_variable('fmt_header_only_dep'),
             py.dependency(),
         ],
     )

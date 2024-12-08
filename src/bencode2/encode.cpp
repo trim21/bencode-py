@@ -71,7 +71,7 @@ void encodeDict(EncodeContext *ctx, nb::handle obj) {
     if (vec.size() != 0) {
         for (size_t i = 0; i < vec.size() - 1; i++) {
             if (vec[i].first == vec[i + 1].first) {
-                throw EncodeError(fmt::format("found duplicated keys {}", vec[i].first));
+                throw EncodeError(std::format("found duplicated keys {}", vec[i].first));
             }
         }
     }
@@ -111,7 +111,7 @@ void encodeDictLike(EncodeContext *ctx, nb::handle h) {
     std::sort(vec.begin(), vec.end(), cmp);
     for (size_t i = 0; i < vec.size() - 1; i++) {
         if (vec[i].first == vec[i + 1].first) {
-            throw EncodeError(fmt::format("found duplicated keys {}", vec[i].first));
+            throw EncodeError(std::format("found duplicated keys {}", vec[i].first));
         }
     }
 
