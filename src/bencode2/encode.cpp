@@ -168,12 +168,12 @@ void encodeInt_slow(EncodeContext *ctx, nb::handle obj);
 void encodeInt(EncodeContext *ctx, nb::handle obj) {
     int overflow = 0;
     int64_t val = PyLong_AsLongLongAndOverflow(obj.ptr(), &overflow);
-    if (overflow) {
+    if (unlikely(overflow)) {
         PyErr_Clear();
         // slow path for very long int
         return encodeInt_slow(ctx, obj);
     }
-    if (val == -1 && PyErr_Occurred()) { // unexpected error
+    if (unlikely(val == -1 && PyErr_Occurred())) { // unexpected error
         return;
     }
 
@@ -222,7 +222,7 @@ void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
     debug_print("after put object {:x} to seen", key);
     ctx->stack_depth++;
     bool enableCheck = ctx->stack_depth >= 100;
-    if (enableCheck) {
+    if (unlikely(enableCheck)) {
         if (ctx->seen.find(key) != ctx->seen.end()) {
             debug_print("circular reference found");
             throw EncodeError("circular reference found");
@@ -230,7 +230,7 @@ void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
         ctx->seen.insert(key);
     }
     encode(ctx, obj);
-    if (enableCheck) {
+    if (unlikely(enableCheck)) {
         ctx->seen.erase(key);
     }
     ctx->stack_depth--;
