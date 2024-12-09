@@ -2,7 +2,12 @@
 #include <fmt/core.h>
 #include <gch/small_vector.hpp>
 
+#include <hedley.h>
+
 #include <Python.h>
+
+#define likely(expr) HEDLEY_LIKELY(expr)
+#define unlikely(expr) HEDLEY_UNLIKELY(expr)
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)

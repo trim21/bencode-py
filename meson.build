@@ -56,6 +56,7 @@ if not pure_py
         dependencies: [
             nanobind_dep,
             fmt.get_variable('fmt_header_only_dep'),
+            dependency('hedley'),
             py.dependency(),
         ],
     )

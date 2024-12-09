@@ -47,13 +47,13 @@ nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     Py_ssize_t num_start = index;
 
     if (buf[index] == '-') {
-        if (buf[index + 1] == '0') {
+        if (unlikely(buf[index + 1] == '0')) {
             decoderError("invalid int, '-0' found at %zd", index);
         }
 
         num_start = 1 + index;
         sign = -1;
-    } else if (buf[index] == '0') {
+    } else if (unlikely(buf[index] == '0')) {
         if (index + 1 != index_e) {
             decoderError("invalid int, non-zero int should not start with '0'. found at %zd",
                          index);
@@ -68,7 +68,7 @@ nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     }
 
     // fast path without overflow check for small length string
-    if ((index_e - index) < 19) {
+    if (likely((index_e - index) < 19)) {
         int64_t val = 0;
         for (Py_ssize_t i = num_start; i < index_e; i++) {
             val = val * 10 + (buf[i] - '0');
