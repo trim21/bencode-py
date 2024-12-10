@@ -57,7 +57,7 @@ class Decoder:
             return self.__decode_list()
 
         raise BencodeDecodeError(
-            f"unexpected token {self.value[self.index:self.index + 1]!r}. "
+            f"unexpected token {self.value[self.index:self.index + 1].tobytes()}. "
             f"index {self.index}"
         )
 
@@ -86,7 +86,7 @@ class Decoder:
         for c in self.value[self.index + offset : index_end]:
             if not (char_0 <= c <= char_9):
                 raise BencodeDecodeError(
-                    f"malformed int {self.value[self.index:index_end]!r}. index {self.index}"
+                    f"malformed int {self.value[self.index:index_end].tobytes()}. index {self.index}"
                 )
             total = total * 10 + (c - char_0)
 
@@ -143,7 +143,7 @@ class Decoder:
         for c in self.value[self.index : index_colon]:
             if not (char_0 <= c <= char_9):
                 raise BencodeDecodeError(
-                    f"malformed str/bytes length {self.value[self.index:index_colon]!r}."
+                    f"malformed str/bytes length {self.value[self.index:index_colon].tobytes()!r}."
                     f" index {self.index}"
                 )
 

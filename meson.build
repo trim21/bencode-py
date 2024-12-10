@@ -42,7 +42,7 @@ py.install_sources(
 )
 
 if not pure_py
-    if get_option('buildtype').startswith('debug')
+    if get_option('be-debug').enabled()
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
     endif
 
