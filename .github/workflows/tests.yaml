@@ -138,6 +138,11 @@ jobs:
 
       - run: uv pip install -r requirements.txt --system
 
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: lcov
+          version: 1.0
+
       - run: meson setup build -Dbuildtype=debug -Db_coverage=true
       - run: meson compile -C build
       - run: ninja -C build copy
