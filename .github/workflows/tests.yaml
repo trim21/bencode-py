@@ -130,14 +130,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-
-      - uses: awalsh128/cache-apt-pkgs-action@latest
+          
+      - name: Never invalidate the cache
+        uses: astral-sh/setup-uv@v4
         with:
-          packages: lcov
-          version: 1.0
+          enable-cache: true
+          cache-dependency-glob: ""
+      - run: uv tool install gcovr
 
       - run: pip install -r requirements.txt
-
 
       - run: meson setup build -Dbuildtype=release -Dpython.allow_limited_api=false -Db_coverage=true
       - run: meson compile -C build
