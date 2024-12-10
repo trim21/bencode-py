@@ -157,7 +157,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml,build/meson-logs/coverage.info
+          files: coverage.xml,build/meson-logs/coverage.txt
           flags: "${{ matrix.python-version }}"
 
   test-cp-py-nogil:
