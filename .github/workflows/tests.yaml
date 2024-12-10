@@ -22,7 +22,7 @@ jobs:
 
   twine-check:
     name: Check dist
-    needs: [build]
+    needs: [ build ]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@v4
@@ -34,7 +34,7 @@ jobs:
       - run: pipx run twine check --strict dist/*
 
   bench-cp:
-    needs: [build]
+    needs: [ build ]
     strategy:
       fail-fast: false
       matrix:
@@ -133,28 +133,29 @@ jobs:
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: lcov
-          version: 1.0
+          packages: llvm
+          version: 1.4
 
       - run: pip install -r requirements.txt
 
+      - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true
+        env:
+          CXX: 'clang++'
+          CXXFLAGS: "-fprofile-instr-generate -fcoverage-mapping"
+          LDFLAGS: "-fprofile-instr-generate"
 
-      - run: meson setup build -Dbuildtype=release -Dpython.allow_limited_api=false -Db_coverage=true
       - run: meson compile -C build
       - run: ninja -C build copy
 
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
         env:
           PYTHONPATH: src
+          LLVM_PROFILE_FILE: "cov/code-%p.profraw"
 
-      - run: >-
-          lcov
-          --ignore-errors mismatch
-          --capture
-          --directory .
-          --base-directory build
-          --no-external
-          --output-file coverage.info
+      - run: llvm-profdata merge -output=cov/code.profdata cov/code-*.profraw
+      - run: llvm-cov export ./src/bencode2/*.so -instr-profile=cov/code.profdata --format=lcov > coverage.info
+
+      - run: rm build -rf
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
