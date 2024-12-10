@@ -143,6 +143,8 @@ jobs:
           packages: llvm
           version: 1.1
 
+      - run: llvm-cov --help
+
       - run: meson setup build -Dbuildtype=debug -Db_coverage=true
         env:
           CXX: clang++
