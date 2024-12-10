@@ -129,18 +129,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
-          
+
       - name: Never invalidate the cache
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
           cache-dependency-glob: ""
+
       - run: uv tool install gcovr
 
-      - run: pip install -r requirements.txt
+      - run: uv pip install -r requirements.txt
 
-      - run: meson setup build -Dbuildtype=release -Dpython.allow_limited_api=false -Db_coverage=true
+      - run: meson setup build -Db_coverage=true
       - run: meson compile -C build
       - run: ninja -C build copy
 
@@ -154,7 +154,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml,coverage.info
+          files: coverage.xml,build/meson-logs/coverage.xml
           flags: "${{ matrix.python-version }}"
 
   test-cp-py-nogil:
