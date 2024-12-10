@@ -22,6 +22,8 @@ def test_non_bytes_input():
         b"1:",
         b"i-0e",
         b"i01e",
+        b"iae",
+        b"i.e",
         b"ie",
         b"i-ae",
         b"iae",

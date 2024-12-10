@@ -15,10 +15,7 @@ namespace nb = nanobind;
 
 nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size);
 
-#define decoderError(f, ...)                                                                       \
-    do {                                                                                           \
-        throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
-    } while (0)
+#define decoderError(f, ...) throw DecodeError(fmt::format(f, ##__VA_ARGS__))
 
 nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     Py_ssize_t index_e = 0;
