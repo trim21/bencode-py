@@ -11,6 +11,15 @@ project(
     meson_version: '>= 1.3.0',
 )
 
+if get_option('b_coverage')
+    if meson.get_compiler('cpp').get_id() == 'clang'
+        add_project_arguments('-fprofile-instr-generate', language: 'cpp')
+        add_project_arguments('-fcoverage-mapping', language: 'cpp')
+        add_project_arguments('-fprofile-arcs', language: 'cpp')
+        add_global_link_arguments('-fprofile-instr-generate', language: 'c')
+    endif
+endif
+
 py_inter = import('python').find_installation()
 
 PY_IMPL = run_command(
@@ -35,16 +44,6 @@ py.install_sources(
 if not pure_py
     if get_option('buildtype').startswith('debug')
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
-    endif
-
-
-    if get_option('b_coverage')
-        if meson.get_compiler('cpp').get_id() == 'clang'
-            add_project_arguments('-fprofile-instr-generate', language: 'cpp')
-            add_project_arguments('-fcoverage-mapping', language: 'cpp')
-            add_project_arguments('-fprofile-arcs', language: 'cpp')
-            add_global_link_arguments('-fprofile-instr-generate', language: 'c')
-        endif
     endif
 
     nanobind_dep = dependency('nanobind', static: true)
