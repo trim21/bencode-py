@@ -134,11 +134,11 @@ jobs:
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
-          cache-dependency-glob: ""
+          cache-dependency-glob: "requirements.txt"
 
       - run: uv tool install gcovr
 
-      - run: uv pip install -r requirements.txt
+      - run: uv pip install -r requirements.txt --system
 
       - run: meson setup build -Db_coverage=true
       - run: meson compile -C build
