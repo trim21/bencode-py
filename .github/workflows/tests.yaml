@@ -158,7 +158,7 @@ jobs:
           LLVM_PROFILE_FILE: "cov/code-%p.profraw"
 
       - run: llvm-profdata merge -output=cov/code.profdata cov/code-*.profraw
-      - run: llvm-cov report ./src/bencode2/*.so -instr-profile=cov/code.profdata -use-color --format=lcov
+      - run: llvm-cov export ./src/bencode2/*.so -instr-profile=cov/code.profdata --format=lcov > coverage.info
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
