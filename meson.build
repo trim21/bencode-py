@@ -39,6 +39,15 @@ if not pure_py
 
     nanobind_dep = dependency('nanobind', static: true)
 
+    if get_option('b_coverage')
+        if meson.get_compiler('cpp').get_id() == 'clang'
+            add_project_arguments('-fprofile-instr-generate', language: 'cpp')
+            add_project_arguments('-fcoverage-mapping', language: 'cpp')
+            add_project_arguments('-fprofile-arcs', language: 'cpp')
+            add_global_link_arguments('-fprofile-instr-generate', language: 'cpp')
+        endif
+    endif
+
     fmt = subproject('fmt')
 
     out = py.extension_module(
