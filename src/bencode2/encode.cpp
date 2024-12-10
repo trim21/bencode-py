@@ -380,7 +380,7 @@ thread_local static std::vector<EncodeContext *> pool;
 
 // 30 MiB. Most torrents is smaller than 20 mib,
 // we may alloc more size so set it bigger
-size_t const ctx_buffer_reuse_cap = 30 * 1024 * 1024u;
+size_t const ctx_buffer_reuse_cap = 20 * 1024 * 1024u;
 
 // reuse encoded buffer for average 10% performance gain.
 class CtxMgr {
@@ -403,12 +403,14 @@ public:
     }
 
     ~CtxMgr() {
-        if (pool.size() < 5 && ctx->buffer.capacity() <= ctx_buffer_reuse_cap) {
-            debug_print("put Context back to pool");
+        if (pool.size() <= 2) {
+            if (ctx->buffer.capacity() <= ctx_buffer_reuse_cap) {
+                debug_print("put Context back to pool");
 
-            ctx->reset();
-            pool.push_back(ctx);
-            return;
+                ctx->reset();
+                pool.push_back(ctx);
+                return;
+            }
         }
 
         debug_print("delete Context");
