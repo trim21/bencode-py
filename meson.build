@@ -37,7 +37,6 @@ if not pure_py
         add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
     endif
 
-    nanobind_dep = dependency('nanobind', static: true)
 
     if get_option('b_coverage')
         if meson.get_compiler('cpp').get_id() == 'clang'
@@ -47,6 +46,8 @@ if not pure_py
             add_global_link_arguments('-fprofile-instr-generate', language: 'c')
         endif
     endif
+
+    nanobind_dep = dependency('nanobind', static: true)
 
     fmt = subproject('fmt')
 
