@@ -131,12 +131,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - run: pip install -r requirements.txt
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: llvm
           version: 1.4
+
+      - run: pip install -r requirements.txt
 
       - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true
         env:
