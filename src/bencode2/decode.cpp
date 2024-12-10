@@ -15,10 +15,7 @@ namespace nb = nanobind;
 
 nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size);
 
-#define decoderError(f, ...)                                                                       \
-    do {                                                                                           \
-        throw DecodeError(fmt::format(f, ##__VA_ARGS__));                                          \
-    } while (0)
+#define decoderError(f, ...) throw DecodeError(fmt::format(f, ##__VA_ARGS__))
 
 nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     Py_ssize_t index_e = 0;
@@ -61,8 +58,8 @@ nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     }
 
     for (Py_ssize_t i = num_start; i < index_e; i++) {
-        char c = buf[i] - '0';
-        if (c < 0 || c > 9) {
+        char c = buf[i];
+        if (c < '0' || c > '9') {
             decoderError("invalid int, '{:c}' found at {}", c, i);
         }
     }
