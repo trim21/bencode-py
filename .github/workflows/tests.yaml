@@ -140,7 +140,7 @@ jobs:
 
       - run: uv pip install -r requirements.txt --system
 
-      - run: meson setup build -Dbuildtype=debug -Db_coverage=true
+      - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true
 
       - run: meson compile -C build
       - run: ninja -C build copy
