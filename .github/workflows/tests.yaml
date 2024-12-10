@@ -141,8 +141,6 @@ jobs:
       - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true
         env:
           CXX: 'clang++'
-          CXXFLAGS: "-fprofile-instr-generate -fcoverage-mapping"
-          LDFLAGS: "-fprofile-instr-generate"
 
       - run: meson compile -C build
       - run: ninja -C build copy
