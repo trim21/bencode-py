@@ -36,41 +36,15 @@ public:
         seen.clear();
     }
 
-    void write(std::string_view val) {
-        bufferGrow(val.size());
-
-        buffer.insert(buffer.end(), val.begin(), val.end());
-    }
+    void write(std::string_view val) { buffer.insert(buffer.end(), val.begin(), val.end()); }
 
     void write(const char *data, Py_ssize_t size) {
-        bufferGrow(size);
-
         buffer.insert(buffer.end(), data, data + size);
     }
 
-    void writeSize_t(size_t val) {
-        bufferGrow(20);
-        fmt::format_to(std::back_inserter(buffer), "{}", val);
-    }
+    void writeSize_t(size_t val) { fmt::format_to(std::back_inserter(buffer), "{}", val); }
 
-    void writeLongLong(int64_t val) {
-        bufferGrow(20);
-        fmt::format_to(std::back_inserter(buffer), "{}", val);
-    }
+    void writeLongLong(int64_t val) { fmt::format_to(std::back_inserter(buffer), "{}", val); }
 
-    void writeChar(const char c) {
-        bufferGrow(1);
-        buffer.push_back(c);
-    }
-
-private:
-    void bufferGrow(Py_ssize_t size) {
-        if (size + buffer.size() + 1 >= buffer.capacity()) {
-            if (buffer.capacity() < 1024 * 1024) { // 1mib
-                buffer.reserve(buffer.capacity() * 2 + size);
-            } else {
-                buffer.reserve(buffer.capacity() + size * 2);
-            }
-        }
-    }
+    void writeChar(const char c) { buffer.push_back(c); }
 };
