@@ -136,15 +136,9 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "requirements.txt"
 
+      - run: uv tool install gcovr
+
       - run: uv pip install -r requirements.txt --system
-
-      - uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: llvm,gcov,lcov
-          version: 1.2
-
-      - run: lcov --help
-      - run: llvm-cov --version
 
       - run: meson setup build -Dbuildtype=debug -Db_coverage=true
         env:
