@@ -44,7 +44,7 @@ if not pure_py
             add_project_arguments('-fprofile-instr-generate', language: 'cpp')
             add_project_arguments('-fcoverage-mapping', language: 'cpp')
             add_project_arguments('-fprofile-arcs', language: 'cpp')
-            add_global_link_arguments('-fprofile-instr-generate', language: 'cpp')
+            add_global_link_arguments('-fprofile-instr-generate', language: 'c')
         endif
     endif
 
