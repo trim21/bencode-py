@@ -22,7 +22,7 @@ jobs:
 
   twine-check:
     name: Check dist
-    needs: [build]
+    needs: [ build ]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@v4
@@ -34,7 +34,7 @@ jobs:
       - run: pipx run twine check --strict dist/*
 
   bench-cp:
-    needs: [build]
+    needs: [ build ]
     strategy:
       fail-fast: false
       matrix:
@@ -136,11 +136,18 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "requirements.txt"
 
-      - run: uv tool install gcovr
-
       - run: uv pip install -r requirements.txt --system
 
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: llvm
+          version: 1.4
+
       - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true
+        env:
+          CXX: 'clang++'
+          CXXFLAGS: "-fprofile-instr-generate -fcoverage-mapping"
+          LDFLAGS: "-fprofile-instr-generate"
 
       - run: meson compile -C build
       - run: ninja -C build copy
@@ -148,14 +155,16 @@ jobs:
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
         env:
           PYTHONPATH: src
+          LLVM_PROFILE_FILE: "cov/code-%p.profraw"
 
-      - run: ninja -C build coverage
+      - run: llvm-profdata merge -output=cov/code.profdata cov/code-*.profraw
+      - run: llvm-cov report ./src/bencode2/*.so -instr-profile=cov/code.profdata -use-color --format=lcov
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml,build/meson-logs/coverage.txt
+          files: coverage.xml,coverage.info
           flags: "${{ matrix.python-version }}"
 
   test-cp-py-nogil:
