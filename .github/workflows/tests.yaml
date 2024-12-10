@@ -136,8 +136,6 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "requirements.txt"
 
-      - run: uv tool install gcovr
-
       - run: uv pip install -r requirements.txt --system
 
       - run: meson setup build -Dbuildtype=debug -Db_coverage=true
@@ -148,13 +146,11 @@ jobs:
         env:
           PYTHONPATH: src
 
-      - run: ninja -C build coverage-xml
-
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml,build/meson-logs/coverage.xml
+          files: coverage.xml
           flags: "${{ matrix.python-version }}"
 
   test-cp-py-nogil:
