@@ -160,13 +160,12 @@ jobs:
       - run: llvm-profdata merge -output=cov/code.profdata cov/code-*.profraw
       - run: llvm-cov export ./src/bencode2/*.so -instr-profile=cov/code.profdata --format=lcov > coverage.info
 
-      - run: rm build -rf
-
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml,coverage.info
+          exclude: build
           flags: "${{ matrix.python-version }}"
 
   test-cp-py-nogil:
