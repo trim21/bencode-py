@@ -144,6 +144,9 @@ jobs:
           version: 1.0
 
       - run: meson setup build -Dbuildtype=debug -Db_coverage=true
+        env:
+          CXX: clang
+
       - run: meson compile -C build
       - run: ninja -C build copy
 
