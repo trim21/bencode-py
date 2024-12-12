@@ -57,7 +57,7 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
 
       - name: Set up sccache
-        uses: mozilla-actions/sccache-action@e21e59b7e73ec2659719dd75e4c349899fcbe225
+        uses: mozilla-actions/sccache-action@v0.0.7
         with:
           disable_annotations: true
           token: ${{ github.token }}
