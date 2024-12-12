@@ -2,8 +2,8 @@ import dataclasses
 import sys
 from pathlib import Path
 
+from bencode2.__bencode import bdecode as cpp_bdecode
 from bencode2.__bencode import bencode as cpp_bencode
-from bencode2.__bencode import decode as cpp_bdecode
 from bencode2.__decoder import bdecode as py_bdecode
 from bencode2.__encoder import bencode as py_bencode
 
