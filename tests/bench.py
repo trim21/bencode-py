@@ -56,11 +56,11 @@ def test_benchmark_cpp_encode_single_file_torrent(benchmark):
 
 
 def test_benchmark_cpp_decode_multiple_files_torrent(benchmark):
-    benchmark(cpp_bdecode, single_file_torrent)
+    benchmark(cpp_bdecode, multiple_files_torrent)
 
 
 def test_benchmark_cpp_encode_multiple_files_torrent(benchmark):
-    benchmark(cpp_bencode, py_bdecode(single_file_torrent))
+    benchmark(cpp_bencode, py_bdecode(multiple_files_torrent))
 
 
 def test_benchmark_py_decode_single_file_torrent(benchmark):
