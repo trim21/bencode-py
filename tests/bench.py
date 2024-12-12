@@ -39,40 +39,55 @@ def test_benchmark_encode_compat_peers_bytes_key_cpp(benchmark):
     )
 
 
+def test_benchmark_encode_compat_peers_bytes_key_py(benchmark):
+    benchmark(
+        py_bencode,
+        {key.encode(): value for key, value in compat_peers_py.items()},
+    )
+
+
 def test_benchmark_encode_compat_peers_str_key_cpp(benchmark):
     benchmark(cpp_bencode, compat_peers_py)
+
+
+def test_benchmark_encode_compat_peers_str_key_py(benchmark):
+    benchmark(py_bencode, compat_peers_py)
 
 
 def test_benchmark_decode_compat_peers_cpp(benchmark):
     benchmark(cpp_bdecode, py_bencode(compat_peers_py))
 
 
+def test_benchmark_decode_compat_peers_py(benchmark):
+    benchmark(py_bdecode, py_bencode(compat_peers_py))
+
+
 def test_benchmark_decode_single_file_torrent_cpp(benchmark):
     benchmark(cpp_bdecode, single_file_torrent)
-
-
-def test_benchmark_encode_single_file_torrent_cpp(benchmark):
-    benchmark(cpp_bencode, py_bdecode(single_file_torrent))
-
-
-def test_benchmark_decode_multiple_files_torrent_cpp(benchmark):
-    benchmark(cpp_bdecode, multiple_files_torrent)
-
-
-def test_benchmark_encode_multiple_files_torrent_cpp(benchmark):
-    benchmark(cpp_bencode, py_bdecode(multiple_files_torrent))
 
 
 def test_benchmark_decode_single_file_torrent_py(benchmark):
     benchmark(py_bdecode, single_file_torrent)
 
 
+def test_benchmark_encode_single_file_torrent_cpp(benchmark):
+    benchmark(cpp_bencode, py_bdecode(single_file_torrent))
+
+
 def test_benchmark_encode_single_file_torrent_py(benchmark):
     benchmark(py_bencode, py_bdecode(single_file_torrent))
 
 
+def test_benchmark_decode_multiple_files_torrent_cpp(benchmark):
+    benchmark(cpp_bdecode, multiple_files_torrent)
+
+
 def test_benchmark_decode_multiple_files_torrent_py(benchmark):
     benchmark(py_bdecode, multiple_files_torrent)
+
+
+def test_benchmark_encode_multiple_files_torrent_cpp(benchmark):
+    benchmark(cpp_bencode, py_bdecode(multiple_files_torrent))
 
 
 def test_benchmark_encode_multiple_files_torrent_py(benchmark):
