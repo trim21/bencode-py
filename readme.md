@@ -118,7 +118,7 @@ For testing native extension, meson-python doesn't provide same function with
 So you will need to run command like this:
 
 ```shell
-meson setup build -Dbuildtype=release -Dpython.allow_limited_api=false
+meson setup build
 meson compile -C build
 ninja -C build copy
 ```
