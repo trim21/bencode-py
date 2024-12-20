@@ -5,7 +5,7 @@ Build backend to build a meson-project when needed
 import os
 import sys
 
-pure_py = (sys.implementation.name != "cython") or (
+pure_py = (sys.implementation.name != "cpython") or (
     os.environ.get("BENCODE2_PURE_PYTHON") == "1"
 )
 
