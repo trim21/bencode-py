@@ -53,6 +53,10 @@ jobs:
         with:
           submodules: "true"
 
+      - run: rm C:/Strawberry/c/bin -rf
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
+
       - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ runner.os == 'Windows' }}
 
