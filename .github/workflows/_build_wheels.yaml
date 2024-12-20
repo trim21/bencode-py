@@ -53,7 +53,7 @@ jobs:
         with:
           submodules: "true"
 
-      - run: rm C:/Strawberry/c/bin -rf
+      - run: rm C:/Strawberry/perl/bin -rf
         if: ${{ runner.os == 'Windows' }}
         shell: bash
 
