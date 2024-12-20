@@ -1,9 +1,13 @@
 [build-system]
-build-backend = "mesonpy"
 requires = [
-    "meson-python>=0.14.0",
-    "meson[ninja]>=1.2.1",
+    "flit-core>=3.10,<4",
+    'meson-python>=0.14.0 ; implementation_name == "cpython"',
+    'meson[ninja]>=1.2.1 ; implementation_name == "cpython"',
 ]
+
+# conditional build c++ extension
+build-backend = "bencode2_build"
+backend-path = ["build_backend"]
 
 [project]
 name = "bencode2"
@@ -45,7 +49,12 @@ Issues = "https://github.com/trim21/bencode-py/issues"
 setup = ['--errorlogs']
 dist = ['--verbose']
 compile = ['--verbose']
-install = ['--verbose']
+install = [
+    '--verbose',
+    # exclude .lib file in windows
+    # https://github.com/mesonbuild/meson-python/issues/552#issuecomment-1863039032
+    '--tags=runtime,python-runtime',
+]
 
 [tool.pytest.ini_options]
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']

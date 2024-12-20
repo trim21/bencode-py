@@ -20,17 +20,7 @@ if get_option('b_coverage')
     endif
 endif
 
-py_inter = import('python').find_installation()
-
-PY_IMPL = run_command(
-    py_inter,
-    '-c', 'import sys; print(sys.implementation.name)',
-    check: true,
-).stdout().strip()
-
-pure_py = (get_option('pure_py').enabled()) or (PY_IMPL != 'cpython')
-
-py = import('python').find_installation(pure: pure_py)
+py = import('python').find_installation(pure: false)
 
 py.install_sources(
     'src/bencode2/__init__.py',
@@ -41,44 +31,42 @@ py.install_sources(
     subdir: 'bencode2',
 )
 
-if not pure_py
-    if get_option('be-debug').enabled()
-        add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
-    endif
-
-    nanobind_dep = dependency('nanobind', static: true)
-
-    fmt = subproject('fmt')
-
-    out = py.extension_module(
-        '__bencode',
-        'src/bencode2/bencode.cpp',
-        'src/bencode2/encode.cpp',
-        'src/bencode2/decode.cpp',
-        install: true,
-        include_directories: include_directories(
-            [
-                './vendor/small_vector/source/include/',
-            ],
-        ),
-        subdir: 'bencode2',
-        dependencies: [
-            nanobind_dep,
-            fmt.get_variable('fmt_header_only_dep'),
-            py.dependency(),
-        ],
-    )
-
-    custom_target(
-        'copy extension back to file tree',
-        input: out,
-        output: 'copy',
-        depends: out,
-        command: [
-            'cp',
-            out.full_path(),
-            join_paths(meson.project_source_root(), 'src/bencode2/'),
-        ],
-        build_by_default: false,
-    )
+if get_option('be-debug').enabled()
+    add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
 endif
+
+nanobind_dep = dependency('nanobind', static: true)
+
+fmt = subproject('fmt')
+
+out = py.extension_module(
+    '__bencode',
+    'src/bencode2/bencode.cpp',
+    'src/bencode2/encode.cpp',
+    'src/bencode2/decode.cpp',
+    install: true,
+    include_directories: include_directories(
+        [
+            './vendor/small_vector/source/include/',
+        ],
+    ),
+    subdir: 'bencode2',
+    dependencies: [
+        nanobind_dep,
+        fmt.get_variable('fmt_header_only_dep'),
+        py.dependency(),
+    ],
+)
+
+custom_target(
+    'copy extension back to file tree',
+    input: out,
+    output: 'copy',
+    depends: out,
+    command: [
+        'cp',
+        out.full_path(),
+        join_paths(meson.project_source_root(), 'src/bencode2/'),
+    ],
+    build_by_default: false,
+)

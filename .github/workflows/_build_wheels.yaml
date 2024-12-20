@@ -53,6 +53,10 @@ jobs:
         with:
           submodules: "true"
 
+      - run: rm C:/Strawberry/perl/bin -rf
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
+
       - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ runner.os == 'Windows' }}
 
@@ -100,7 +104,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: pipx run build -w -Csetup-args=-Dpure_py=enabled
+      - run: pipx run build -w
+        env:
+          BENCODE2_PURE_PYTHON: '1'
 
       - uses: actions/upload-artifact@v4
         with:
