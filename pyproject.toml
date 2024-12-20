@@ -53,7 +53,7 @@ install = [
     '--verbose',
     # exclude .lib file in windows
     # https://github.com/mesonbuild/meson-python/issues/552#issuecomment-1863039032
-    '--tags=runtime,python-runtime'
+    '--tags=runtime,python-runtime',
 ]
 
 [tool.pytest.ini_options]
