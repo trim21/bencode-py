@@ -100,7 +100,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: pipx run build -w -Csetup-args=-Dpure_py=enabled
+      - run: pipx run build -w
+        env:
+          BENCODE2_PURE_PYTHON: '1'
 
       - uses: actions/upload-artifact@v4
         with:

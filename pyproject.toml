@@ -1,9 +1,13 @@
 [build-system]
-build-backend = "mesonpy"
 requires = [
+    "flit-core>=3.10,<4",
     "meson-python>=0.14.0",
     "meson[ninja]>=1.2.1",
 ]
+
+# conditional build c++ extension
+build-backend = "build"
+backend-path = ["build_backend"]
 
 [project]
 name = "bencode2"
