@@ -49,7 +49,12 @@ Issues = "https://github.com/trim21/bencode-py/issues"
 setup = ['--errorlogs']
 dist = ['--verbose']
 compile = ['--verbose']
-install = ['--verbose']
+install = [
+    '--verbose',
+    # exclude .lib file in windows
+    # https://github.com/mesonbuild/meson-python/issues/552#issuecomment-1863039032
+    '--tags=runtime,python-runtime'
+]
 
 [tool.pytest.ini_options]
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
