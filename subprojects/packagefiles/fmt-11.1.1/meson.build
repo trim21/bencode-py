@@ -1,7 +1,7 @@
 project(
   'fmt',
   'cpp',
-  version: '11.0.2',
+  version: '11.1.1',
   license: 'MIT WITH fmt-exception',
   default_options: ['cpp_std=c++14'],
 )
