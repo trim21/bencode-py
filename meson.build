@@ -36,7 +36,7 @@ endif
 
 nanobind_dep = dependency('nanobind', static: true)
 
-fmt = subproject('fmt')
+fmt = subproject('fmt', default_options: ['header-only=true'])
 
 out = py.extension_module(
     '__bencode',
