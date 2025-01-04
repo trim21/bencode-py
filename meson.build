@@ -30,13 +30,14 @@ py.install_sources(
     subdir: 'bencode2',
 )
 
+add_project_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
+
 if get_option('be-debug').enabled()
     add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
 endif
 
 nanobind_dep = dependency('nanobind', static: true)
 
-fmt = subproject('fmt', default_options: ['header-only=true'])
 
 out = py.extension_module(
     '__bencode',
@@ -45,14 +46,11 @@ out = py.extension_module(
     'src/bencode2/decode.cpp',
     install: true,
     include_directories: include_directories(
-        ['./vendor/small_vector/source/include/'],
+        './vendor/small_vector/source/include/',
+        './vendor/fmt/include/',
     ),
     subdir: 'bencode2',
-    dependencies: [
-        nanobind_dep,
-        fmt.get_variable('fmt_header_only_dep'),
-        py.dependency(),
-    ],
+    dependencies: [nanobind_dep, py.dependency()],
 )
 
 custom_target(
