@@ -45,9 +45,7 @@ out = py.extension_module(
     'src/bencode2/decode.cpp',
     install: true,
     include_directories: include_directories(
-        [
-            './vendor/small_vector/source/include/',
-        ],
+        ['./vendor/small_vector/source/include/'],
     ),
     subdir: 'bencode2',
     dependencies: [

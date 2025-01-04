@@ -1,4 +1,10 @@
 repos:
+  - repo: https://github.com/trim21/pre-commit-mirror-meson
+    rev: 'v1.6.1'
+    hooks:
+      - id: meson-fmt
+        args: [-e, -i]
+
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.23
     hooks:
@@ -24,7 +30,7 @@ repos:
       - id: trailing-whitespace
         exclude: '.*\.bin'
       - id: mixed-line-ending
-        args: [--fix=lf]
+        args: [ --fix=lf ]
         exclude: '.*\.bin'
       - id: end-of-file-fixer
         exclude: '.*\.bin'
@@ -35,7 +41,7 @@ repos:
     rev: v19.1.5
     hooks:
       - id: clang-format
-        types_or: [c++, c, cuda]
+        types_or: [ c++, c, cuda ]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
