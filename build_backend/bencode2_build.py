@@ -10,7 +10,9 @@ pure_py = (sys.implementation.name != "cpython") or (
 )
 
 if pure_py:
-    from flit_core.buildapi import *  # noqa: F403
+    import  flit_core.buildapi as build_api
 
 else:
-    from mesonpy import *  # noqa: F403
+    import  mesonpy as build_api
+
+__all__ = ['build_api']
