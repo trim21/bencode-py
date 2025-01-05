@@ -6,7 +6,7 @@ requires = [
 ]
 
 # conditional build c++ extension
-build-backend = "bencode2_build.build_api"
+build-backend = "bencode2_build:build_api"
 backend-path = ["build_backend"]
 
 [project]

@@ -15,4 +15,4 @@ if pure_py:
 else:
     import mesonpy as build_api
 
-__all__ = ['build_api']
+__all__ = ["build_api"]
