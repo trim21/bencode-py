@@ -1,16 +1,20 @@
 repos:
-  - repo: https://github.com/trim21/pre-commit-mirror-meson
-    rev: 'v1.6.1'
+  - repo: local
     hooks:
-      - id: meson-fmt
-        args: [-e, -i]
+      - id: meson
+        name: meson
+        language: python
+        entry: meson format -e -i
+        files: ^(.*/)?(meson\.build|meson\.format)$
+        additional_dependencies: ['meson==1.6.0']
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.23
     hooks:
       - id: validate-pyproject
+        language: python
         # Optional extra validations from SchemaStore:
-        additional_dependencies: [ "validate-pyproject-schema-store[all]" ]
+        additional_dependencies: [ "validate-pyproject-schema-store[all]==2024.11.22" ]
         args:
           - --disable
           - ruff
