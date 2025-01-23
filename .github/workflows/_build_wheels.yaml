@@ -48,6 +48,16 @@ jobs:
             cibw_build: "*[13579]-* *[13579]t-*"
             config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
+          - os: ubuntu-24.04-arm
+            cibw_arch: aarch64
+            cibw_build: "*[02468]-* *[02468]t-*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
+
+          - os: ubuntu-24.04-arm
+            cibw_arch: aarch64
+            cibw_build: "*[13579]-* *[13579]t-*"
+            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,11 +72,13 @@ jobs:
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.7
+        if: ${{ runner.os != 'Linux' }}
         with:
           disable_annotations: true
           token: ${{ github.token }}
 
       - name: Install the latest version of uv
+        if: ${{ runner.os != 'Linux' }}
         uses: astral-sh/setup-uv@v5
 
       - name: Restore cached Primes
@@ -80,6 +92,9 @@ jobs:
             ~/Library/Caches/cibuildwheel
             ~/.cache/cibuildwheel
           key: "cibuildwheel-${{ runner.os }}-${{ matrix.cibw_arch }}-${{ matrix.cibw_build }}"
+
+      - run: docker --help
+        if: ${{ runner.os == 'Linux' && contains(matrix.os, 'arm') }}
 
       - uses: pypa/cibuildwheel@v2.22.0
         env:
@@ -106,7 +121,7 @@ jobs:
 
       - run: pipx run build -w
         env:
-          BENCODE2_PURE_PYTHON: '1'
+          BENCODE2_PURE_PYTHON: "1"
 
       - uses: actions/upload-artifact@v4
         with:
