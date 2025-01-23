@@ -44,6 +44,8 @@ public:
 
     void writeSize_t(size_t val) { fmt::format_to(std::back_inserter(buffer), "{}", val); }
 
+    void writePySize_t(Py_ssize_t val) { fmt::format_to(std::back_inserter(buffer), "{}", val); }
+
     void writeLongLong(int64_t val) { fmt::format_to(std::back_inserter(buffer), "{}", val); }
 
     void writeChar(const char c) { buffer.push_back(c); }

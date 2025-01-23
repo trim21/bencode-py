@@ -291,7 +291,7 @@ void encodeAny(EncodeContext *ctx, const nb::handle obj) {
         }
 
         debug_print("write buffer");
-        ctx->writeSize_t(length);
+        ctx->writePySize_t(length);
         debug_print("write char");
         ctx->writeChar(':');
         debug_print("write content");
