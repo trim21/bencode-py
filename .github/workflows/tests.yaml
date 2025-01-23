@@ -22,7 +22,7 @@ jobs:
 
   twine-check:
     name: Check dist
-    needs: [ build ]
+    needs: [build]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@v4
@@ -34,7 +34,7 @@ jobs:
       - run: pipx run twine check --strict dist/*
 
   benchmark:
-    needs: [ build ]
+    needs: [build]
     strategy:
       fail-fast: false
       matrix:
@@ -131,16 +131,21 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: llvm
-          version: 1.4
+      - run: |
+          set -ex
+          sudo apt-get update -y
+          sudo apt-get install llvm -y
+
+      # - uses: awalsh128/cache-apt-pkgs-action@latest
+      # with:
+      # packages: llvm
+      # version: 1.4
 
       - run: pip install -r requirements.txt
 
       - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true
         env:
-          CXX: 'clang++'
+          CXX: "clang++"
           CXXFLAGS: "-fprofile-instr-generate -fcoverage-mapping"
           LDFLAGS: "-fprofile-instr-generate"
 
