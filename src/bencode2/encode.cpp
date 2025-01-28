@@ -295,7 +295,7 @@ void encodeAny(EncodeContext *ctx, const nb::handle obj) {
         debug_print("write char");
         ctx->writeChar(':');
         debug_print("write content");
-        ctx->write((const char *)s, length);
+        ctx->write(s, length);
         return;
     }
 
