@@ -6,4 +6,4 @@
 [submodule "vendor/fmt"]
 	path = vendor/fmt
 	url = https://github.com/fmtlib/fmt.git
-	branch = 11.1.2
+	branch = 11.1.3
