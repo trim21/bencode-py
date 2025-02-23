@@ -16,47 +16,38 @@ jobs:
           - os: macos-13
             cibw_arch: x86_64
             cibw_build: "*[02468]-* *[02468]t-*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
           - os: macos-13
             cibw_arch: x86_64
             cibw_build: "*[13579]-* *[13579]t-*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
           - os: macos-14
             cibw_arch: arm64
             cibw_build: "*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
           - os: windows-latest
             cibw_arch: AMD64
             cibw_build: "*[02468]-* *[02468]t-*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
           - os: windows-latest
             cibw_arch: AMD64
             cibw_build: "*[13579]-* *[13579]t-*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
           - os: ubuntu-24.04
             cibw_arch: x86_64
             cibw_build: "*[02468]-* *[02468]t-*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
           - os: ubuntu-24.04
             cibw_arch: x86_64
             cibw_build: "*[13579]-* *[13579]t-*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
           - os: ubuntu-24.04-arm
             cibw_arch: aarch64
             cibw_build: "*[02468]-* *[02468]t-*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
           - os: ubuntu-24.04-arm
             cibw_arch: aarch64
             cibw_build: "*[13579]-* *[13579]t-*"
-            config_settings: 'setup-args="-Dpython.allow_limited_api=false"'
 
     steps:
       - uses: actions/checkout@v4
