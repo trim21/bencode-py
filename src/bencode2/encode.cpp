@@ -284,18 +284,18 @@ void encodeAny(EncodeContext *ctx, const nb::handle obj) {
 
     if (PyBytes_Check(obj.ptr())) {
         debug_print("encode bytes");
-        Py_buffer view;
-        if (PyObject_GetBuffer(obj.ptr(), &view, 0)) {
-            return;
+        char *s;
+        Py_ssize_t length;
+        if (PyBytes_AsStringAndSize(obj.ptr(), &s, &length)) {
+            throw nb::python_error();
         }
 
         debug_print("write buffer");
-        ctx->writeSize_t(view.len);
+        ctx->writePySize_t(length);
         debug_print("write char");
         ctx->writeChar(':');
         debug_print("write content");
-        ctx->write((const char *)view.buf, view.len);
-        PyBuffer_Release(&view);
+        ctx->write(s, length);
         return;
     }
 
