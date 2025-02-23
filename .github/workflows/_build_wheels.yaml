@@ -104,5 +104,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: "wheels-dist"
+          name: "wheels-py"
           path: dist/*
