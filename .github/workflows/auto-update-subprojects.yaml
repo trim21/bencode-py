@@ -1,0 +1,34 @@
+name: meson wraps auto update
+
+on:
+  push:
+    branches:
+      - master
+
+  schedule:
+    - cron: "19 20 * * 4"
+
+jobs:
+  auto-update:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: "master"
+          submodules: "true"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - run: meson subprojects update
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: ci/meson-auto-update
+          title: "build: update meson wraps"
+          base: "master"
