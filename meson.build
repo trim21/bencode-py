@@ -3,7 +3,7 @@ project(
     'cpp',
     default_options: [
         'c_std=c11',
-        'cpp_std=c++2c',
+        'cpp_std=c++26',
         'buildtype=release',
         'debug=false',
     ],
