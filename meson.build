@@ -3,7 +3,7 @@ project(
     'cpp',
     default_options: [
         'c_std=c11',
-        'cpp_std=c++20',
+        'cpp_std=c++2c',
         'buildtype=release',
         'debug=false',
     ],
@@ -31,6 +31,8 @@ py.install_sources(
 )
 
 add_project_arguments('-DFMT_HEADER_ONLY', language: 'cpp')
+
+add_project_arguments('-DLIBCXX_HARDENING_MODE=fast', language: 'cpp')
 
 if get_option('be-debug').enabled()
     add_project_arguments('-DBENCODE_CPP_DEBUG', language: 'cpp')
