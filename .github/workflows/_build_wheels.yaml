@@ -53,7 +53,7 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
 
       - name: Set up sccache
-        uses: mozilla-actions/sccache-action@v0.0.7
+        uses: mozilla-actions/sccache-action@v0.0.8
         if: ${{ runner.os != 'Linux' }}
         with:
           disable_annotations: true
