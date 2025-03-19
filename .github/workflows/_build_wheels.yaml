@@ -75,7 +75,7 @@ jobs:
             ~/.cache/cibuildwheel
           key: "cibuildwheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.cibw_build }}"
 
-      - uses: pypa/cibuildwheel@v2.23.0
+      - uses: pypa/cibuildwheel@v2.23.1
         env:
           CIBW_BUILD_FRONTEND: "build[uv]"
           CIBW_ARCHS: "native"
