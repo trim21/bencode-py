@@ -6,7 +6,7 @@ repos:
         language: python
         entry: meson format -e -i
         files: ^(.*/)?(meson\.build|meson\.format)$
-        additional_dependencies: ['meson==1.7.0']
+        additional_dependencies: ['meson==1.7.1']
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.24.1
