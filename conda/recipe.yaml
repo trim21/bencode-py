@@ -27,7 +27,7 @@ requirements:
     - meson-python
   run:
     - python
-    - typing-extensions
+    - typing_extensions
 
 tests:
   - python:
