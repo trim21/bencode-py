@@ -1,0 +1,35 @@
+package:
+  name: bencode2
+  version: "0.3.24"
+
+source:
+  path: ".."
+  use_gitignore: true
+
+build:
+  number: 0
+  script: "${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv ."
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - ${{ compiler('cxx') }}
+    - python
+    - pip
+    - meson
+    - ninja
+    - meson-python
+  host:
+    - python
+    - pip
+    - meson
+    - ninja
+    - meson-python
+  run:
+    - python
+    - typing_extensions>=4.8.0
+
+tests:
+  - python:
+      imports:
+        - bencode2
