@@ -52,6 +52,7 @@ jobs:
             --output-dir=output \
             --verbose \
             --recipe=./conda/recipe.yaml
+        shell: bash
 
       - run: ls ./output/
 
