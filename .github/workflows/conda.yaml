@@ -43,7 +43,8 @@ jobs:
           pixi-version: v0.44.0
           run-install: false
 
-      - run: pixi global install rattler-build
+      - run: pixi global install rattler-build meson
+      - run: meson subprojects download
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
@@ -53,7 +54,7 @@ jobs:
           rattler-build build \
             --wrap-log-lines=false \
             --log-style=plain \
-            --output-dir=output \
+            --output-dir=${{ github.workspace }}/output \
             --verbose \
             --recipe=./conda/recipe.yaml
         shell: bash
@@ -63,5 +64,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: "conda-${{ runner.os }}-${{ runner.arch }}"
-          path: ./output/*/*.conda
+          path: ${{ github.workspace }}/output/*/*.conda
           if-no-files-found: ignore
