@@ -8,6 +8,10 @@ on:
     branches:
       - master
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build wheels
@@ -39,8 +43,7 @@ jobs:
           pixi-version: v0.44.0
           run-install: false
 
-      - run: pixi global install rattler-build meson
-      - run: meson subprojects download
+      - run: pixi global install rattler-build
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
