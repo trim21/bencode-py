@@ -3,7 +3,7 @@ package:
   version: "0.3.24"
 
 source:
-  path: '..'
+  path: ".."
   # use_gitignore: true
 
 build:
@@ -27,3 +27,8 @@ requirements:
     - meson-python
   run:
     - python
+
+tests:
+  - python:
+      imports:
+        - bencode2
