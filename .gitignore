@@ -278,6 +278,7 @@ pyrightconfig.json
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/c++,python,c,visualstudiocode
+output/
+
 .task/
 taskfile.yaml

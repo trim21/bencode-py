@@ -49,8 +49,7 @@ jobs:
           rattler-build.exe build \
             --wrap-log-lines=false \
             --log-style=plain \
-            --output-dir=D:/rattler-build-output \
-            --variant-config=./conda/win.yaml \
+            --output-dir=output \
             --verbose \
             --recipe=./conda/recipe.yaml
 
