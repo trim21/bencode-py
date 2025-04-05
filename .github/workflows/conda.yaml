@@ -46,7 +46,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - run: |
-          rattler-build.exe build \
+          rattler-build build \
             --wrap-log-lines=false \
             --log-style=plain \
             --output-dir=output \
