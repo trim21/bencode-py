@@ -4,9 +4,17 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - .github/renovate.json
+      - .pre-commit-config.yaml
+      - readme.md
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - .github/renovate.json
+      - .pre-commit-config.yaml
+      - readme.md
 
   # build conda package weekly to see if it's broken
   schedule:

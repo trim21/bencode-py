@@ -2,6 +2,12 @@ name: tests
 
 on:
   pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - .github/renovate.json
+      - .pre-commit-config.yaml
+      - readme.md
   workflow_dispatch:
   push:
     branches:
@@ -10,6 +16,7 @@ on:
       - "*"
     paths-ignore:
       - .github/renovate.json
+      - .pre-commit-config.yaml
       - readme.md
 
 concurrency:
