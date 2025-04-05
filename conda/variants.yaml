@@ -3,3 +3,11 @@ python:
   - "3.11"
   - "3.12"
   - "3.13"
+
+c_compiler:
+  - if: win
+    then: vs2019
+  - if: linux
+    then: gcc
+  - if: osx
+    then: clang
