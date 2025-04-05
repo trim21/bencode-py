@@ -50,7 +50,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ runner.os == 'Windows' }}
 
-      - name: Install gotestsum
+      - name: Install rattler-build
         uses: jaxxstorm/action-install-gh-release@v2.0.0
         with:
           repo: prefix-dev/rattler-build
