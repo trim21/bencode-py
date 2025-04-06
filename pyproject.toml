@@ -1,8 +1,8 @@
 [build-system]
 requires = [
-    "flit-core==3.12.0",
-    'meson-python==0.17.1; implementation_name == "cpython"',
-    'meson[ninja]==1.7.2; implementation_name == "cpython"',
+  "flit-core==3.12.0",
+  'meson-python==0.17.1; implementation_name == "cpython"',
+  'meson[ninja]==1.7.2; implementation_name == "cpython"',
 ]
 
 # conditional build c++ extension
@@ -16,28 +16,28 @@ description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
 requires-python = ">=3.9,<4.0"
 authors = [
-    { name = "trim21", email = "trim21me@gmail.com" },
+  { name = "trim21", email = "trim21me@gmail.com" },
 ]
 readme = 'readme.md'
 keywords = [
-    "bencode",
-    "bittorrent",
-    "bit-torrent",
-    "serialize",
-    "deserialize",
-    'p2p',
+  "bencode",
+  "bittorrent",
+  "bit-torrent",
+  "serialize",
+  "deserialize",
+  'p2p',
 ]
 
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3 :: Only",
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
 ]
 
 dependencies = [
-    'typing_extensions>=4.8.0',
+  'typing_extensions>=4.8.0',
 ]
 
 [project.urls]
@@ -50,10 +50,10 @@ setup = ['--errorlogs']
 dist = ['--verbose']
 compile = ['--verbose']
 install = [
-    '--verbose',
-    # exclude .lib file in windows
-    # https://github.com/mesonbuild/meson-python/issues/552#issuecomment-1863039032
-    '--tags=runtime,python-runtime',
+  '--verbose',
+  # exclude .lib file in windows
+  # https://github.com/mesonbuild/meson-python/issues/552#issuecomment-1863039032
+  '--tags=runtime,python-runtime',
 ]
 
 [tool.pytest.ini_options]
@@ -91,7 +91,7 @@ ignore = ['ANN401', 'E721', 'E501']
 
 [tool.coverage.run]
 source = [
-    "src",
+  "src",
 ]
 
 [tool.mypy]

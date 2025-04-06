@@ -18,10 +18,10 @@ on:
 
   # build conda package weekly to see if it's broken
   schedule:
-    - cron: "0 3 * * 3"
+    - cron: '0 3 * * 3'
 
 concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
+  group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: true
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: "true"
+          submodules: 'true'
 
       - run: rm C:/Strawberry/perl/bin -rf
         if: ${{ runner.os == 'Windows' }}
@@ -74,6 +74,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: "conda-${{ runner.os }}-${{ runner.arch }}"
+          name: 'conda-${{ runner.os }}-${{ runner.arch }}'
           path: ./output/*/*.conda
           if-no-files-found: ignore
