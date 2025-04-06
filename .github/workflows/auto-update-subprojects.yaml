@@ -6,7 +6,7 @@ on:
       - master
 
   schedule:
-    - cron: "19 20 * * 4"
+    - cron: '19 20 * * 4'
 
 jobs:
   auto-update:
@@ -14,12 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: "master"
-          submodules: "true"
+          ref: 'master'
+          submodules: 'true'
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: '3.13'
           cache: pip
 
       - run: pip install -r requirements.txt
@@ -30,5 +30,5 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           branch: ci/meson-auto-update
-          title: "build: update meson wraps"
-          base: "master"
+          title: 'build: update meson wraps'
+          base: 'master'
