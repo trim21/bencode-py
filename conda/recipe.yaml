@@ -18,6 +18,7 @@ requirements:
     - pip
     - meson
     - ninja
+    - nanobind==2.4.0
     - meson-python
   host:
     - python
