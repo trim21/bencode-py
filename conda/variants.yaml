@@ -13,3 +13,11 @@ c_compiler:
     then: gcc
   - if: osx
     then: clang
+
+cxx_compiler:
+  - if: win
+    then: vs2022
+  - if: linux
+    then: g++
+  - if: osx
+    then: clang++
