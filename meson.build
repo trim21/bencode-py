@@ -2,7 +2,7 @@ project(
     'bencode2',
     'cpp',
     default_options: [
-        'c_std=c11',
+        'c_std=c17',
         'cpp_std=c++20',
         'buildtype=release',
         'debug=false',
