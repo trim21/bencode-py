@@ -20,19 +20,25 @@ requirements:
     - ${{ compiler('cxx') }}
     - python
     - pip
+
     - meson
     - ninja
+    - meson-python
+
+    - pkgconfig # for nanobind
     - nanobind==2.4.0
     - nanobind-abi
-    - meson-python
   host:
     - python
     - pip
+
     - meson
-    - nanobind==2.4.0
-    - nanobind-abi
     - ninja
     - meson-python
+
+    - pkgconfig # for nanobind
+    - nanobind==2.4.0
+    - nanobind-abi
   run:
     - python
     - typing_extensions>=4.8.0
