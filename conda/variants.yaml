@@ -8,7 +8,7 @@ python:
 
 c_compiler:
   - if: win
-    then: vs2019
+    then: vs2022
   - if: linux
     then: gcc
   - if: osx
