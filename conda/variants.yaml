@@ -18,6 +18,6 @@ cxx_compiler:
   - if: win
     then: vs2022
   - if: linux
-    then: g++
+    then: gcc
   - if: osx
-    then: clang++
+    then: clang
