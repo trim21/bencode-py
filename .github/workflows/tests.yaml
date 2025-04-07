@@ -253,3 +253,29 @@ jobs:
     runs-on: 'ubuntu-24.04'
     steps:
       - run: 'echo success'
+
+  preview:
+    continue-on-error: true
+    runs-on: 'ubuntu-24.04'
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          submodules: 'true'
+
+      - name: Set up latest Python
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
+        with:
+          python-version: '3.14-dev'
+          cache: 'pip'
+
+      - run: pip install -r requirements.txt
+
+      - run: meson setup build
+
+      - run: meson compile -C build
+      - run: ninja -C build copy
+
+      - run: pytest --assert-pkg-compiled=true tests
+        env:
+          PYTHONPATH: src
