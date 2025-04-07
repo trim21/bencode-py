@@ -276,6 +276,6 @@ jobs:
       - run: meson compile -C build
       - run: ninja -C build copy
 
-      - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
+      - run: pytest --assert-pkg-compiled=true tests
         env:
           PYTHONPATH: src
