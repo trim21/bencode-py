@@ -34,7 +34,7 @@ jobs:
           pixi-version: v0.44.0
           run-install: false
 
-      - run: pixi global install rattler-build yq
+      - run: pixi global install rattler-build yq>=3.4.3
 
       - run: |
           echo BENCODE2_CONDA_VERSION=$(tomlq -r '.project.version' pyproject.toml) >> $GITHUB_ENV
