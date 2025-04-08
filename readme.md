@@ -53,7 +53,7 @@ pip install bencode2
 
 ### conda/pixi
 
-you can install conda package `bencode2 from channel <https://prefix.dev/channels/trim21-pkgs>.
+you can install conda package `bencode2` from <https://prefix.dev/channels/trim21-pkgs/packages/bencode2>.
 
 ## basic usage
 
