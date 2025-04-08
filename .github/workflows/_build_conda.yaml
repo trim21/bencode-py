@@ -40,11 +40,15 @@ jobs:
         if: ${{ runner.os != 'Linux' }}
         uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
 
-      - run: go install github.com/mikefarah/yq/v4@latest
-
       - run: |
-          echo BENCODE2_CONDA_VERSION=$(yq '.project.version' pyproject.toml) >> $GITHUB_ENV
-        shell: bash
+          import toml
+          import os
+          from pathlib import Path
+
+          project = toml.loads(Path('pyproject.toml').read_text('utf-8'))
+          with Path(os.environ["GITHUB_PATH"]).open('a', encoding='utf-8') as f:
+              f.write("BENCODE2_CONDA_VERSION="+project['project']['version'])
+        shell: python
 
       - run: |
           rattler-build build \
