@@ -40,6 +40,9 @@ jobs:
           path: dist
           merge-multiple: true
 
+      - run: ls dist -ahl
+      - run: tree .
+
       - uses: prefix-dev/setup-pixi@8eaba7c61d661f73d558b0b477156b7b62667fa4 # v0.8.4
         with:
           pixi-version: v0.44.0
@@ -48,4 +51,4 @@ jobs:
       - run: pixi global install rattler-build
 
       - name: Upload all packages
-        run: rattler-build upload prefix -c trim21-pkgs dist/*.conda
+        run: rattler-build upload prefix -c trim21-pkgs dist/**/*.conda
