@@ -14,11 +14,6 @@ requirements:
   build:
     - ${{ compiler('c') }}
     - ${{ compiler('cxx') }}
-    - python
-    - pip
-    - meson
-    - ninja
-    - meson-python
   host:
     - python
     - pip
