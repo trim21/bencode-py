@@ -154,14 +154,14 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: meson setup wheels -Doptimization=0 -Dwheelstype=debug -Db_coverage=true
+      - run: meson setup build -Doptimization=0 -Dwheelstype=debug -Db_coverage=true
         env:
           CXX: 'clang++'
           CXXFLAGS: '-fprofile-instr-generate -fcoverage-mapping'
           LDFLAGS: '-fprofile-instr-generate'
 
-      - run: meson compile -C wheels
-      - run: ninja -C wheels copy
+      - run: meson compile -C build
+      - run: ninja -C build copy
 
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
         env:
@@ -171,7 +171,7 @@ jobs:
       - run: llvm-profdata merge -output=cov/code.profdata cov/code-*.profraw
       - run: llvm-cov export ./src/bencode2/*.so -instr-profile=cov/code.profdata --format=lcov > coverage.info
 
-      - run: rm wheels -rf
+      - run: rm build -rf
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5
@@ -232,7 +232,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - run: pip install -r requirements.txt
-      - run: pip install  --no-wheels-isolation -e .
+      - run: pip install  --no-build-isolation -e .
 
       - name: Run pytest
         run: python -m pytest --cov --assert-pkg-compiled=false
@@ -275,10 +275,10 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: meson setup wheels
+      - run: meson setup build
 
-      - run: meson compile -C wheels
-      - run: ninja -C wheels copy
+      - run: meson compile -C build
+      - run: ninja -C build copy
 
       - run: pytest --assert-pkg-compiled=true tests
         env:
