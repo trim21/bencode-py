@@ -41,6 +41,10 @@ jobs:
         uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
 
       - run: |
+          echo BENCODE2_VERSION=$(yq '.project.version' pyproject.toml) >> $GITHUB_ENV
+        shell: bash
+
+      - run: |
           rattler-build build \
             --wrap-log-lines=false \
             --log-style=plain \
@@ -48,8 +52,6 @@ jobs:
             --verbose \
             --recipe=./conda/recipe.yaml
         shell: bash
-        env:
-          BENCODE2_VERSION: ${{ github.ref_name }}
 
       - run: ls ./output/
 
