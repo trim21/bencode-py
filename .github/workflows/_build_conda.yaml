@@ -46,8 +46,8 @@ jobs:
           from pathlib import Path
 
           project = toml.loads(Path('pyproject.toml').read_text('utf-8'))
-          with Path(os.environ["GITHUB_PATH"]).open('a', encoding='utf-8') as f:
-              f.write("BENCODE2_CONDA_VERSION="+project['project']['version'])
+          with Path(os.environ["GITHUB_ENV"]).open('a', encoding='utf-8') as f:
+              f.write("BENCODE2_CONDA_VERSION=" + project['project']['version'])
         shell: python
 
       - run: |
