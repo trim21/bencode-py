@@ -49,10 +49,6 @@ jobs:
 
       - run: pixi global install rattler-build
 
-      - name: Install the latest version of uv
-        if: ${{ runner.os != 'Linux' }}
-        uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
-
       - run: |
           rattler-build build \
             --wrap-log-lines=false \
