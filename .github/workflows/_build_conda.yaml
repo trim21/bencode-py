@@ -40,6 +40,8 @@ jobs:
         if: ${{ runner.os != 'Linux' }}
         uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
 
+      - run: go install github.com/mikefarah/yq/v4@latest
+
       - run: |
           echo BENCODE2_CONDA_VERSION=$(yq '.project.version' pyproject.toml) >> $GITHUB_ENV
         shell: bash
