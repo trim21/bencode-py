@@ -48,6 +48,8 @@ jobs:
             --verbose \
             --recipe=./conda/recipe.yaml
         shell: bash
+        env:
+          BENCODE2_VERSION: ${{ github.ref_name }}
 
       - run: ls ./output/
 
