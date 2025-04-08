@@ -37,7 +37,7 @@ jobs:
       - run: pixi global install rattler-build yq
 
       - run: |
-          echo BENCODE2_CONDA_VERSION=$(tomlq '.project.version' pyproject.toml) >> $GITHUB_ENV
+          echo BENCODE2_CONDA_VERSION=$(tomlq -r '.project.version' pyproject.toml) >> $GITHUB_ENV
         shell: bash
 
       - name: Install the latest version of uv
