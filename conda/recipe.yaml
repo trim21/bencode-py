@@ -1,6 +1,6 @@
 package:
   name: bencode2
-  version: '0.3.24'
+  version: ${{ env.get("BENCODE2_CONDA_VERSION", default='dev') }}
 
 source:
   path: '..'
@@ -14,11 +14,6 @@ requirements:
   build:
     - ${{ compiler('c') }}
     - ${{ compiler('cxx') }}
-    - python
-    - pip
-    - meson
-    - ninja
-    - meson-python
   host:
     - python
     - pip

@@ -1,28 +1,7 @@
 name: build conda packages
 
 on:
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - .github/renovate.json
-      - .pre-commit-config.yaml
-      - readme.md
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - .github/renovate.json
-      - .pre-commit-config.yaml
-      - readme.md
-
-  # build conda package weekly to see if it's broken
-  schedule:
-    - cron: '0 3 * * 3'
-
-concurrency:
-  group: '${{ github.workflow }}-${{ github.ref }}'
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
   build:
@@ -43,6 +22,19 @@ jobs:
         with:
           submodules: 'true'
 
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
+        with:
+          python-version: '^3.11.0'
+
+      - shell: python
+        run: |
+          import tomllib
+          import os
+          from pathlib import Path
+          project = tomllib.loads(Path('pyproject.toml').read_text('utf-8'))
+          with Path(os.environ["GITHUB_ENV"]).open('a', encoding='utf-8') as f:
+              f.write("BENCODE2_CONDA_VERSION=" + project['project']['version'])
+
       - run: rm C:/Strawberry/perl/bin -rf
         if: ${{ runner.os == 'Windows' }}
         shell: bash
@@ -56,10 +48,6 @@ jobs:
           run-install: false
 
       - run: pixi global install rattler-build
-
-      - name: Install the latest version of uv
-        if: ${{ runner.os != 'Linux' }}
-        uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
 
       - run: |
           rattler-build build \
