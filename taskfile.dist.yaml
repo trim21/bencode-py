@@ -9,4 +9,3 @@ tasks:
       - cmd: git add pyproject.toml
       - cmd: 'git commit -m "bump: v{{ .VERSION }}"'
       - cmd: git tag "v{{ .VERSION }}" -m "v{{ .VERSION }}"
-      - cmd: git push
