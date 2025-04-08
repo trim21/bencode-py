@@ -25,10 +25,10 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
 
   conda:
-    uses: ./.github/workflows/_wheels_conda.yaml
+    uses: ./.github/workflows/_build_conda.yaml
 
   upload-conda:
-    name: Upload wheels to Conda
+    name: Upload packages to Conda
     needs: [conda]
     permissions:
       id-token: write
