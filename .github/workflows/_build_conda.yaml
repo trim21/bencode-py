@@ -29,27 +29,16 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1
         if: ${{ runner.os == 'Windows' }}
 
-      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
-        with:
-          python-version: '^3.11.0'
-          cache: pip
-
-      - shell: python
-        run: |
-          import tomllib
-          import os
-          from pathlib import Path
-
-          project = tomllib.loads(Path('pyproject.toml').read_text('utf-8'))
-          with Path(os.environ["GITHUB_ENV"]).open('a', encoding='utf-8') as f:
-              f.write("BENCODE2_CONDA_VERSION=" + project['project']['version'])
-
       - uses: prefix-dev/setup-pixi@8eaba7c61d661f73d558b0b477156b7b62667fa4 # v0.8.4
         with:
           pixi-version: v0.44.0
           run-install: false
 
-      - run: pixi global install rattler-build
+      - run: pixi global install rattler-build yq
+
+      - run: |
+          echo BENCODE2_CONDA_VERSION=$(yq '.project.version' pyproject.toml) >> $GITHUB_ENV
+        shell: bash
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
