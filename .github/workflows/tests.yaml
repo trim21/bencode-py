@@ -24,12 +24,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    uses: ./.github/workflows/_build_wheels.yaml
+  wheels:
+    uses: ./.github/workflows/_wheels_wheels.yaml
+
+  conda:
+    uses: ./.github/workflows/_wheels_conda.yaml
 
   twine-check:
     name: Check dist
-    needs: [build]
+    needs: [wheels]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
@@ -41,7 +44,7 @@ jobs:
       - run: pipx run twine check --strict dist/*
 
   benchmark:
-    needs: [build]
+    needs: [wheels]
     strategy:
       fail-fast: false
       matrix:
@@ -151,14 +154,14 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true
+      - run: meson setup wheels -Doptimization=0 -Dwheelstype=debug -Db_coverage=true
         env:
           CXX: 'clang++'
           CXXFLAGS: '-fprofile-instr-generate -fcoverage-mapping'
           LDFLAGS: '-fprofile-instr-generate'
 
-      - run: meson compile -C build
-      - run: ninja -C build copy
+      - run: meson compile -C wheels
+      - run: ninja -C wheels copy
 
       - run: pytest --cov --cov-report xml --assert-pkg-compiled=true tests
         env:
@@ -168,7 +171,7 @@ jobs:
       - run: llvm-profdata merge -output=cov/code.profdata cov/code-*.profraw
       - run: llvm-cov export ./src/bencode2/*.so -instr-profile=cov/code.profdata --format=lcov > coverage.info
 
-      - run: rm build -rf
+      - run: rm wheels -rf
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5
@@ -229,7 +232,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - run: pip install -r requirements.txt
-      - run: pip install  --no-build-isolation -e .
+      - run: pip install  --no-wheels-isolation -e .
 
       - name: Run pytest
         run: python -m pytest --cov --assert-pkg-compiled=false
@@ -250,6 +253,7 @@ jobs:
       - test-cp-py-nogil
       - test-c-cov
       - twine-check
+      - conda
     runs-on: 'ubuntu-24.04'
     steps:
       - run: 'echo success'
@@ -271,10 +275,10 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: meson setup build
+      - run: meson setup wheels
 
-      - run: meson compile -C build
-      - run: ninja -C build copy
+      - run: meson compile -C wheels
+      - run: ninja -C wheels copy
 
       - run: pytest --assert-pkg-compiled=true tests
         env:

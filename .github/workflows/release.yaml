@@ -6,12 +6,12 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  wheels:
     uses: ./.github/workflows/_build_wheels.yaml
 
-  pypi:
+  upload-pypi:
     name: Upload wheels to PyPI
-    needs: [build]
+    needs: [wheels]
     permissions:
       id-token: write
     runs-on: ubuntu-24.04
@@ -23,3 +23,31 @@ jobs:
           merge-multiple: true
 
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  conda:
+    uses: ./.github/workflows/_wheels_conda.yaml
+
+  upload-conda:
+    name: Upload wheels to Conda
+    needs: [conda]
+    permissions:
+      id-token: write
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+        with:
+          pattern: conda-*
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+      - uses: prefix-dev/setup-pixi@8eaba7c61d661f73d558b0b477156b7b62667fa4 # v0.8.4
+        with:
+          pixi-version: v0.44.0
+          run-install: false
+
+      - run: pixi global install rattler-build
+
+      - name: Upload all packages
+        run: rattler-build upload prefix -c trim21-pkgs dist/*.conda
