@@ -41,11 +41,11 @@ jobs:
         uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
 
       - run: |
-          import toml
+          import tomllib
           import os
           from pathlib import Path
 
-          project = toml.loads(Path('pyproject.toml').read_text('utf-8'))
+          project = tomllib.loads(Path('pyproject.toml').read_text('utf-8'))
           with Path(os.environ["GITHUB_ENV"]).open('a', encoding='utf-8') as f:
               f.write("BENCODE2_CONDA_VERSION=" + project['project']['version'])
         shell: python
