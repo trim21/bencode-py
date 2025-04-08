@@ -25,10 +25,10 @@ concurrency:
 
 jobs:
   wheels:
-    uses: ./.github/workflows/_wheels_wheels.yaml
+    uses: ./.github/workflows/_build_wheels.yaml
 
   conda:
-    uses: ./.github/workflows/_wheels_conda.yaml
+    uses: ./.github/workflows/_build_conda.yaml
 
   twine-check:
     name: Check dist
