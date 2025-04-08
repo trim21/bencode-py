@@ -1,6 +1,6 @@
 package:
   name: bencode2
-  version: ${{ env.get("BENCODE2_VERSION", default='dev') }}
+  version: ${{ env.get("BENCODE2_CONDA_VERSION", default='dev') }}
 
 source:
   path: '..'
