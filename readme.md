@@ -45,9 +45,15 @@ Which means you can still use it in non-cpython python with same behavior.
 
 ## install
 
+### pypi
+
 ```shell
 pip install bencode2
 ```
+
+### conda/pixi
+
+you can install conda package `bencode2 from channel <https://prefix.dev/channels/trim21-pkgs>.
 
 ## basic usage
 

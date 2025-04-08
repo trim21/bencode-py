@@ -1,28 +1,7 @@
 name: build conda packages
 
 on:
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - .github/renovate.json
-      - .pre-commit-config.yaml
-      - readme.md
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - .github/renovate.json
-      - .pre-commit-config.yaml
-      - readme.md
-
-  # build conda package weekly to see if it's broken
-  schedule:
-    - cron: '0 3 * * 3'
-
-concurrency:
-  group: '${{ github.workflow }}-${{ github.ref }}'
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
   build:
