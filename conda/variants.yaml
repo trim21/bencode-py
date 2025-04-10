@@ -8,7 +8,7 @@ python:
 
 c_compiler:
   - if: win
-    then: vs2022
+    then: clang
   - if: linux
     then: gcc
   - if: osx
@@ -16,7 +16,7 @@ c_compiler:
 
 cxx_compiler:
   - if: win
-    then: vs2022
+    then: clangxx
   - if: linux
     then: gxx
   - if: osx
