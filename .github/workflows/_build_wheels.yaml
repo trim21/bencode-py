@@ -83,7 +83,7 @@ jobs:
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: 'pytest {project}/tests --assert-pkg-compiled=true'
           MACOSX_DEPLOYMENT_TARGET: '11.0'
-          CIBW_ENVIRONMENT_WINDOWS: 'cxx=clang-cl'
+          CIBW_ENVIRONMENT_WINDOWS: 'CC=clang-cl CXX=clang-cl'
 
       - run: ls ./wheelhouse/
 
