@@ -8,8 +8,16 @@ python:
 
 c_compiler:
   - if: win
-    then: vs2019
+    then: vs2022
   - if: linux
     then: gcc
   - if: osx
     then: clang
+
+cxx_compiler:
+  - if: win
+    then: vs2022
+  - if: linux
+    then: gxx
+  - if: osx
+    then: clangxx
