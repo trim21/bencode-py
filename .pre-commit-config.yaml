@@ -9,13 +9,11 @@ repos:
         additional_dependencies: ['meson==1.7.2']
 
   - repo: https://github.com/trim21/dprint-pre-commit
-    rev: v0.49.1.1
+    rev: v0.49.1.2
     hooks:
       - id: dprint
-        types_or:
-          - toml
-          - yaml
-          - json
+        pass_filenames: false
+        always_run: true
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.24.1
