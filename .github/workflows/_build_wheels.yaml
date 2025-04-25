@@ -36,7 +36,8 @@ jobs:
           ZIG_TARGET: 'x86_64-linux-gnu.2.17'
 
       - run: uv tool install auditwheel
-      - run: auditwheel repair dist/*.whl wheelhouse
+      - run: auditwheel show dist/*.whl
+      - run: auditwheel repair dist/*.whl
 
       # - run: "pytest {project}/tests --assert-pkg-compiled=true"
       #   env:
