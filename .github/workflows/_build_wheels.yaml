@@ -4,6 +4,48 @@ on:
   workflow_call:
 
 jobs:
+  linux-wheels:
+    runs-on: 'ubuntu-24.04'
+    strategy:
+      matrix:
+        py:
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          submodules: 'true'
+
+      - uses: mlugg/setup-zig@v1
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
+
+      - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
+        with:
+          python-version: '${{ matrix.py }}'
+
+      - run: uv pip install -r ./requirements.txt
+
+      - run: uv build --no-build-isolation --wheel --out-dir wheelhouse
+        env:
+          CC: zig cc
+          CXX: zig cxx
+
+      # - run: "pytest {project}/tests --assert-pkg-compiled=true"
+      #   env:
+      #     PYTHONPATH: src
+
+      - run: ls ./wheelhouse/
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
+          path: ./wheelhouse/*.whl
+          if-no-files-found: ignore
+
   build_wheels:
     name: Build wheels
     runs-on: ${{ matrix.os }}
@@ -28,11 +70,11 @@ jobs:
           - os: windows-latest
             cibw_build: '*[13579]-* *[13579]t-*'
 
-          - os: ubuntu-24.04
-            cibw_build: '*[02468]-* *[02468]t-*'
+          # - os: ubuntu-24.04
+          #   cibw_build: '*[02468]-* *[02468]t-*'
 
-          - os: ubuntu-24.04
-            cibw_build: '*[13579]-* *[13579]t-*'
+          # - os: ubuntu-24.04
+          #   cibw_build: '*[13579]-* *[13579]t-*'
 
           - os: ubuntu-24.04-arm
             cibw_build: '*[02468]-* *[02468]t-*'
