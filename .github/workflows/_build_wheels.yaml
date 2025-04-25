@@ -29,10 +29,13 @@ jobs:
 
       - run: uv pip install --system -r ./requirements.txt
 
-      - run: uv build --no-build-isolation --wheel --out-dir wheelhouse
+      - run: uv build --no-build-isolation --wheel --out-dir dist
         env:
           CC: zig cc
-          CXX: zig cxx
+          CXX: zig c++
+
+      - run: uv tool install auditwheel
+      - run: auditwheel repair dist wheelhouse
 
       # - run: "pytest {project}/tests --assert-pkg-compiled=true"
       #   env:
