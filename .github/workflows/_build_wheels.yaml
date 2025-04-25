@@ -35,7 +35,7 @@ jobs:
           CXX: zig c++
 
       - run: uv tool install auditwheel
-      - run: auditwheel repair dist wheelhouse
+      - run: auditwheel repair dist/*.whl wheelhouse
 
       # - run: "pytest {project}/tests --assert-pkg-compiled=true"
       #   env:
