@@ -28,3 +28,14 @@ tests:
   - python:
       imports:
         - bencode2
+
+  - script:
+      - pytest tests --assert-pkg-compiled=true
+
+    requirements:
+      run:
+        - pytest
+
+    files:
+      source:
+        - tests/
