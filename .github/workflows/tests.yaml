@@ -35,7 +35,7 @@ jobs:
     needs: [wheels]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4
+      - uses: actions/download-artifact@v4
         with:
           pattern: wheels-*
           path: dist
