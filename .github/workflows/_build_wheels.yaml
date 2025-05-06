@@ -41,7 +41,7 @@ jobs:
             cibw_build: '*[13579]-* *[13579]t-*'
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
         with:
           submodules: 'true'
 
@@ -49,11 +49,11 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: bash
 
-      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1
+      - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ runner.os == 'Windows' }}
 
       - name: Set up sccache
-        uses: mozilla-actions/sccache-action@7d986dd989559c6ecdb630a3fd2557667be217ad # v0.0.9
+        uses: mozilla-actions/sccache-action@v0.0.9
         if: ${{ runner.os != 'Linux' }}
         with:
           disable_annotations: true
@@ -61,12 +61,12 @@ jobs:
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
-        uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
+        uses: astral-sh/setup-uv@v6
 
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
         id: cache
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        uses: actions/cache@v4
         with:
           path: |
             ${{ env.UV_CACHE_DIR }}
@@ -75,7 +75,7 @@ jobs:
             ~/.cache/cibuildwheel
           key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.cibw_build }}'
 
-      - uses: pypa/cibuildwheel@d04cacbc9866d432033b1d09142936e6a0e2121a # v2.23.2
+      - uses: pypa/cibuildwheel@v2.23.3
         env:
           CIBW_BUILD_FRONTEND: 'build[uv]'
           CIBW_ARCHS: 'native'
@@ -86,7 +86,7 @@ jobs:
 
       - run: ls ./wheelhouse/
 
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@v4
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
@@ -96,13 +96,13 @@ jobs:
     name: make sdist and wheel
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
 
       - run: pipx run build -w
         env:
           BENCODE2_PURE_PYTHON: '1'
 
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@v4
         with:
           name: 'wheels-py'
           path: dist/*
