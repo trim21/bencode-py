@@ -19,7 +19,7 @@ jobs:
           - os: macos-13
             cibw_build: '*[13579]-* *[13579]t-*'
 
-          - os: macos-14
+          - os: macos-15
             cibw_build: '*'
 
           - os: windows-latest
