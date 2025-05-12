@@ -213,13 +213,14 @@ jobs:
     strategy:
       matrix:
         os:
-          - 'windows-latest'
-          - 'ubuntu-22.04'
+          - 'windows-2022'
+          - 'ubuntu-24.04'
           - 'macos-13'
-          - 'macos-14'
+          - 'macos-15'
         python-version:
           - 'pypy3.9'
           - 'pypy3.10'
+          - 'pypy3.11'
 
     runs-on: '${{ matrix.os }}'
 
