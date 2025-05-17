@@ -42,6 +42,8 @@ jobs:
 
       - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ runner.os == 'Windows' }}
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
       - uses: jaxxstorm/action-install-gh-release@v2.1.0
         with:
