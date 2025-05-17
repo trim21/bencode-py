@@ -28,6 +28,12 @@ jobs:
           - os: windows-latest
             cibw_build: '*[13579]-* *[13579]t-*'
 
+          - os: windows-11-arm
+            cibw_build: '*[02468]-* *[02468]t-*'
+
+          - os: windows-11-arm
+            cibw_build: '*[13579]-* *[13579]t-*'
+
           - os: ubuntu-24.04
             cibw_build: '*[02468]-* *[02468]t-*'
 
