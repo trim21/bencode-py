@@ -6,7 +6,7 @@ repos:
         language: python
         entry: meson format -e -i
         files: ^(.*/)?(meson\.build|meson\.format)$
-        additional_dependencies: ['meson==1.8.0']
+        additional_dependencies: ['meson==1.8.1']
 
   - repo: https://github.com/trim21/dprint-pre-commit
     rev: v0.49.1.2
@@ -51,14 +51,14 @@ repos:
         exclude: '.*\.bin'
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v20.1.4
+    rev: v20.1.5
     hooks:
       - id: clang-format
         types_or: [c++, c, cuda]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.11.9
+    rev: v0.11.12
     hooks:
       # Run the linter.
       - id: ruff
