@@ -19,13 +19,19 @@ jobs:
           - os: macos-13
             cibw_build: '*[13579]-* *[13579]t-*'
 
-          - os: macos-14
+          - os: macos-15
             cibw_build: '*'
 
           - os: windows-latest
             cibw_build: '*[02468]-* *[02468]t-*'
 
           - os: windows-latest
+            cibw_build: '*[13579]-* *[13579]t-*'
+
+          - os: windows-11-arm
+            cibw_build: '*[02468]-* *[02468]t-*'
+
+          - os: windows-11-arm
             cibw_build: '*[13579]-* *[13579]t-*'
 
           - os: ubuntu-24.04
@@ -51,10 +57,12 @@ jobs:
 
       - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ runner.os == 'Windows' }}
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
-        if: ${{ runner.os != 'Linux' }}
+        if: ${{ (runner.os != 'Linux') && !(runner.arch == 'ARM64' && runner.os == 'Windows') }}
         with:
           disable_annotations: true
           token: ${{ github.token }}
