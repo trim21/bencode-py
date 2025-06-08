@@ -14,8 +14,8 @@ requirements:
   build:
     - ${{ compiler('c') }}
     - ${{ compiler('cxx') }}
-    - c-compiler 1.9.*
-    - cxx-compiler 1.9.*
+    - c-compiler >=1.9.0
+    - cxx-compiler >=1.9.0
   host:
     - python
     - pip
