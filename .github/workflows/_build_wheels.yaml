@@ -14,37 +14,37 @@ jobs:
       matrix:
         include:
           - os: macos-13
-            cibw_build: '*[02468]-* *[02468]t-*'
+            cibw_build: '*[02468]-*'
 
           - os: macos-13
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[13579]-*'
 
           - os: macos-15
             cibw_build: '*'
 
           - os: windows-latest
-            cibw_build: '*[02468]-* *[02468]t-*'
+            cibw_build: '*[02468]-*'
 
           - os: windows-latest
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[13579]-*'
 
           - os: windows-11-arm
-            cibw_build: '*[02468]-* *[02468]t-*'
+            cibw_build: '*[02468]-*'
 
           - os: windows-11-arm
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[13579]-*'
 
           - os: ubuntu-24.04
-            cibw_build: '*[02468]-* *[02468]t-*'
+            cibw_build: '*[02468]-*'
 
           - os: ubuntu-24.04
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[13579]-*'
 
           - os: ubuntu-24.04-arm
-            cibw_build: '*[02468]-* *[02468]t-*'
+            cibw_build: '*[02468]-*'
 
           - os: ubuntu-24.04-arm
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[13579]-*'
 
     steps:
       - uses: actions/checkout@v4
