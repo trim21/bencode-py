@@ -16,7 +16,7 @@ jobs:
           - os: windows-latest
           - os: ubuntu-24.04
           - os: ubuntu-24.04-arm
-          # - os: windows-11-arm
+          - os: windows-11-arm
 
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v2.1.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.41.0'
+          tag: 'v0.42.1'
 
       - run: |
           rattler-build build \
