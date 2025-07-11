@@ -13,12 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-13
-            cibw_build: '*[02468]-*'
-
-          - os: macos-13
-            cibw_build: '*[13579]-*'
-
           - os: macos-15
             cibw_build: '*'
 
