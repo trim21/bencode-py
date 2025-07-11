@@ -60,7 +60,7 @@ install = [
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
 
 [tool.cibuildwheel]
-skip = 'pp* cp39-* *musl*'
+skip = 'cp39-* *musl*'
 enable = ['cpython-freethreading']
 environment = { 'UV_LINK_MODE' = 'copy' }
 
