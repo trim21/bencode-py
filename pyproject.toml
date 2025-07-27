@@ -2,7 +2,7 @@
 requires = [
   "flit-core==3.12.0",
   'meson-python==0.18.0; implementation_name == "cpython"',
-  'meson[ninja]==1.8.1; implementation_name == "cpython"',
+  'meson[ninja]==1.8.2; implementation_name == "cpython"',
 ]
 
 # conditional build c++ extension
@@ -60,7 +60,7 @@ install = [
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
 
 [tool.cibuildwheel]
-skip = 'pp* cp39-* *musl*'
+skip = 'cp39-* *musl*'
 enable = ['cpython-freethreading']
 environment = { 'UV_LINK_MODE' = 'copy' }
 
