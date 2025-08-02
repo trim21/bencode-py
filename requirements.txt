@@ -1,5 +1,5 @@
 meson-python>=0.14.0
-meson[ninja]==1.8.2
+meson[ninja]==1.8.3
 flit-core < 4
 
 typing_extensions
