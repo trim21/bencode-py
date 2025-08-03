@@ -6,7 +6,7 @@ repos:
         language: python
         entry: meson format -e -i
         files: ^(.*/)?(meson\.build|meson\.format)$
-        additional_dependencies: ['meson==1.8.2']
+        additional_dependencies: ['meson==1.8.3']
 
   - repo: https://github.com/trim21/dprint-pre-commit
     rev: v0.49.1.2
@@ -22,7 +22,7 @@ repos:
         language: python
         # Optional extra validations from SchemaStore:
         additional_dependencies:
-          - 'validate-pyproject-schema-store[all]==2025.6.23'
+          - 'validate-pyproject-schema-store[all]==2025.7.14'
         args:
           - --disable
           - ruff
@@ -51,14 +51,14 @@ repos:
         exclude: '.*\.bin'
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v20.1.7
+    rev: v20.1.8
     hooks:
       - id: clang-format
         types_or: [c++, c, cuda]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.12.2
+    rev: v0.12.7
     hooks:
       # Run the linter.
       - id: ruff
