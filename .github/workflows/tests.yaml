@@ -72,9 +72,10 @@ jobs:
       - run: pip install bencode2 --no-index --find-links ./dist/
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@v4
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
+          mode: instrumentation
           run: python -m pytest tests/bench.py --assert-pkg-compiled=true --codspeed
 
   test-cp-py:
