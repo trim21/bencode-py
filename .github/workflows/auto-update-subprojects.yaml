@@ -24,7 +24,9 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: meson subprojects update
+      - run: rm subprojects -rf
+      - run: meson wrap instal nanobind
+      - run: meson wrap instal robin-map
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
