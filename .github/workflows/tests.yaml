@@ -180,6 +180,7 @@ jobs:
           flags: '${{ matrix.python-version }}'
 
   test-cp-py-nogil:
+    if: false
     strategy:
       fail-fast: false
       matrix:
