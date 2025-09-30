@@ -24,7 +24,7 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: rm subprojects -rf
+      - run: rm subprojects/*.wrap -rf
       - run: meson wrap install nanobind
       - run: meson wrap install robin-map
 
