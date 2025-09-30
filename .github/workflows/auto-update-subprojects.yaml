@@ -10,9 +10,6 @@ on:
 
 jobs:
   auto-update:
-    permissions:
-      contents: write
-      pull-requests: write
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -36,4 +33,5 @@ jobs:
         with:
           branch: ci/meson-auto-update
           title: 'build: update meson wraps'
+          token: '${{ secrets.PAT }}'
           base: 'master'
