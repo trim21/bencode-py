@@ -12,23 +12,26 @@ jobs:
   auto-update:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: 'master'
           submodules: 'true'
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
           cache: pip
 
       - run: pip install -r requirements.txt
 
-      - run: meson subprojects update
+      - run: rm subprojects/*.wrap -rf
+      - run: meson wrap install nanobind
+      - run: meson wrap install robin-map
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           branch: ci/meson-auto-update
           title: 'build: update meson wraps'
+          token: '${{ secrets.PAT }}'
           base: 'master'
