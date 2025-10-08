@@ -11,7 +11,7 @@ backend-path = ["build_backend"]
 
 [project]
 name = "bencode2"
-version = "0.3.26"
+version = "0.3.27"
 description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
 requires-python = ">=3.9,<4.0"
