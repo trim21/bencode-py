@@ -1,14 +1,14 @@
 meson-python>=0.14.0
-meson[ninja]==1.9.0
+meson[ninja]==1.9.1
 flit-core < 4
 
 typing_extensions
 
 mypy ; implementation_name == "cpython"
 # test
-pytest==8.4.1
-pytest-cov==6.2.1
-pytest-codspeed==4.0.0 ; implementation_name == "cpython"
+pytest==8.4.2
+pytest-cov==7.0.0
+pytest-codspeed==4.1.1 ; implementation_name == "cpython"
 pytest-github-actions-annotate-failures==0.3.0
 # lint
 pre-commit ; implementation_name == "cpython"

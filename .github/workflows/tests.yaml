@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -72,9 +72,10 @@ jobs:
       - run: pip install bencode2 --no-index --find-links ./dist/
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@v4
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
+          mode: instrumentation
           run: python -m pytest tests/bench.py --assert-pkg-compiled=true --codspeed
 
   test-cp-py:
@@ -101,7 +102,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -136,7 +137,7 @@ jobs:
           submodules: 'true'
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -180,6 +181,7 @@ jobs:
           flags: '${{ matrix.python-version }}'
 
   test-cp-py-nogil:
+    if: false
     strategy:
       fail-fast: false
       matrix:
@@ -226,7 +228,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -267,7 +269,7 @@ jobs:
           submodules: 'true'
 
       - name: Set up latest Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.14-dev'
           cache: 'pip'

@@ -2,7 +2,7 @@
 requires = [
   "flit-core==3.12.0",
   'meson-python==0.18.0; implementation_name == "cpython"',
-  'meson[ninja]==1.8.3; implementation_name == "cpython"',
+  'meson[ninja]==1.9.1; implementation_name == "cpython"',
 ]
 
 # conditional build c++ extension
@@ -11,7 +11,7 @@ backend-path = ["build_backend"]
 
 [project]
 name = "bencode2"
-version = "0.3.26"
+version = "0.3.27"
 description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
 requires-python = ">=3.9,<4.0"
