@@ -195,7 +195,7 @@ jobs:
 
       - uses: Quansight-Labs/setup-python@v5
         with:
-          python-version: '3.13t'
+          python-version: '3.14t'
 
       - run: pip install -r requirements.txt
 
