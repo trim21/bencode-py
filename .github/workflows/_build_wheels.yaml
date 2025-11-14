@@ -16,6 +16,12 @@ jobs:
           - os: macos-15
             cibw_build: '*'
 
+          - os: macos-15-intel
+            cibw_build: '*[02468]-*'
+
+          - os: macos-15-intel
+            cibw_build: '*[13579]-*'
+
           - os: windows-latest
             cibw_build: '*[02468]-*'
 
