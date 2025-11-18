@@ -16,6 +16,12 @@ jobs:
           - os: macos-15
             cibw_build: '*'
 
+          - os: macos-15-intel
+            cibw_build: '*[02468]-*'
+
+          - os: macos-15-intel
+            cibw_build: '*[13579]-*'
+
           - os: windows-latest
             cibw_build: '*[02468]-*'
 
@@ -88,7 +94,7 @@ jobs:
 
       - run: ls ./wheelhouse/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
@@ -104,7 +110,7 @@ jobs:
         env:
           BENCODE2_PURE_PYTHON: '1'
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: 'wheels-py'
           path: dist/*

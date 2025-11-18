@@ -22,7 +22,7 @@ repos:
         language: python
         # Optional extra validations from SchemaStore:
         additional_dependencies:
-          - 'validate-pyproject-schema-store[all]==2025.10.11'
+          - 'validate-pyproject-schema-store[all]==2025.11.4'
         args:
           - --disable
           - ruff
@@ -51,14 +51,14 @@ repos:
         exclude: '.*\.bin'
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v21.1.2
+    rev: v21.1.5
     hooks:
       - id: clang-format
         types_or: [c++, c, cuda]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.14.0
+    rev: v0.14.3
     hooks:
       # Run the linter.
       - id: ruff
