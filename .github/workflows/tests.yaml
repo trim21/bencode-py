@@ -181,7 +181,6 @@ jobs:
           flags: '${{ matrix.python-version }}'
 
   test-cp-py-nogil:
-    if: false
     strategy:
       fail-fast: false
       matrix:
@@ -194,9 +193,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: Quansight-Labs/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
-          python-version: '3.13t'
+          python-version: '3.14t'
 
       - run: pip install -r requirements.txt
 
