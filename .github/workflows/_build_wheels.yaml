@@ -47,7 +47,7 @@ jobs:
             cibw_build: '*[13579]-*'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
@@ -104,7 +104,7 @@ jobs:
     name: make sdist and wheel
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - run: pipx run build -w
         env:
