@@ -5,7 +5,7 @@ on:
 
 jobs:
   build_wheels:
-    name: Build wheels
+    name: Build conda
     runs-on: ${{ matrix.os }}
     env:
       SCCACHE_GHA_ENABLED: 'true'
