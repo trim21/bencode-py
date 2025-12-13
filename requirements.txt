@@ -6,7 +6,7 @@ typing_extensions
 
 mypy ; implementation_name == "cpython"
 # test
-pytest==9.0.1
+pytest==9.0.2
 pytest-cov==7.0.0
 pytest-codspeed==4.2.0 ; implementation_name == "cpython"
 pytest-github-actions-annotate-failures==0.3.0
