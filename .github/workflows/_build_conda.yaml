@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    name: Build wheels
+    name: Build conda
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
