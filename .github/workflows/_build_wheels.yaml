@@ -94,7 +94,7 @@ jobs:
 
       - run: ls ./wheelhouse/
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
@@ -110,7 +110,7 @@ jobs:
         env:
           BENCODE2_PURE_PYTHON: '1'
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-py'
           path: dist/*
