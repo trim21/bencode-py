@@ -2,7 +2,7 @@
 requires = [
   "flit-core==3.12.0",
   'meson-python==0.18.0; implementation_name == "cpython"',
-  'meson[ninja]==1.9.1; implementation_name == "cpython"',
+  'meson[ninja]==1.10.0; implementation_name == "cpython"',
 ]
 
 # conditional build c++ extension
@@ -11,10 +11,10 @@ backend-path = ["build_backend"]
 
 [project]
 name = "bencode2"
-version = "0.3.27"
+version = "0.3.28"
 description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.10,<4.0"
 authors = [
   { name = "trim21", email = "trim21me@gmail.com" },
 ]
@@ -77,11 +77,11 @@ manylinux-s390x-image = "manylinux_2_28"
 
 [tool.black]
 extend-exclude = 'vendor'
-target-version = ['py39']
+target-version = ['py310']
 line-length = 88
 
 [tool.ruff]
-target-version = 'py39'
+target-version = 'py310'
 line-length = 88
 extend-exclude = ['vendor']
 
@@ -102,7 +102,7 @@ source = [
 
 [tool.mypy]
 exclude = ['tests', 'vendor']
-python_version = "3.9"
+python_version = "3.10"
 strict = true
 disallow_untyped_defs = true
 ignore_missing_imports = true

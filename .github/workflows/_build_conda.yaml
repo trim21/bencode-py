@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    name: Build wheels
+    name: Build conda
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -19,7 +19,7 @@ jobs:
           # - os: windows-11-arm
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
@@ -61,7 +61,7 @@ jobs:
 
       - run: ls ./output/
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: 'conda-${{ runner.os }}-${{ runner.arch }}'
           path: ./output/*/*.conda

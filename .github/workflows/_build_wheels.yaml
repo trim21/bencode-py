@@ -47,7 +47,7 @@ jobs:
             cibw_build: '*[13579]-*'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
@@ -74,7 +74,7 @@ jobs:
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ env.UV_CACHE_DIR }}
@@ -94,7 +94,7 @@ jobs:
 
       - run: ls ./wheelhouse/
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
@@ -104,13 +104,13 @@ jobs:
     name: make sdist and wheel
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - run: pipx run build -w
         env:
           BENCODE2_PURE_PYTHON: '1'
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-py'
           path: dist/*
