@@ -60,15 +60,11 @@ install = [
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
 
 [tool.cibuildwheel]
-skip = 'cp39-* *musl*'
+skip = '*musl*'
 enable = ['cpython-freethreading']
 environment = { 'UV_LINK_MODE' = 'copy' }
 
-manylinux-x86_64-image = "manylinux_2_28"
-manylinux-i686-image = "manylinux_2_28"
 manylinux-aarch64-image = "manylinux_2_28"
-manylinux-ppc64le-image = "manylinux_2_28"
-manylinux-s390x-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
 # before-all = "uv tool install sccache"
