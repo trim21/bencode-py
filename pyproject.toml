@@ -60,14 +60,19 @@ install = [
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
 
 [tool.cibuildwheel]
-skip = 'cp39-* *musl*'
+skip = '*musl*'
 enable = ['cpython-freethreading']
 environment = { 'UV_LINK_MODE' = 'copy' }
+
+manylinux-aarch64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
 # before-all = "uv tool install sccache"
 # environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
 # environment = { "PATH" = "$PATH:/root/.local/bin" }
+
+[tool.cibuildwheel.windows]
+config-settings = { "setup-args" = ["-Dcpp_std=c++20"] }
 
 [tool.black]
 extend-exclude = 'vendor'
