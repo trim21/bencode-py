@@ -35,7 +35,7 @@ jobs:
     needs: [wheels]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           pattern: wheels-*
           path: dist
@@ -54,15 +54,15 @@ jobs:
     runs-on: 'ubuntu-24.04'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           pattern: wheels-*
           path: dist
@@ -72,9 +72,10 @@ jobs:
       - run: pip install bencode2 --no-index --find-links ./dist/
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@v4
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
+          mode: instrumentation
           run: python -m pytest tests/bench.py --assert-pkg-compiled=true --codspeed
 
   test-cp-py:
@@ -86,23 +87,21 @@ jobs:
           - 'windows-latest'
           - 'ubuntu-24.04'
           - 'ubuntu-24.04-arm'
-          - 'macos-13'
           - 'macos-15'
+          - 'macos-15-intel'
         python-version:
-          - '3.9'
           - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
-        exclude:
-          - { os: macos-15, python-version: '3.9' }
+          - '3.14'
 
     runs-on: '${{ matrix.os }}'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -132,12 +131,12 @@ jobs:
     runs-on: 'ubuntu-24.04'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -191,11 +190,11 @@ jobs:
 
     runs-on: '${{ matrix.os }}'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: Quansight-Labs/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
-          python-version: '3.13t'
+          python-version: '3.14t'
 
       - run: pip install -r requirements.txt
 
@@ -215,20 +214,18 @@ jobs:
         os:
           - 'windows-2022'
           - 'ubuntu-24.04'
-          - 'macos-13'
           - 'macos-15'
         python-version:
-          - 'pypy3.9'
           - 'pypy3.10'
           - 'pypy3.11'
 
     runs-on: '${{ matrix.os }}'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -264,12 +261,12 @@ jobs:
     runs-on: 'ubuntu-24.04'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
       - name: Set up latest Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.14-dev'
           cache: 'pip'

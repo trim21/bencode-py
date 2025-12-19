@@ -3,8 +3,10 @@ MACOSX_DEPLOYMENT_TARGET: "11.0"
 python:
   - if: target_platform != "win-arm64"
     then:
+      - "3.14"
       - "3.13"
     else:
+      - "3.14"
       - "3.13"
       - "3.12"
       - "3.11"
