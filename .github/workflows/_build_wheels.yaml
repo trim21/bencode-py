@@ -35,7 +35,7 @@ jobs:
       - run: uv build --no-build-isolation --wheel --out-dir dist
         env:
           CC: 'zig cc --target x86_64-linux-gnu.2.17'
-          CXX: './ci/zig-cxx.sh'
+          CXX: '${{ github.workspace }}/ci/zig-cxx.sh'
           ZIG_TARGET: 'x86_64-linux-gnu.2.17'
 
       - run: uv tool install auditwheel
