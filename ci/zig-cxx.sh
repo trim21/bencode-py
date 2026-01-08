@@ -12,4 +12,4 @@ if printf '%s\n' "$@" | grep -q -- '^-Wl,--version$'; then
   exec zig c++ "$@"
 fi
 
-exec zig c++ -target "x86_64-linux-gnu.2.17" "$@"
+exec zig c++ -target "${ZIG_TARGET}" "$@"
