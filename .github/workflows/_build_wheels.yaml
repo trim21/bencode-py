@@ -13,6 +13,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
+          - '3.14'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,7 +33,7 @@ jobs:
       - run: uv build --no-build-isolation --wheel --out-dir dist
         env:
           CC: 'zig cc --target x86_64-linux-gnu.2.17'
-          CXX: 'zig c++ --target x86_64-linux-gnu.2.17'
+          # CXX: 'zig c++ --target x86_64-linux-gnu.2.17'
 
       - run: uv tool install auditwheel
       - run: auditwheel show dist/*.whl
@@ -78,12 +79,6 @@ jobs:
             cibw_build: '*[02468]-*'
 
           - os: windows-11-arm
-            cibw_build: '*[13579]-*'
-
-          - os: ubuntu-24.04
-            cibw_build: '*[02468]-*'
-
-          - os: ubuntu-24.04
             cibw_build: '*[13579]-*'
 
           - os: ubuntu-24.04-arm
