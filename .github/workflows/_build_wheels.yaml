@@ -60,41 +60,41 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-13
-            cibw_build: '*[02468]-* *[02468]t-*'
-
-          - os: macos-13
-            cibw_build: '*[13579]-* *[13579]t-*'
-
           - os: macos-15
             cibw_build: '*'
 
-          - os: windows-latest
-            cibw_build: '*[02468]-* *[02468]t-*'
+          - os: macos-15-intel
+            cibw_build: '*[02468]-*'
+
+          - os: macos-15-intel
+            cibw_build: '*[13579]-*'
 
           - os: windows-latest
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[02468]-*'
+
+          - os: windows-latest
+            cibw_build: '*[13579]-*'
 
           - os: windows-11-arm
-            cibw_build: '*[02468]-* *[02468]t-*'
+            cibw_build: '*[02468]-*'
 
           - os: windows-11-arm
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[13579]-*'
 
           - os: ubuntu-24.04
-            cibw_build: '*[02468]-* *[02468]t-*'
+            cibw_build: '*[02468]-*'
 
           - os: ubuntu-24.04
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[13579]-*'
 
           - os: ubuntu-24.04-arm
-            cibw_build: '*[02468]-* *[02468]t-*'
+            cibw_build: '*[02468]-*'
 
           - os: ubuntu-24.04-arm
-            cibw_build: '*[13579]-* *[13579]t-*'
+            cibw_build: '*[13579]-*'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
@@ -116,12 +116,12 @@ jobs:
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
 
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ env.UV_CACHE_DIR }}
@@ -130,7 +130,7 @@ jobs:
             ~/.cache/cibuildwheel
           key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.cibw_build }}'
 
-      - uses: pypa/cibuildwheel@v2.23.3
+      - uses: pypa/cibuildwheel@v3.2.1
         env:
           CIBW_BUILD_FRONTEND: 'build[uv]'
           CIBW_ARCHS: 'native'
@@ -141,7 +141,7 @@ jobs:
 
       - run: ls ./wheelhouse/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
@@ -151,13 +151,13 @@ jobs:
     name: make sdist and wheel
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - run: pipx run build -w
         env:
           BENCODE2_PURE_PYTHON: '1'
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-py'
           path: dist/*

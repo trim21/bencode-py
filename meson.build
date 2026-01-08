@@ -3,7 +3,7 @@ project(
     'cpp',
     default_options: [
         'c_std=c17',
-        'cpp_std=c++20',
+        'cpp_std=c++23',
         'buildtype=release',
         'debug=false',
     ],
@@ -24,6 +24,7 @@ py = import('python').find_installation(pure: false)
 py.install_sources(
     'src/bencode2/__init__.py',
     'src/bencode2/__init__.pyi',
+    'src/bencode2/__bencode.pyi',
     'src/bencode2/__encoder.py',
     'src/bencode2/__decoder.py',
     'src/bencode2/py.typed',

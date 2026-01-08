@@ -6,5 +6,8 @@
   ],
   "git-submodules": {
     "enabled": true
+  },
+  "poetry": {
+    "enabled": false
   }
 }
