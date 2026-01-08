@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Shim to inject Zig target when used as the C++ compiler.
+target="${ZIG_TARGET:-x86_64-linux-gnu.2.17}"
+
 # Meson probes the preprocessor with "-E -dM -"; avoid injecting target there
-# because zig's cc1 rejects "--target" in that mode.
+# because zig's cc1 rejects target flags in that mode.
 if [[ $# -eq 1 && "$1" == "--version" ]]; then
   exec zig c++ --version
 fi
@@ -11,4 +14,9 @@ if printf '%s\n' "$@" | grep -q -- '^-E$' && printf '%s\n' "$@" | grep -q -- '^-
   exec zig c++ "$@"
 fi
 
-exec zig c++ --target "x86_64-linux-gnu.2.17}" "$@"
+# Meson linker detection calls "-Wl,--version"; skip target injection there too.
+if printf '%s\n' "$@" | grep -q -- '^-Wl,--version$'; then
+  exec zig c++ "$@"
+fi
+
+exec zig c++ -target "${target}" "$@"
