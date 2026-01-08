@@ -5,7 +5,7 @@ on:
 
 jobs:
   linux-wheels:
-    runs-on: 'ubuntu-24.04'
+    runs-on: ${{ matrix.arch.runs_on }}
     strategy:
       matrix:
         py:
@@ -14,6 +14,11 @@ jobs:
           - '3.12'
           - '3.13'
           - '3.14'
+        arch:
+          - runs_on: ubuntu-24.04
+            target: x86_64-linux-gnu.2.17
+          - runs_on: ubuntu-24.04-arm
+            target: aarch64-linux-gnu.2.17
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,23 +39,17 @@ jobs:
 
       - run: uv build --no-build-isolation --wheel --out-dir dist
         env:
-          CC: 'zig cc --target x86_64-linux-gnu.2.17'
+          CC: 'zig cc -target ${{ matrix.arch.target }}'
           CXX: '${{ github.workspace }}/ci/zig-cxx.sh'
-          ZIG_TARGET: 'x86_64-linux-gnu.2.17'
+          ZIG_TARGET: '${{ matrix.arch.target }}'
 
       - run: uv tool install auditwheel
       - run: auditwheel show dist/*.whl
       - run: auditwheel repair dist/*.whl
 
-      # - run: "pytest {project}/tests --assert-pkg-compiled=true"
-      #   env:
-      #     PYTHONPATH: src
-
-      - run: ls ./wheelhouse/
-
       - uses: actions/upload-artifact@v6
         with:
-          name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
+          name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
           path: ./wheelhouse/*.whl
           if-no-files-found: ignore
 
@@ -82,12 +81,6 @@ jobs:
             cibw_build: '*[02468]-*'
 
           - os: windows-11-arm
-            cibw_build: '*[13579]-*'
-
-          - os: ubuntu-24.04-arm
-            cibw_build: '*[02468]-*'
-
-          - os: ubuntu-24.04-arm
             cibw_build: '*[13579]-*'
 
     steps:
