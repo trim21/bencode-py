@@ -33,8 +33,8 @@ jobs:
       - run: uv build --no-build-isolation --wheel --out-dir dist
         env:
           CC: 'zig cc --target x86_64-linux-gnu.2.17'
-          CXX: 'zig c++'
-          # CXX: 'zig c++ --target x86_64-linux-gnu.2.17'
+          # CXX: 'zig c++'
+          CXX: 'zig c++ --target x86_64-linux-gnu.2.17'
 
       - run: uv tool install auditwheel
       - run: auditwheel show dist/*.whl
