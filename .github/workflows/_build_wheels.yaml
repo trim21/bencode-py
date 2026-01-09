@@ -85,7 +85,7 @@ jobs:
         with:
           submodules: 'true'
 
-      - run: rm C:/Strawberry/perl/bin -rf
+      - run: rm C:/Strawberry/perl/bin 'C:/Program Files/Git/usr/bin/link.EXE' -rf
         if: ${{ runner.os == 'Windows' }}
         shell: bash
 
