@@ -4,6 +4,52 @@ on:
   workflow_call:
 
 jobs:
+  linux-wheels:
+    runs-on: ${{ matrix.arch.runs_on }}
+    strategy:
+      matrix:
+        py:
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
+          - '3.14'
+        arch:
+          - runs_on: ubuntu-24.04
+            target: x86_64-linux-gnu.2.17
+          - runs_on: ubuntu-24.04-arm
+            target: aarch64-linux-gnu.2.17
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.py }}'
+
+      - run: uv tool install zig-bin
+
+      - run: uv pip install --system -r ./requirements.txt
+
+      - run: uv build --no-build-isolation --wheel --out-dir dist
+        env:
+          CC: 'zig cc -target ${{ matrix.arch.target }}'
+          CXX: 'zig c++ -target ${{ matrix.arch.target }}'
+
+      - run: uv tool install auditwheel
+      - run: auditwheel show dist/*.whl
+      - run: auditwheel repair dist/*.whl
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
+          path: ./wheelhouse/*.whl
+          if-no-files-found: ignore
+
   build_wheels:
     name: Build wheels
     runs-on: ${{ matrix.os }}
@@ -34,24 +80,12 @@ jobs:
           - os: windows-11-arm
             cibw_build: '*[13579]-*'
 
-          - os: ubuntu-24.04
-            cibw_build: '*[02468]-*'
-
-          - os: ubuntu-24.04
-            cibw_build: '*[13579]-*'
-
-          - os: ubuntu-24.04-arm
-            cibw_build: '*[02468]-*'
-
-          - os: ubuntu-24.04-arm
-            cibw_build: '*[13579]-*'
-
     steps:
       - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
-      - run: rm C:/Strawberry/perl/bin -rf
+      - run: rm C:/Strawberry/perl/bin 'C:/Program Files/Git/usr/bin/link.EXE' -rf
         if: ${{ runner.os == 'Windows' }}
         shell: bash
 
@@ -83,7 +117,7 @@ jobs:
             ~/.cache/cibuildwheel
           key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.cibw_build }}'
 
-      - uses: pypa/cibuildwheel@v3.2.1
+      - uses: pypa/cibuildwheel@v3.3.1
         env:
           CIBW_BUILD_FRONTEND: 'build[uv]'
           CIBW_ARCHS: 'native'
