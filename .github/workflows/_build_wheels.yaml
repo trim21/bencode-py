@@ -94,12 +94,12 @@ jobs:
         with:
           arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
-      - name: Set up sccache
-        uses: mozilla-actions/sccache-action@v0.0.9
-        if: ${{ (runner.os != 'Linux') && !(runner.arch == 'ARM64' && runner.os == 'Windows') }}
-        with:
-          disable_annotations: true
-          token: ${{ github.token }}
+      # - name: Set up sccache
+      #   uses: mozilla-actions/sccache-action@v0.0.9
+      #   if: ${{ (runner.os != 'Linux') && !(runner.arch == 'ARM64' && runner.os == 'Windows') }}
+      #   with:
+      #     disable_annotations: true
+      #     token: ${{ github.token }}
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
@@ -148,3 +148,44 @@ jobs:
         with:
           name: 'wheels-py'
           path: dist/*
+
+  musllinux-wheels:
+    name: Build musllinux wheels
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runs_on: ubuntu-24.04
+          - arch: aarch64
+            runs_on: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+
+      - uses: pypa/cibuildwheel@v3.3.1
+        env:
+          CIBW_BUILD_FRONTEND: 'build[uv]'
+          CIBW_PLATFORM: 'linux'
+          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
+          CIBW_BUILD: 'cp3*-musllinux*'
+          CIBW_SKIP: ''
+          # CIBW_MANYLINUX_X86_64_IMAGE: "musllinux_1_2"
+          # CIBW_MANYLINUX_AARCH64_IMAGE: "musllinux_1_2"
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: 'pytest {project}/tests --assert-pkg-compiled=true'
+          CIBW_ENVIRONMENT: 'UV_LINK_MODE=copy'
+
+      - run: ls ./wheelhouse/
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: 'wheels-musllinux-${{ matrix.arch }}'
+          path: ./wheelhouse/*.whl
+          if-no-files-found: ignore
