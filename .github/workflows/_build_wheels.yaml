@@ -33,7 +33,7 @@ jobs:
 
       - run: uv tool install zig-bin
 
-      - run: uv pip install --system -r ./requirements.txt
+      - run: uv sync --dev --no-install-project
 
       - run: uv build --no-build-isolation --wheel --out-dir dist
         env:
