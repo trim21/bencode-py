@@ -8,8 +8,10 @@ source:
 
 build:
   number: 0
+  skip: python_allow_limited_api == 'true' and (python != '3.12')
   script: >-
     ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
+    --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
     ${{ ' --config-settings=setup-args=-Dcpp_std=c++20' if win else '' }}
 
 requirements:
@@ -21,12 +23,26 @@ requirements:
   host:
     - python
     - pip
-    - meson
+    - if: win
+      then:
+        - meson<1.6.0
+      else:
+        - meson
     - ninja
     - meson-python
   run:
-    - python
+    - if: python_allow_limited_api == 'true'
+      then:
+        - python >= ${{ python }}
+      else:
+        - python
     - typing_extensions>=4.8.0
+
+  ignore_run_exports:
+    from_package:
+      - if: python_allow_limited_api == 'true'
+        then:
+          - python
 
 tests:
   - python:

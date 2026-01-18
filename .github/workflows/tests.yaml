@@ -165,7 +165,7 @@ jobs:
 
       - run: uv sync --dev --no-install-project
 
-      - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true
+      - run: meson setup build -Doptimization=0 -Dbuildtype=debug -Db_coverage=true -Dpython.allow_limited_api=false
         env:
           CXX: 'clang++'
           CXXFLAGS: '-fprofile-instr-generate -fcoverage-mapping'

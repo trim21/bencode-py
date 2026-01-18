@@ -35,7 +35,7 @@ jobs:
 
       - run: uv sync --dev --no-install-project
 
-      - run: uv build --no-build-isolation --wheel --out-dir dist
+      - run: uv build --no-build-isolation --wheel --out-dir dist --config-setting=setup-args=-Dpython.allow_limited_api=false
         env:
           CC: 'zig cc -target ${{ matrix.arch.target }}'
           CXX: 'zig c++ -target ${{ matrix.arch.target }}'
@@ -47,6 +47,51 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
+          path: ./wheelhouse/*.whl
+          if-no-files-found: ignore
+
+  linux-wheels-abi3:
+    name: Build wheels (abi3)
+    runs-on: ${{ matrix.arch.runs_on }}
+    strategy:
+      matrix:
+        py: ['3.12']
+        arch:
+          - runs_on: ubuntu-24.04
+            target: x86_64-linux-gnu.2.17
+          - runs_on: ubuntu-24.04-arm
+            target: aarch64-linux-gnu.2.17
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '${{ matrix.py }}'
+
+      - run: uv tool install zig-bin
+
+      - run: uv sync --dev --no-install-project
+
+      - run: uv build --no-build-isolation --wheel --out-dir dist
+        env:
+          CC: 'zig cc -target ${{ matrix.arch.target }}'
+          CXX: 'zig c++ -target ${{ matrix.arch.target }}'
+
+      - run: uv tool install auditwheel
+      - run: auditwheel show dist/*.whl
+      - run: auditwheel repair dist/*.whl
+
+      - run: uv tool install abi3audit
+      - run: abi3audit -v wheelhouse/*.whl
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: 'wheels-abi3-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
           path: ./wheelhouse/*.whl
           if-no-files-found: ignore
 
@@ -122,6 +167,8 @@ jobs:
           CIBW_BUILD_FRONTEND: 'build[uv]'
           CIBW_ARCHS: 'native'
           CIBW_BUILD: ${{ matrix.cibw_build }}
+          CIBW_CONFIG_SETTINGS_WINDOWS: 'setup-args="-Dpython.allow_limited_api=false" setup-args="-Dcpp_std=c++20"'
+          CIBW_CONFIG_SETTINGS: 'setup-args=-Dpython.allow_limited_api=false'
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: 'pytest {project}/tests --assert-pkg-compiled=true'
           MACOSX_DEPLOYMENT_TARGET: '11.0'
@@ -131,6 +178,69 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
+          path: ./wheelhouse/*.whl
+          if-no-files-found: ignore
+
+  build_wheels_abi3:
+    name: Build wheels (abi3)
+    runs-on: ${{ matrix.os }}
+    env:
+      SCCACHE_GHA_ENABLED: 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+          - os: macos-15-intel
+          # not supported by meson yet
+          # - os: windows-latest
+          # - os: windows-11-arm
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - run: rm C:/Strawberry/perl/bin 'C:/Program Files/Git/usr/bin/link.EXE' -rf
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
+
+      - name: Install the latest version of uv
+        if: ${{ runner.os != 'Linux' }}
+        uses: astral-sh/setup-uv@v7
+
+      - name: Restore cached Primes
+        if: ${{ runner.os != 'Linux' }}
+        id: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ env.UV_CACHE_DIR }}
+            ~\AppData\Local\pypa\cibuildwheel\Cache
+            ~/Library/Caches/cibuildwheel
+            ~/.cache/cibuildwheel
+          key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.cibw_build }}-abi3'
+
+      - uses: pypa/cibuildwheel@v3.3.1
+        env:
+          CIBW_BUILD_FRONTEND: 'build[uv]'
+          CIBW_ARCHS: 'native'
+          CIBW_BUILD: 'cp312-*'
+          CIBW_CONFIG_SETTINGS_WINDOWS: 'setup-args=-Dcpp_std=c++20'
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: 'pytest {project}/tests --assert-pkg-compiled=true'
+          MACOSX_DEPLOYMENT_TARGET: '11.0'
+
+      - run: ls ./wheelhouse/
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: 'wheels-abi3-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
           if-no-files-found: ignore
 
@@ -181,6 +291,7 @@ jobs:
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: 'pytest {project}/tests --assert-pkg-compiled=true'
           CIBW_ENVIRONMENT: 'UV_LINK_MODE=copy'
+          CIBW_CONFIG_SETTINGS: 'setup-args=-Dpython.allow_limited_api=false'
 
       - run: ls ./wheelhouse/
 

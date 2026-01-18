@@ -1,10 +1,14 @@
 version = 1
 revision = 3
-requires-python = ">=3.10, <4.0"
+requires-python = ">=3.10"
 resolution-markers = [
-    "python_full_version >= '3.12' and sys_platform != 'ios'",
+    "python_full_version >= '3.12' and implementation_name == 'cpython' and sys_platform != 'ios' and sys_platform != 'win32'",
+    "python_full_version >= '3.12' and implementation_name == 'cpython' and sys_platform == 'win32'",
+    "python_full_version >= '3.12' and implementation_name != 'cpython' and sys_platform != 'ios'",
     "python_full_version >= '3.12' and sys_platform == 'ios'",
-    "python_full_version < '3.12' and sys_platform != 'ios'",
+    "python_full_version < '3.12' and implementation_name == 'cpython' and sys_platform != 'ios' and sys_platform != 'win32'",
+    "python_full_version < '3.12' and implementation_name == 'cpython' and sys_platform == 'win32'",
+    "python_full_version < '3.12' and implementation_name != 'cpython' and sys_platform != 'ios'",
     "python_full_version < '3.12' and sys_platform == 'ios'",
 ]
 
@@ -19,7 +23,8 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "flit-core" },
-    { name = "meson", extra = ["ninja"], marker = "implementation_name == 'cpython'" },
+    { name = "meson", version = "1.5.2", source = { registry = "https://pypi.org/simple" }, extra = ["ninja"], marker = "implementation_name == 'cpython' and sys_platform == 'win32'" },
+    { name = "meson", version = "1.10.1", source = { registry = "https://pypi.org/simple" }, extra = ["ninja"], marker = "implementation_name == 'cpython' and sys_platform != 'win32'" },
     { name = "meson-python", marker = "implementation_name == 'cpython'" },
     { name = "mypy", marker = "implementation_name == 'cpython'" },
     { name = "pytest" },
@@ -34,7 +39,8 @@ requires-dist = [{ name = "typing-extensions", specifier = ">=4.8.0" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "flit-core", specifier = "==3.12.0" },
-    { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython'", specifier = "==1.10.0" },
+    { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython' and sys_platform == 'win32'", specifier = "<1.6.0" },
+    { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython' and sys_platform != 'win32'", specifier = "==1.10.1" },
     { name = "meson-python", marker = "implementation_name == 'cpython'", specifier = "==0.19.0" },
     { name = "mypy", marker = "implementation_name == 'cpython'", specifier = "==1.19.1" },
     { name = "pytest", specifier = "==9.0.2" },
@@ -48,7 +54,7 @@ name = "cffi"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
+    { name = "pycparser", marker = "(implementation_name == 'cpython' and sys_platform != 'ios') or (implementation_name != 'PyPy' and sys_platform == 'ios')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/eb/56/b1ba7935a17738ae8453301356628e8147c79dbb825bcbc73dc7401f9846/cffi-2.0.0.tar.gz", hash = "sha256:44d1b5909021139fe36001ae048dbdde8214afa20200eda0f64c068cac5d5529", size = 523588, upload-time = "2025-09-08T23:24:04.541Z" }
 wheels = [
@@ -346,7 +352,7 @@ name = "markdown-it-py"
 version = "4.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "mdurl" },
+    { name = "mdurl", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/5b/f5/4ec618ed16cc4f8fb3b701563655a69816155e79e24a17b651541804721d/markdown_it_py-4.0.0.tar.gz", hash = "sha256:cb0a2b4aa34f932c007117b194e945bd74e0ec24133ceb5bac59009cda1cb9f3", size = 73070, upload-time = "2025-08-11T12:57:52.854Z" }
 wheels = [
@@ -364,16 +370,40 @@ wheels = [
 
 [[package]]
 name = "meson"
-version = "1.10.0"
+version = "1.5.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/45/76/c2f4cff5dabcd64711bd327dd00fd22ec603bed6a928dd5d058044d568d8/meson-1.10.0.tar.gz", hash = "sha256:8071860c1f46a75ea34801490fd1c445c9d75147a65508cd3a10366a7006cc1c", size = 2412381, upload-time = "2025-12-08T17:14:57.124Z" }
+resolution-markers = [
+    "python_full_version >= '3.12' and implementation_name == 'cpython' and sys_platform == 'win32'",
+    "python_full_version < '3.12' and implementation_name == 'cpython' and sys_platform == 'win32'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/34/e8/bb0e264882a42f5d5acae869d5980f298ff9c298d844e18fd1ac009ce7e9/meson-1.5.2.tar.gz", hash = "sha256:f955e09ab0d71ef180ae85df65991d58ed8430323de7d77a37e11c9ea630910b", size = 2265788, upload-time = "2024-09-20T19:14:40.185Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/32/4f/c398c6f06ece1c6c246e008d5dac3824c98f54d3eb3d8014f4910afd6d48/meson-1.10.0-py3-none-any.whl", hash = "sha256:4b27aafce281e652dcb437b28007457411245d975c48b5db3a797d3e93ae1585", size = 1057029, upload-time = "2025-12-08T17:14:55.038Z" },
+    { url = "https://files.pythonhosted.org/packages/55/a6/47b9353c331318a13eb050887eacfd61eb075746285f9baf7ef7de6ae235/meson-1.5.2-py3-none-any.whl", hash = "sha256:77706e2368a00d789c097632ccf4fc39251fba56d03e1e1b262559a3c7a08f5b", size = 968744, upload-time = "2024-09-20T19:14:38.158Z" },
 ]
 
 [package.optional-dependencies]
 ninja = [
-    { name = "ninja" },
+    { name = "ninja", marker = "implementation_name == 'cpython' and sys_platform == 'win32'" },
+]
+
+[[package]]
+name = "meson"
+version = "1.10.1"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.12' and implementation_name == 'cpython' and sys_platform != 'ios' and sys_platform != 'win32'",
+    "python_full_version >= '3.12' and sys_platform == 'ios'",
+    "python_full_version < '3.12' and implementation_name == 'cpython' and sys_platform != 'ios' and sys_platform != 'win32'",
+    "python_full_version < '3.12' and sys_platform == 'ios'",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1b/d3/8c43e758cf456273c32652bb8b7a4ec2d74327d8849856b0b714ad671da7/meson-1.10.1.tar.gz", hash = "sha256:c42296f12db316a4515b9375a5df330f2e751ccdd4f608430d41d7d6210e4317", size = 2413969, upload-time = "2026-01-18T14:45:08.687Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9c/d5/582789135863eec7c8c1fa31fbde401b3d5d82dbbb4a0973351a1698f738/meson-1.10.1-py3-none-any.whl", hash = "sha256:fe43d1cc2e6de146fbea78f3a062194bcc0e779efc8a0f0d7c35544dfb86731f", size = 1057724, upload-time = "2026-01-18T14:45:02.584Z" },
+]
+
+[package.optional-dependencies]
+ninja = [
+    { name = "ninja", marker = "(implementation_name == 'cpython' and sys_platform != 'win32') or sys_platform == 'ios'" },
 ]
 
 [[package]]
@@ -381,10 +411,11 @@ name = "meson-python"
 version = "0.19.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "meson" },
-    { name = "packaging" },
-    { name = "pyproject-metadata" },
-    { name = "tomli", marker = "python_full_version < '3.11'" },
+    { name = "meson", version = "1.5.2", source = { registry = "https://pypi.org/simple" }, marker = "implementation_name == 'cpython' and sys_platform == 'win32'" },
+    { name = "meson", version = "1.10.1", source = { registry = "https://pypi.org/simple" }, marker = "(implementation_name == 'cpython' and sys_platform != 'win32') or sys_platform == 'ios'" },
+    { name = "packaging", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
+    { name = "pyproject-metadata", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
+    { name = "tomli", marker = "(python_full_version < '3.11' and implementation_name == 'cpython') or (python_full_version < '3.11' and sys_platform == 'ios')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/32/98/7fe5d1bf741c03c6eea04b6245737dbd79657d4f9200e82fcbb4cc12637b/meson_python-0.19.0.tar.gz", hash = "sha256:9959d198aa69b57fcfd354a34518c6f795b781a73ed0656f4d01660160cc2553", size = 101504, upload-time = "2026-01-15T13:52:44.368Z" }
 wheels = [
@@ -396,11 +427,11 @@ name = "mypy"
 version = "1.19.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "librt", marker = "platform_python_implementation != 'PyPy'" },
-    { name = "mypy-extensions" },
-    { name = "pathspec" },
-    { name = "tomli", marker = "python_full_version < '3.11'" },
-    { name = "typing-extensions" },
+    { name = "librt", marker = "(implementation_name == 'cpython' and platform_python_implementation != 'PyPy') or (platform_python_implementation != 'PyPy' and sys_platform == 'ios')" },
+    { name = "mypy-extensions", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
+    { name = "pathspec", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
+    { name = "tomli", marker = "(python_full_version < '3.11' and implementation_name == 'cpython') or (python_full_version < '3.11' and sys_platform == 'ios')" },
+    { name = "typing-extensions", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f5/db/4efed9504bc01309ab9c2da7e352cc223569f05478012b5d9ece38fd44d2/mypy-1.19.1.tar.gz", hash = "sha256:19d88bb05303fe63f71dd2c6270daca27cb9401c4ca8255fe50d1d920e0eb9ba", size = 3582404, upload-time = "2025-12-15T05:03:48.42Z" }
 wheels = [
@@ -522,7 +553,7 @@ name = "pyproject-metadata"
 version = "0.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "packaging" },
+    { name = "packaging", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/75/bd/74706b3671c443944f487a42a0148a507b733c60600df1d34cde41e6d10b/pyproject_metadata-0.10.0.tar.gz", hash = "sha256:7f5bd0ef398b60169556cb17ea261d715caf7f8561238151f51b2305084ba8d4", size = 40568, upload-time = "2025-11-21T15:29:23.573Z" }
 wheels = [
@@ -552,9 +583,9 @@ name = "pytest-codspeed"
 version = "4.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi" },
-    { name = "pytest" },
-    { name = "rich" },
+    { name = "cffi", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
+    { name = "pytest", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
+    { name = "rich", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e2/e8/27fcbe6516a1c956614a4b61a7fccbf3791ea0b992e07416e8948184327d/pytest_codspeed-4.2.0.tar.gz", hash = "sha256:04b5d0bc5a1851ba1504d46bf9d7dbb355222a69f2cd440d54295db721b331f7", size = 113263, upload-time = "2025-10-24T09:02:55.704Z" }
 wheels = [
@@ -604,8 +635,8 @@ name = "rich"
 version = "14.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "markdown-it-py" },
-    { name = "pygments" },
+    { name = "markdown-it-py", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
+    { name = "pygments", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fb/d2/8920e102050a0de7bfabeb4c4614a49248cf8d5d7a8d01885fbb24dc767a/rich-14.2.0.tar.gz", hash = "sha256:73ff50c7c0c1c77c8243079283f4edb376f0f6442433aecb8ce7e6d0b92d1fe4", size = 219990, upload-time = "2025-10-09T14:16:53.064Z" }
 wheels = [
