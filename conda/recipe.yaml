@@ -23,7 +23,11 @@ requirements:
   host:
     - python
     - pip
-    - meson
+    - if: win
+      then:
+        - meson<1.6.0
+      else:
+        - meson
     - ninja
     - meson-python
   run:
