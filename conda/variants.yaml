@@ -6,3 +6,7 @@ python:
   - '3.12'
   - '3.13'
   - '3.14'
+
+python_allow_limited_api:
+  - 'true'
+  - 'false'

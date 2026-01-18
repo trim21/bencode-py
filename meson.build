@@ -39,6 +39,9 @@ endif
 
 nanobind_dep = dependency('nanobind', static: true)
 
+allow_limited_api = get_option('python.allow_limited_api')
+py_limited_api = (allow_limited_api) ? '3.12' : ''
+
 
 out = py.extension_module(
     '__bencode',
@@ -52,6 +55,7 @@ out = py.extension_module(
     ),
     subdir: 'bencode2',
     dependencies: [nanobind_dep, py.dependency()],
+    limited_api: py_limited_api,
 )
 
 custom_target(
