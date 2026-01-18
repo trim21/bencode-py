@@ -2,8 +2,7 @@
 requires = [
   "flit-core==3.12.0",
   'meson-python==0.19.0; implementation_name == "cpython"',
-  'meson[ninja]==1.10.1; implementation_name == "cpython" and sys_platform != "win32"',
-  'meson[ninja]<1.6.0; implementation_name == "cpython" and sys_platform == "win32"',
+  'meson[ninja]==1.10.1; implementation_name == "cpython"',
 ]
 
 # conditional build c++ extension
@@ -50,8 +49,7 @@ Issues = "https://github.com/trim21/bencode-py/issues"
 dev = [
   'flit-core==3.12.0',
   'meson-python==0.19.0; implementation_name == "cpython"',
-  'meson[ninja]==1.10.1; implementation_name == "cpython" and sys_platform != "win32"',
-  'meson[ninja]<1.6.0; implementation_name == "cpython" and sys_platform == "win32"',
+  'meson[ninja]==1.10.1; implementation_name == "cpython"',
   'mypy==1.19.1; implementation_name == "cpython"',
   'pytest==9.0.2',
   'pytest-codspeed==4.2.0; implementation_name == "cpython"',

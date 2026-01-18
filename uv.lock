@@ -23,8 +23,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "flit-core" },
-    { name = "meson", version = "1.5.2", source = { registry = "https://pypi.org/simple" }, extra = ["ninja"], marker = "implementation_name == 'cpython' and sys_platform == 'win32'" },
-    { name = "meson", version = "1.10.1", source = { registry = "https://pypi.org/simple" }, extra = ["ninja"], marker = "implementation_name == 'cpython' and sys_platform != 'win32'" },
+    { name = "meson", extra = ["ninja"], marker = "implementation_name == 'cpython'" },
     { name = "meson-python", marker = "implementation_name == 'cpython'" },
     { name = "mypy", marker = "implementation_name == 'cpython'" },
     { name = "pytest" },
@@ -39,8 +38,7 @@ requires-dist = [{ name = "typing-extensions", specifier = ">=4.8.0" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "flit-core", specifier = "==3.12.0" },
-    { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython' and sys_platform == 'win32'", specifier = "<1.6.0" },
-    { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython' and sys_platform != 'win32'", specifier = "==1.10.1" },
+    { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython'", specifier = "==1.10.1" },
     { name = "meson-python", marker = "implementation_name == 'cpython'", specifier = "==0.19.0" },
     { name = "mypy", marker = "implementation_name == 'cpython'", specifier = "==1.19.1" },
     { name = "pytest", specifier = "==9.0.2" },
@@ -370,32 +368,8 @@ wheels = [
 
 [[package]]
 name = "meson"
-version = "1.5.2"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.12' and implementation_name == 'cpython' and sys_platform == 'win32'",
-    "python_full_version < '3.12' and implementation_name == 'cpython' and sys_platform == 'win32'",
-]
-sdist = { url = "https://files.pythonhosted.org/packages/34/e8/bb0e264882a42f5d5acae869d5980f298ff9c298d844e18fd1ac009ce7e9/meson-1.5.2.tar.gz", hash = "sha256:f955e09ab0d71ef180ae85df65991d58ed8430323de7d77a37e11c9ea630910b", size = 2265788, upload-time = "2024-09-20T19:14:40.185Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/55/a6/47b9353c331318a13eb050887eacfd61eb075746285f9baf7ef7de6ae235/meson-1.5.2-py3-none-any.whl", hash = "sha256:77706e2368a00d789c097632ccf4fc39251fba56d03e1e1b262559a3c7a08f5b", size = 968744, upload-time = "2024-09-20T19:14:38.158Z" },
-]
-
-[package.optional-dependencies]
-ninja = [
-    { name = "ninja", marker = "implementation_name == 'cpython' and sys_platform == 'win32'" },
-]
-
-[[package]]
-name = "meson"
 version = "1.10.1"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.12' and implementation_name == 'cpython' and sys_platform != 'ios' and sys_platform != 'win32'",
-    "python_full_version >= '3.12' and sys_platform == 'ios'",
-    "python_full_version < '3.12' and implementation_name == 'cpython' and sys_platform != 'ios' and sys_platform != 'win32'",
-    "python_full_version < '3.12' and sys_platform == 'ios'",
-]
 sdist = { url = "https://files.pythonhosted.org/packages/1b/d3/8c43e758cf456273c32652bb8b7a4ec2d74327d8849856b0b714ad671da7/meson-1.10.1.tar.gz", hash = "sha256:c42296f12db316a4515b9375a5df330f2e751ccdd4f608430d41d7d6210e4317", size = 2413969, upload-time = "2026-01-18T14:45:08.687Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9c/d5/582789135863eec7c8c1fa31fbde401b3d5d82dbbb4a0973351a1698f738/meson-1.10.1-py3-none-any.whl", hash = "sha256:fe43d1cc2e6de146fbea78f3a062194bcc0e779efc8a0f0d7c35544dfb86731f", size = 1057724, upload-time = "2026-01-18T14:45:02.584Z" },
@@ -403,7 +377,7 @@ wheels = [
 
 [package.optional-dependencies]
 ninja = [
-    { name = "ninja", marker = "(implementation_name == 'cpython' and sys_platform != 'win32') or sys_platform == 'ios'" },
+    { name = "ninja", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
 ]
 
 [[package]]
@@ -411,8 +385,7 @@ name = "meson-python"
 version = "0.19.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "meson", version = "1.5.2", source = { registry = "https://pypi.org/simple" }, marker = "implementation_name == 'cpython' and sys_platform == 'win32'" },
-    { name = "meson", version = "1.10.1", source = { registry = "https://pypi.org/simple" }, marker = "(implementation_name == 'cpython' and sys_platform != 'win32') or sys_platform == 'ios'" },
+    { name = "meson", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
     { name = "packaging", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
     { name = "pyproject-metadata", marker = "implementation_name == 'cpython' or sys_platform == 'ios'" },
     { name = "tomli", marker = "(python_full_version < '3.11' and implementation_name == 'cpython') or (python_full_version < '3.11' and sys_platform == 'ios')" },
