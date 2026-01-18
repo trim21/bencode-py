@@ -8,7 +8,7 @@ source:
 
 build:
   number: 0
-  skip: python_allow_limited_api == 'true' and (python != '3.12')
+  skip: (python_allow_limited_api == 'true') and (win or (python != '3.12'))
   script: >-
     ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
     --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
