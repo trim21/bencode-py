@@ -1,15 +1,12 @@
 repos:
-  - repo: local
+  - repo: https://github.com/trim21/pre-commit-mirror-meson
+    rev: 'v1.10.0'
     hooks:
-      - id: meson
-        name: meson
-        language: python
-        entry: meson format -e -i
-        files: ^(.*/)?(meson\.build|meson\.format)$
-        additional_dependencies: ['meson==1.10.0']
+      - id: meson-fmt
+        args: ['--inplace', '--editor-config']
 
   - repo: https://github.com/trim21/dprint-pre-commit
-    rev: v0.49.1.2
+    rev: 'v0.51.1.0'
     hooks:
       - id: dprint
         pass_filenames: false
