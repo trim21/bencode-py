@@ -31,8 +31,18 @@ requirements:
     - ninja
     - meson-python
   run:
-    - python
+    - if: python_allow_limited_api == 'true'
+      then:
+        - python >= ${{ python }}
+      else:
+        - python
     - typing_extensions>=4.8.0
+
+  ignore_run_exports:
+    from_package:
+      - if: python_allow_limited_api == 'true'
+        then:
+          - python
 
 tests:
   - python:
