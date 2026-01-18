@@ -68,9 +68,6 @@ install = [
   '--tags=runtime,python-runtime',
 ]
 
-[tool.meson-python]
-limited-api = true
-
 [tool.pytest.ini_options]
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
 
@@ -120,3 +117,9 @@ ignore_missing_imports = true
 warn_return_any = false
 warn_unused_configs = true
 show_error_codes = true
+
+# we will append this to pyproject.toml in ci to build abi3 wheels
+#
+# [tool.meson-python]
+# limited-api = true
+#
