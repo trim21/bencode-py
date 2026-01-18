@@ -17,15 +17,18 @@ jobs:
           ref: 'master'
           submodules: 'true'
 
+      - run: rm subprojects/*.wrap -rf
+
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
 
       - uses: astral-sh/setup-uv@v7
+        with:
+          activate-environment: 'true'
 
       - run: uv sync --dev --no-install-project
 
-      - run: rm subprojects/*.wrap -rf
       - run: meson wrap install nanobind
       - run: meson wrap install robin-map
 
