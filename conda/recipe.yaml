@@ -12,6 +12,7 @@ build:
   script: >-
     ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
     --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
+    ${{ ' --config-settings=tool.meson-python.limited-api=true' if python_allow_limited_api == 'true' else '' }}
     ${{ ' --config-settings=setup-args=-Dcpp_std=c++20' if win else '' }}
 
 requirements:
