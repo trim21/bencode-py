@@ -49,6 +49,16 @@ tests:
   - python:
       imports:
         - bencode2
+      python_version:
+        - ${{ python }}
+
+  - if: python_allow_limited_api == 'true' and unix
+    then:
+      script:
+        - abi3audit -v ${{ SP_DIR }}/bencode2/__bencode.abi3.so --assume-minimum-abi3 ${{ python }}
+      requirements:
+        run:
+          - abi3audit
 
   - script:
       - pytest tests --assert-pkg-compiled=true
