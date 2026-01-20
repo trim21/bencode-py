@@ -3,7 +3,7 @@ package:
   version: ${{ env.get("BENCODE2_CONDA_VERSION", default='dev') }}
 
 source:
-  path: ".."
+  path: '..'
   use_gitignore: true
 
 build:
