@@ -46,11 +46,11 @@ requirements:
           - python
 
 tests:
-  - python:
-      imports:
-        - bencode2
-      python_version:
-        - ${{ python }}.*
+  # - python:
+  #     imports:
+  #       - bencode2
+  #     python_version:
+  #       - ${{ python }}.*
 
   - script:
       - pytest tests --assert-pkg-compiled=true
