@@ -9,6 +9,8 @@ source:
 build:
   number: 0
   skip: (python_allow_limited_api == 'true') and (win or (python != '3.12'))
+  python:
+    version_independent: ${{ python_allow_limited_api == 'true' }}
   script: >-
     ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
     --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
@@ -22,6 +24,9 @@ requirements:
     - cxx-compiler >=1.9.0
   host:
     - python
+    - if: python_allow_limited_api == 'true'
+      then:
+        - python-abi3 3.12.*
     - pip
     - if: win
       then:
@@ -33,7 +38,7 @@ requirements:
   run:
     - if: python_allow_limited_api == 'true'
       then:
-        - python >= ${{ python }}
+        - python >=${{ python }}
       else:
         - python
     - typing_extensions>=4.8.0
@@ -48,6 +53,7 @@ tests:
   - python:
       imports:
         - bencode2
+      python_version: ${{ ['%s.*' % python] if python_allow_limited_api == 'true' else [] }}
 
   - script:
       - pytest tests --assert-pkg-compiled=true
