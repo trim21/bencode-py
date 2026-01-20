@@ -28,11 +28,7 @@ requirements:
       then:
         - python-abi3 3.12.*
     - pip
-    - if: win
-      then:
-        - meson<1.6.0
-      else:
-        - meson
+    - meson
     - ninja
     - meson-python
   run:
