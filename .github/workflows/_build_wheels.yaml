@@ -83,7 +83,7 @@ jobs:
 
       - run: uv sync --dev --no-install-project
 
-      - run: uv build --no-build-isolation --wheel --out-dir dist --config-setting="setup-args=-Dbe-limited-abi=enabled"
+      - run: uv build --no-build-isolation --wheel --out-dir dist --config-setting="setup-args=-Dpython.allow_limited_api=true"
         env:
           CC: 'zig cc -target ${{ matrix.arch.target }}'
           CXX: 'zig c++ -target ${{ matrix.arch.target }}'
@@ -236,7 +236,7 @@ jobs:
           CIBW_BUILD_FRONTEND: 'build[uv]'
           CIBW_ARCHS: 'native'
           CIBW_BUILD: 'cp312-*'
-          CIBW_CONFIG_SETTINGS: 'setup-args=-Dbe-limited-abi=enabled'
+          CIBW_CONFIG_SETTINGS: 'setup-args=-Dpython.allow_limited_api=true'
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: 'pytest {project}/tests --assert-pkg-compiled=true'
           MACOSX_DEPLOYMENT_TARGET: '11.0'

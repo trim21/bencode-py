@@ -9,10 +9,12 @@ source:
 build:
   number: 0
   skip: (python_allow_limited_api == 'true') and (win or (python != '3.12'))
+  python:
+    skip_pyc_compilation: true
+    version_independent: ${{ python_allow_limited_api == 'true' }}
   script: >-
     ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
     --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
-    ${{ ' --config-settings=setup-args=-Dcpp_std=c++20' if win else '' }}
 
 requirements:
   build:
@@ -22,18 +24,17 @@ requirements:
     - cxx-compiler >=1.9.0
   host:
     - python
-    - pip
-    - if: win
+    - if: python_allow_limited_api == 'true'
       then:
-        - meson<1.6.0
-      else:
-        - meson
+        - python-abi3 3.12.*
+    - pip
+    - meson
     - ninja
     - meson-python
   run:
     - if: python_allow_limited_api == 'true'
       then:
-        - python >= ${{ python }}
+        - python >=${{ python }}
       else:
         - python
     - typing_extensions>=4.8.0
@@ -45,9 +46,13 @@ requirements:
           - python
 
 tests:
-  - python:
-      imports:
-        - bencode2
+  - if: python_allow_limited_api == 'false'
+    then:
+      python:
+        imports:
+          - bencode2
+        python_version:
+          - ${{ python }}.*
 
   - script:
       - pytest tests --assert-pkg-compiled=true
@@ -55,6 +60,7 @@ tests:
     requirements:
       run:
         - pytest
+        - python
 
     files:
       source:
