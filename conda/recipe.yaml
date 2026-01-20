@@ -48,7 +48,6 @@ tests:
   - python:
       imports:
         - bencode2
-      python_version: ${{ [python ~ '.*'] if python_allow_limited_api == 'true' else [] }}
 
   - script:
       - pytest tests --assert-pkg-compiled=true
@@ -56,6 +55,7 @@ tests:
     requirements:
       run:
         - pytest
+        - python
 
     files:
       source:
