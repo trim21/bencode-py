@@ -10,6 +10,7 @@ build:
   number: 0
   skip: (python_allow_limited_api == 'true') and (win or (python != '3.12'))
   python:
+    skip_pyc_compilation: true
     version_independent: ${{ python_allow_limited_api == 'true' }}
   script: >-
     ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
