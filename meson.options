@@ -1,2 +1,1 @@
 option('be-debug', type: 'feature', value: 'disabled')
-option('be-limited-abi', type: 'feature', value: 'disabled')
