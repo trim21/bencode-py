@@ -50,7 +50,7 @@ tests:
       imports:
         - bencode2
       python_version:
-        - ${{ python }}
+        - ${{ python }}.*
 
   - if: python_allow_limited_api == 'true' and unix
     then:
