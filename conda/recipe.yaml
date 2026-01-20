@@ -3,7 +3,7 @@ package:
   version: ${{ env.get("BENCODE2_CONDA_VERSION", default='dev') }}
 
 source:
-  path: '..'
+  path: ".."
   use_gitignore: true
 
 build:
@@ -46,11 +46,13 @@ requirements:
           - python
 
 tests:
-  # - python:
-  #     imports:
-  #       - bencode2
-  #     python_version:
-  #       - ${{ python }}.*
+  - if: python_allow_limited_api == 'false'
+    then:
+      python:
+        imports:
+          - bencode2
+        python_version:
+          - ${{ python }}.*
 
   - script:
       - pytest tests --assert-pkg-compiled=true
