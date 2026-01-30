@@ -24,7 +24,7 @@ requirements:
       then:
         - c-compiler >=1.9.0
         - cxx-compiler >=1.9.0
-    - compilers
+        - compilers
   host:
     - python
     - if: python_allow_limited_api == 'true'
