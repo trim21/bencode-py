@@ -47,8 +47,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: 'conda-${{ runner.os }}-${{ runner.arch }}'
-          path: ./output/*/*.conda
-          if-no-files-found: ignore
+          path: ./output/**/*.conda
 
   build-windows:
     name: Build conda (windows)
@@ -93,5 +92,4 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: 'conda-${{ runner.os }}-${{ runner.arch }}'
-          path: C:/rattler-output/output/*/*.conda
-          if-no-files-found: ignore
+          path: C:/rattler-output/**/*.conda
