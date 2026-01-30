@@ -4,8 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  build:
-    name: Build conda
+  build-unix:
+    name: Build conda (unix)
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -13,40 +13,19 @@ jobs:
         include:
           - os: macos-15
           - os: macos-15-intel
-          - os: windows-latest
           - os: ubuntu-24.04
           - os: ubuntu-24.04-arm
-          # - os: windows-11-arm
-
-    env:
-      WORK_DIR: ${{ github.workspace }}
 
     steps:
       - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
-      - name: Move workspace to short path (Windows)
-        if: ${{ runner.os == 'Windows' }}
-        shell: pwsh
-        run: |
-          Remove-Item -Recurse -Force C:\b -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Path C:\b | Out-Null
-          robocopy $env:GITHUB_WORKSPACE C:\b /MIR /NFL /NDL /NJH /NJS /NC /NS
-          if ($LASTEXITCODE -gt 3) { exit $LASTEXITCODE }
-          $LASTEXITCODE = 0
-          'WORK_DIR=C:/b' | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          New-Item -ItemType Directory -Force -Path C:\b\_tmp | Out-Null
-          'TEMP=C:/b/_tmp' | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          'TMP=C:/b/_tmp' | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Remove-Item -Recurse -Force $env:GITHUB_WORKSPACE -ErrorAction SilentlyContinue
-
       - uses: actions/setup-python@v6
         with:
           python-version: '^3.11.0'
 
       - shell: python
-        working-directory: ${{ env.WORK_DIR }}
         run: |
           import tomllib
           import os
@@ -54,15 +33,6 @@ jobs:
           project = tomllib.loads(Path('pyproject.toml').read_text('utf-8'))
           with Path(os.environ["GITHUB_ENV"]).open('a', encoding='utf-8') as f:
               f.write("BENCODE2_CONDA_VERSION=" + project['project']['version'])
-
-      - run: rm C:/Strawberry/perl/bin -rf
-        if: ${{ runner.os == 'Windows' }}
-        shell: bash
-
-      - uses: ilammy/msvc-dev-cmd@v1
-        if: ${{ runner.os == 'Windows' }}
-        with:
-          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
       - uses: jaxxstorm/action-install-gh-release@v2.1.0
         with:
@@ -77,13 +47,68 @@ jobs:
             --verbose \
             --recipe=./conda/recipe.yaml
         shell: bash
-        working-directory: ${{ env.WORK_DIR }}
 
       - run: ls ./output/
-        working-directory: ${{ env.WORK_DIR }}
 
       - uses: actions/upload-artifact@v6
         with:
           name: 'conda-${{ runner.os }}-${{ runner.arch }}'
-          path: ${{ env.WORK_DIR }}/output/*/*.conda
+          path: ./output/*/*.conda
+          if-no-files-found: ignore
+
+  build-windows:
+    name: Build conda (windows)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+          # - os: windows-11-arm
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '^3.11.0'
+
+      - shell: python
+        run: |
+          import tomllib
+          import os
+          from pathlib import Path
+          project = tomllib.loads(Path('pyproject.toml').read_text('utf-8'))
+          with Path(os.environ["GITHUB_ENV"]).open('a', encoding='utf-8') as f:
+              f.write("BENCODE2_CONDA_VERSION=" + project['project']['version'])
+
+      - run: rm C:/Strawberry/perl/bin -rf
+        shell: bash
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
+
+      - uses: jaxxstorm/action-install-gh-release@v2.1.0
+        with:
+          repo: prefix-dev/rattler-build
+          tag: 'v0.55.1'
+
+      - run: |
+          rattler-build build \
+            --wrap-log-lines=false \
+            --log-style=plain \
+            '--output-dir=C:/rattler-output' \
+            --verbose \
+            --recipe=./conda/recipe.yaml
+        shell: bash
+
+      - run: ls C:/rattler-output
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: 'conda-${{ runner.os }}-${{ runner.arch }}'
+          path: C:/rattler-output/output/*/*.conda
           if-no-files-found: ignore
