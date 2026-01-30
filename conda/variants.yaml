@@ -1,5 +1,10 @@
 MACOSX_DEPLOYMENT_TARGET: "11.0"
 
+c_compiler:
+  - if: target_os.startswith("win")
+    then:
+      - vs2022
+
 python:
   - if: target_platform != "win-arm64"
     then:
@@ -13,5 +18,5 @@ python:
       - "3.10"
 
 python_allow_limited_api:
-  - 'true'
-  - 'false'
+  - "true"
+  - "false"
