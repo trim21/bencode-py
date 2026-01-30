@@ -4,6 +4,10 @@ c_compiler:
   - if: target_os.startswith("win")
     then:
       - vs2022
+cxx_compiler:
+  - if: target_os.startswith("win")
+    then:
+      - vs2022
 
 python:
   - if: target_platform != "win-arm64"
