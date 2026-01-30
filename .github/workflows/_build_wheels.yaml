@@ -20,22 +20,22 @@ jobs:
           - runs_on: ubuntu-24.04-arm
             target: aarch64-linux-gnu.2.17
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '${{ matrix.py }}'
 
       - run: uv tool install zig-bin
 
-      - run: uv pip install --system -r ./requirements.txt
+      - run: uv sync --dev --no-install-project
 
-      - run: uv build --no-build-isolation --wheel --out-dir dist
+      - run: uv build --no-build-isolation --wheel --out-dir dist --config-setting=setup-args=-Dpython.allow_limited_api=false
         env:
           CC: 'zig cc -target ${{ matrix.arch.target }}'
           CXX: 'zig c++ -target ${{ matrix.arch.target }}'
@@ -47,6 +47,57 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
+          path: ./wheelhouse/*.whl
+          if-no-files-found: ignore
+
+  linux-wheels-abi3:
+    name: Build wheels (abi3)
+    runs-on: ${{ matrix.arch.runs_on }}
+    strategy:
+      matrix:
+        py: ['3.12']
+        arch:
+          - runs_on: ubuntu-24.04
+            target: x86_64-linux-gnu.2.17
+          - runs_on: ubuntu-24.04-arm
+            target: aarch64-linux-gnu.2.17
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - name: Enable abi3 limited API
+        run: |
+          printf '\n[tool.meson-python]\nlimited-api = true\n' >> pyproject.toml
+
+      - run: cat pyproject.toml
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '${{ matrix.py }}'
+
+      - run: uv tool install zig-bin
+
+      - run: uv sync --dev --no-install-project
+
+      - run: uv build --no-build-isolation --wheel --out-dir dist --config-setting="setup-args=-Dpython.allow_limited_api=true"
+        env:
+          CC: 'zig cc -target ${{ matrix.arch.target }}'
+          CXX: 'zig c++ -target ${{ matrix.arch.target }}'
+
+      - run: uv tool install auditwheel
+      - run: auditwheel show dist/*.whl
+      - run: auditwheel repair dist/*.whl
+
+      - run: uv tool install abi3audit
+      - run: abi3audit -v wheelhouse/*.whl
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: 'wheels-abi3-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
           path: ./wheelhouse/*.whl
           if-no-files-found: ignore
 
@@ -94,13 +145,6 @@ jobs:
         with:
           arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
-      - name: Set up sccache
-        uses: mozilla-actions/sccache-action@v0.0.9
-        if: ${{ (runner.os != 'Linux') && !(runner.arch == 'ARM64' && runner.os == 'Windows') }}
-        with:
-          disable_annotations: true
-          token: ${{ github.token }}
-
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
         uses: astral-sh/setup-uv@v7
@@ -134,6 +178,77 @@ jobs:
           path: ./wheelhouse/*.whl
           if-no-files-found: ignore
 
+  build_wheels_abi3:
+    name: Build wheels (abi3)
+    runs-on: ${{ matrix.os }}
+    env:
+      SCCACHE_GHA_ENABLED: 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+          - os: macos-15-intel
+          # not supported by meson yet
+          # - os: windows-latest
+          # - os: windows-11-arm
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - name: Enable abi3 limited API
+        run: |
+          printf '\n[tool.meson-python]\nlimited-api = true\n' >> pyproject.toml
+        shell: bash
+
+      - run: cat pyproject.toml
+        shell: bash
+
+      - run: rm C:/Strawberry/perl/bin 'C:/Program Files/Git/usr/bin/link.EXE' -rf
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
+
+      - name: Install the latest version of uv
+        if: ${{ runner.os != 'Linux' }}
+        uses: astral-sh/setup-uv@v7
+
+      - name: Restore cached Primes
+        if: ${{ runner.os != 'Linux' }}
+        id: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ env.UV_CACHE_DIR }}
+            ~\AppData\Local\pypa\cibuildwheel\Cache
+            ~/Library/Caches/cibuildwheel
+            ~/.cache/cibuildwheel
+          key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-abi3'
+
+      - uses: pypa/cibuildwheel@v3.3.1
+        env:
+          CIBW_BUILD_FRONTEND: 'build[uv]'
+          CIBW_ARCHS: 'native'
+          CIBW_BUILD: 'cp312-*'
+          CIBW_CONFIG_SETTINGS: 'setup-args=-Dpython.allow_limited_api=true'
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: 'pytest {project}/tests --assert-pkg-compiled=true'
+          MACOSX_DEPLOYMENT_TARGET: '11.0'
+
+      - run: ls ./wheelhouse/
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: 'wheels-abi3-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
+          path: ./wheelhouse/*.whl
+          if-no-files-found: ignore
+
   build:
     name: make sdist and wheel
     runs-on: ubuntu-24.04
@@ -148,3 +263,44 @@ jobs:
         with:
           name: 'wheels-py'
           path: dist/*
+
+  musllinux-wheels:
+    name: Build musllinux wheels
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runs_on: ubuntu-24.04
+          - arch: aarch64
+            runs_on: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
+
+      - uses: pypa/cibuildwheel@v3.3.1
+        env:
+          CIBW_BUILD_FRONTEND: 'build[uv]'
+          CIBW_PLATFORM: 'linux'
+          CIBW_ARCHS_LINUX: ${{ matrix.arch }}
+          CIBW_BUILD: 'cp3*-musllinux*'
+          CIBW_SKIP: ''
+          # CIBW_MANYLINUX_X86_64_IMAGE: "musllinux_1_2"
+          # CIBW_MANYLINUX_AARCH64_IMAGE: "musllinux_1_2"
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: 'pytest {project}/tests --assert-pkg-compiled=true'
+          CIBW_ENVIRONMENT: 'UV_LINK_MODE=copy'
+
+      - run: ls ./wheelhouse/
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: 'wheels-musllinux-${{ matrix.arch }}'
+          path: ./wheelhouse/*.whl
+          if-no-files-found: ignore

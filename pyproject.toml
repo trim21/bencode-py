@@ -1,8 +1,8 @@
 [build-system]
 requires = [
   "flit-core==3.12.0",
-  'meson-python==0.18.0; implementation_name == "cpython"',
-  'meson[ninja]==1.10.0; implementation_name == "cpython"',
+  'meson-python==0.19.0; implementation_name == "cpython"',
+  'meson[ninja]==1.10.1; implementation_name == "cpython"',
 ]
 
 # conditional build c++ extension
@@ -11,10 +11,10 @@ backend-path = ["build_backend"]
 
 [project]
 name = "bencode2"
-version = "0.3.28"
+version = "0.3.29"
 description = "A fast and correct bencode serialize/deserialize library"
 license = { text = "MIT" }
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.10"
 authors = [
   { name = "trim21", email = "trim21me@gmail.com" },
 ]
@@ -45,6 +45,18 @@ Homepage = "https://github.com/trim21/bencode-py"
 Repository = "https://github.com/trim21/bencode-py"
 Issues = "https://github.com/trim21/bencode-py/issues"
 
+[dependency-groups]
+dev = [
+  'flit-core==3.12.0',
+  'meson-python==0.19.0; implementation_name == "cpython"',
+  'meson[ninja]==1.10.1; implementation_name == "cpython"',
+  'mypy==1.19.1; implementation_name == "cpython"',
+  'pytest==9.0.2',
+  'pytest-codspeed==4.2.0; implementation_name == "cpython"',
+  'pytest-cov==7.0.0',
+  'pytest-github-actions-annotate-failures==0.3.0',
+]
+
 [tool.meson-python.args]
 setup = ['--errorlogs']
 dist = ['--verbose']
@@ -70,9 +82,6 @@ manylinux-aarch64-image = "manylinux_2_28"
 # before-all = "uv tool install sccache"
 # environment-pass = ['SCCACHE_GHA_ENABLED', 'ACTIONS_CACHE_URL', 'ACTIONS_RUNTIME_TOKEN']
 # environment = { "PATH" = "$PATH:/root/.local/bin" }
-
-[tool.cibuildwheel.windows]
-config-settings = { "setup-args" = ["-Dcpp_std=c++20"] }
 
 [tool.black]
 extend-exclude = 'vendor'
@@ -108,3 +117,9 @@ ignore_missing_imports = true
 warn_return_any = false
 warn_unused_configs = true
 show_error_codes = true
+
+# we will append this to pyproject.toml in ci to build abi3 wheels
+#
+# [tool.meson-python]
+# limited-api = true
+#

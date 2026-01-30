@@ -91,7 +91,7 @@ bencode2 will decode bencode string to python `bytes`.
 | `bytes`, `bytearray`,`memoryview` |    string    |
 |   `list`, `tuple`, `NamedTuple`   |    array     |
 |       `dict`, `OrderedDict`       |  dictionary  |
-|       `types.MaapingProxy`        |  dictionary  |
+|       `types.MappingProxy`        |  dictionary  |
 |            dataclasses            |  dictionary  |
 
 ## free threading

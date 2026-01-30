@@ -22,12 +22,14 @@ static bool cmp(std::pair<std::string_view, nb::handle> &a,
 }
 
 static std::string_view py_string_view(nb::handle obj) {
+#ifndef Py_LIMITED_API
     // fast path for pure ascii string
     if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
         const char *s = (char *)PyUnicode_DATA(obj.ptr());
         Py_ssize_t size = ((PyASCIIObject *)(obj.ptr()))->length;
         return std::string_view(s, size);
     }
+#endif
 
     Py_ssize_t size = 0;
     const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
@@ -242,6 +244,7 @@ void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
 void encodeStr(EncodeContext *ctx, const nb::handle obj) {
     debug_print("encode str");
 
+#ifndef Py_LIMITED_API
     // fast path for pure ascii string
     if (PyUnicode_IS_COMPACT_ASCII(obj.ptr())) {
         const char *s = (char *)PyUnicode_DATA(obj.ptr());
@@ -254,6 +257,7 @@ void encodeStr(EncodeContext *ctx, const nb::handle obj) {
         ctx->write(s, size);
         return;
     }
+#endif
 
     Py_ssize_t size = 0;
     const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
@@ -331,6 +335,7 @@ void encodeAny(EncodeContext *ctx, const nb::handle obj) {
         return;
     }
 
+#ifndef Py_LIMITED_API
     // fast path for memoryview
     if (PyMemoryView_Check(obj.ptr())) {
         Py_buffer *buf = PyMemoryView_GET_BUFFER(obj.ptr());
@@ -340,6 +345,7 @@ void encodeAny(EncodeContext *ctx, const nb::handle obj) {
 
         return;
     }
+#endif
 
     if (PyObject_CheckBuffer(obj.ptr())) {
         Py_buffer buf;

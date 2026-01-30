@@ -6,6 +6,7 @@ tasks:
       VERSION:
         sh: yq '.project.version' pyproject.toml
     cmds:
-      - cmd: git add pyproject.toml
+      - cmd: uv sync --no-install-project
+      - cmd: git add pyproject.toml uv.lock
       - cmd: 'git commit -m "bump: v{{ .VERSION }}"'
       - cmd: git tag "v{{ .VERSION }}" -m "v{{ .VERSION }}"

@@ -3,9 +3,10 @@ project(
     'cpp',
     default_options: [
         'c_std=c17',
-        'cpp_std=c++23',
+        'cpp_std=c++20',
         'buildtype=release',
         'debug=false',
+        'python.allow_limited_api=false',
     ],
     meson_version: '>= 1.3.0',
 )
@@ -39,6 +40,11 @@ endif
 
 nanobind_dep = dependency('nanobind', static: true)
 
+allow_limited_api = get_option('python.allow_limited_api')
+py_limited_api = allow_limited_api ? '3.12' : ''
+
+message('allow_limited_api', allow_limited_api)
+message('py_limited_api', py_limited_api)
 
 out = py.extension_module(
     '__bencode',
@@ -52,6 +58,7 @@ out = py.extension_module(
     ),
     subdir: 'bencode2',
     dependencies: [nanobind_dep, py.dependency()],
+    limited_api: py_limited_api,
 )
 
 custom_target(
