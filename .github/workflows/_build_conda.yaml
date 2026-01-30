@@ -20,6 +20,7 @@ jobs:
 
     env:
       WORK_DIR: ${{ github.workspace }}
+      RATTLER_BUILD_EXPERIMENTAL: 'true'
 
     steps:
       - uses: actions/checkout@v6

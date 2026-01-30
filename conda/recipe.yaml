@@ -1,6 +1,6 @@
 package:
   name: bencode2
-  version: ${{ env.get("BENCODE2_CONDA_VERSION", default='dev') }}
+  version: ${{ load_from_file("../pyproject.toml").project.version }}
 
 source:
   path: '..'
