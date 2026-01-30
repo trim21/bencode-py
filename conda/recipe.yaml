@@ -20,8 +20,10 @@ requirements:
   build:
     - ${{ compiler('c') }}
     - ${{ compiler('cxx') }}
-    - c-compiler >=1.9.0
-    - cxx-compiler >=1.9.0
+    - if: target_platform != "win-arm64"
+      then:
+        - c-compiler >=1.9.0
+        - cxx-compiler >=1.9.0
     - compilers
   host:
     - python
