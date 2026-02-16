@@ -1,6 +1,6 @@
 package:
   name: bencode2
-  version: ${{ env.get("BENCODE2_CONDA_VERSION", default='dev') }}
+  version: ${{ load_from_file("../pyproject.toml").project.version }}
 
 source:
   path: '..'
@@ -20,8 +20,11 @@ requirements:
   build:
     - ${{ compiler('c') }}
     - ${{ compiler('cxx') }}
-    - c-compiler >=1.9.0
-    - cxx-compiler >=1.9.0
+    - if: target_platform != "win-arm64"
+      then:
+        - c-compiler >=1.9.0
+        - cxx-compiler >=1.9.0
+        - compilers
   host:
     - python
     - if: python_allow_limited_api == 'true'
