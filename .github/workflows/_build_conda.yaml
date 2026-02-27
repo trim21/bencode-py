@@ -50,7 +50,7 @@ jobs:
 
       - run: ls ./output/
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'conda-${{ runner.os }}-${{ runner.arch }}'
           path: ./output/*/*.conda
@@ -107,7 +107,7 @@ jobs:
 
       - run: ls C:/rattler-output
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'conda-${{ runner.os }}-${{ runner.arch }}'
           path: C:/rattler-output/output/*/*.conda
