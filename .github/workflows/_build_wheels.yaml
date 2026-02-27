@@ -44,7 +44,7 @@ jobs:
       - run: auditwheel show dist/*.whl
       - run: auditwheel repair dist/*.whl
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
           path: ./wheelhouse/*.whl
@@ -95,7 +95,7 @@ jobs:
       - run: uv tool install abi3audit
       - run: abi3audit -v wheelhouse/*.whl
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'wheels-abi3-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
           path: ./wheelhouse/*.whl
@@ -172,7 +172,7 @@ jobs:
 
       - run: ls ./wheelhouse/
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
@@ -243,7 +243,7 @@ jobs:
 
       - run: ls ./wheelhouse/
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'wheels-abi3-${{ runner.os }}-${{ runner.arch }}-${{ strategy.job-index }}'
           path: ./wheelhouse/*.whl
@@ -259,7 +259,7 @@ jobs:
         env:
           BENCODE2_PURE_PYTHON: '1'
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'wheels-py'
           path: dist/*
@@ -299,7 +299,7 @@ jobs:
 
       - run: ls ./wheelhouse/
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'wheels-musllinux-${{ matrix.arch }}'
           path: ./wheelhouse/*.whl
