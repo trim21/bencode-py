@@ -9,5 +9,10 @@
   },
   "poetry": {
     "enabled": false
-  }
+  },
+  "labels": [
+    "ci:auto-merge",
+    "dependencies"
+  ],
+  "prConcurrentLimit": 3
 }
