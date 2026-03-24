@@ -12,10 +12,9 @@ cxx_compiler:
       - vs2022
 
 python:
-  - if: target_platform != "win-arm64"
+  - if: target_platform == "win-arm64"
     then:
       - '3.14'
-      - '3.13'
     else:
       - '3.14'
       - '3.13'
