@@ -86,6 +86,8 @@ jobs:
             --verbose \
             --recipe=./conda/recipe.yaml
         shell: bash
+        env:
+          RUST_BACKTRACE: '1'
 
       - run: ls C:/rattler-output
 
