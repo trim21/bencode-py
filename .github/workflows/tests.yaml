@@ -35,7 +35,7 @@ jobs:
     needs: [wheels]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           pattern: wheels-*
           path: dist
@@ -66,7 +66,7 @@ jobs:
         with:
           activate-environment: 'true'
 
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           pattern: wheels-*
           path: dist

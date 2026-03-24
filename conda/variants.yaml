@@ -1,4 +1,5 @@
-MACOSX_DEPLOYMENT_TARGET: '11.0'
+MACOSX_DEPLOYMENT_TARGET:
+  - '11.0'
 
 c_compiler:
   - if: target_platform[:3] == "win"

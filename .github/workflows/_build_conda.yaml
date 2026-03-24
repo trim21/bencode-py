@@ -31,7 +31,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v2.1.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.55.1'
+          tag: 'v0.61.2'
 
       - run: |
           rattler-build build \
@@ -44,7 +44,7 @@ jobs:
 
       - run: ls ./output/
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'conda-${{ runner.os }}-${{ runner.arch }}'
           path: ./output/**/*.conda
@@ -76,7 +76,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v2.1.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.55.1'
+          tag: 'v0.61.2'
 
       - run: |
           rattler-build build \
@@ -89,7 +89,7 @@ jobs:
 
       - run: ls C:/rattler-output
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: 'conda-${{ runner.os }}-${{ runner.arch }}'
           path: C:/rattler-output/**/*.conda
