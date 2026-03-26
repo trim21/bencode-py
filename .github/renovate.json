@@ -4,6 +4,7 @@
     "local>trim21/renovate-config",
     "local>trim21/renovate-config:monthly"
   ],
+  "rebaseWhen": "conflicted",
   "git-submodules": {
     "enabled": true
   },
