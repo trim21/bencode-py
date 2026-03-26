@@ -6,10 +6,6 @@ merge_queue:
 queue_rules:
   - name: q
     update_method: merge
-    merge_conditions:
-      - check-success=test-pass
-      - check-success=mypy
-      - check-success=pre-commit
 
 pull_request_rules:
   - name: label conflicts
@@ -29,6 +25,9 @@ pull_request_rules:
           - '- head*=renovate/lockfile-maintenance-*'
           - 'created-at<=24h ago'
       - base=master
+      - check-success=test-pass
+      - check-success=mypy
+      - check-success=pre-commit
     actions:
       queue:
         name: q
