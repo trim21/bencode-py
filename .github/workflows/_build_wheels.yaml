@@ -161,7 +161,7 @@ jobs:
             ~/.cache/cibuildwheel
           key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.cibw_build }}'
 
-      - uses: pypa/cibuildwheel@v3.4.0
+      - uses: pypa/cibuildwheel@v3.4.1
         env:
           CIBW_BUILD_FRONTEND: 'uv'
           CIBW_ARCHS: 'native'
@@ -231,7 +231,7 @@ jobs:
             ~/.cache/cibuildwheel
           key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-abi3'
 
-      - uses: pypa/cibuildwheel@v3.4.0
+      - uses: pypa/cibuildwheel@v3.4.1
         env:
           CIBW_BUILD_FRONTEND: 'uv'
           CIBW_ARCHS: 'native'
@@ -284,7 +284,7 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 
-      - uses: pypa/cibuildwheel@v3.4.0
+      - uses: pypa/cibuildwheel@v3.4.1
         env:
           CIBW_BUILD_FRONTEND: 'uv'
           CIBW_PLATFORM: 'linux'
