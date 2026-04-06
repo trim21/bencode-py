@@ -31,7 +31,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v2.1.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.61.2'
+          tag: 'v0.61.4'
 
       - run: |
           rattler-build build \
@@ -73,10 +73,10 @@ jobs:
         with:
           arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
-      - uses: jaxxstorm/action-install-gh-release@v2.1.0
+      - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.61.2'
+          tag: 'v0.61.4'
 
       - run: |
           rattler-build build \

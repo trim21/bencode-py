@@ -161,9 +161,9 @@ jobs:
             ~/.cache/cibuildwheel
           key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-${{ matrix.cibw_build }}'
 
-      - uses: pypa/cibuildwheel@v3.3.1
+      - uses: pypa/cibuildwheel@v3.4.1
         env:
-          CIBW_BUILD_FRONTEND: 'build[uv]'
+          CIBW_BUILD_FRONTEND: 'uv'
           CIBW_ARCHS: 'native'
           CIBW_BUILD: ${{ matrix.cibw_build }}
           CIBW_TEST_REQUIRES: pytest
@@ -231,9 +231,9 @@ jobs:
             ~/.cache/cibuildwheel
           key: 'cibuildwheel-${{ runner.os }}-${{ runner.arch }}-abi3'
 
-      - uses: pypa/cibuildwheel@v3.3.1
+      - uses: pypa/cibuildwheel@v3.4.1
         env:
-          CIBW_BUILD_FRONTEND: 'build[uv]'
+          CIBW_BUILD_FRONTEND: 'uv'
           CIBW_ARCHS: 'native'
           CIBW_BUILD: 'cp312-*'
           CIBW_CONFIG_SETTINGS: 'setup-args=-Dpython.allow_limited_api=true'
@@ -284,9 +284,9 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v7
 
-      - uses: pypa/cibuildwheel@v3.3.1
+      - uses: pypa/cibuildwheel@v3.4.1
         env:
-          CIBW_BUILD_FRONTEND: 'build[uv]'
+          CIBW_BUILD_FRONTEND: 'uv'
           CIBW_PLATFORM: 'linux'
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_BUILD: 'cp3*-musllinux*'
