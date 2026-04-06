@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: '^3.11.0'
 
-      - uses: jaxxstorm/action-install-gh-release@v3.1.0
+      - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: prefix-dev/rattler-build
           tag: 'v0.61.4'
