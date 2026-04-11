@@ -33,6 +33,9 @@ static std::string_view py_string_view(nb::handle obj) {
 
     Py_ssize_t size = 0;
     const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
+    if (s == nullptr) {
+        throw nb::python_error();
+    }
     return std::string_view(s, size);
 }
 
@@ -261,6 +264,9 @@ void encodeStr(EncodeContext *ctx, const nb::handle obj) {
 
     Py_ssize_t size = 0;
     const char *s = PyUnicode_AsUTF8AndSize(obj.ptr(), &size);
+    if (s == nullptr) {
+        throw nb::python_error();
+    }
 
     debug_print("write length");
     ctx->writeSize_t(size);
