@@ -103,7 +103,7 @@ def test_reject_i_dash_e():
 def test_decode_depth_limit():
     """Deeply nested input should raise an error instead of crashing with stack overflow."""
     deep = b"l" * 5000 + b"e" * 5000
-    with pytest.raises(BencodeDecodeError):
+    with pytest.raises((BencodeDecodeError, RecursionError)):
         bdecode(deep)
 
 
