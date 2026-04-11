@@ -92,3 +92,24 @@ def test_decode1():
         b"t": b"aa",
         b"y": b"q",
     }
+
+
+def test_reject_i_dash_e():
+    """i-e should not be parsed as 0, it's a malformed int (no digits after minus)."""
+    with pytest.raises(BencodeDecodeError):
+        bdecode(b"i-e")
+
+
+def test_decode_depth_limit():
+    """Deeply nested input should raise an error instead of crashing with stack overflow."""
+    deep = b"l" * 5000 + b"e" * 5000
+    with pytest.raises((BencodeDecodeError, RecursionError)):
+        bdecode(deep)
+
+
+def test_bytes_length_overflow():
+    """A crafted length prefix that would overflow Py_ssize_t should be rejected."""
+    # 20-digit number that exceeds PY_SSIZE_T_MAX
+    payload = b"99999999999999999999:"
+    with pytest.raises(BencodeDecodeError):
+        bdecode(payload)

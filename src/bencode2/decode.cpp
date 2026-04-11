@@ -13,9 +13,17 @@
 
 namespace nb = nanobind;
 
-nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size);
+#define BENCODE_MAX_DECODE_DEPTH 4096
+
+nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_fast32_t depth);
 
 #define decoderError(f, ...) throw DecodeError(fmt::format(f, ##__VA_ARGS__))
+
+static inline void checkDepth(uint_fast32_t depth) {
+    if (depth > BENCODE_MAX_DECODE_DEPTH) {
+        throw DecodeError("exceeded maximum decode depth");
+    }
+}
 
 nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     Py_ssize_t index_e = 0;
@@ -27,7 +35,7 @@ nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     }
 
     if (index_e == 0) {
-        throw DecodeError(fmt::format("invalid int, missing 'e': %zd", index));
+        decoderError("invalid int, missing 'e': {}", index);
     }
 
     // malformed 'ie'
@@ -44,16 +52,17 @@ nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     Py_ssize_t num_start = index;
 
     if (buf[index] == '-') {
-        if (buf[index + 1] == '0') {
-            decoderError("invalid int, '-0' found at %zd", index);
-        }
-
         num_start = 1 + index;
+        if (num_start >= index_e) {
+            decoderError("invalid int, '-' with no digits at {}", index);
+        }
+        if (buf[num_start] == '0') {
+            decoderError("invalid int, '-0' found at {}", index);
+        }
         sign = -1;
     } else if (buf[index] == '0') {
         if (index + 1 != index_e) {
-            decoderError("invalid int, non-zero int should not start with '0'. found at %zd",
-                         index);
+            decoderError("invalid int, non-zero int should not start with '0'. found at {}", index);
         }
     }
 
@@ -121,7 +130,6 @@ __OverFlow:;
 }
 
 // there is no bytes/Str in bencode, they only have 1 type for both of them.
-// TODO: check byte length overflow ssize_t
 static std::string_view decodeAsView(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     Py_ssize_t index_sep = 0;
     for (Py_ssize_t i = index; i < size; i++) {
@@ -132,7 +140,7 @@ static std::string_view decodeAsView(const char *buf, Py_ssize_t &index, Py_ssiz
     }
 
     if (index_sep == 0) {
-        decoderError("invalid string, missing length: index %zd", index);
+        decoderError("invalid string, missing length: index {}", index);
     }
 
     if (buf[index] == '0' && index + 1 != index_sep) {
@@ -142,7 +150,10 @@ static std::string_view decodeAsView(const char *buf, Py_ssize_t &index, Py_ssiz
     Py_ssize_t len = 0;
     for (Py_ssize_t i = index; i < index_sep; i++) {
         if (buf[i] < '0' || buf[i] > '9') {
-            decoderError("invalid bytes length, found '%c' at %zd", buf[i], i);
+            decoderError("invalid bytes length, found '{:c}' at {}", buf[i], i);
+        }
+        if (len > (PY_SSIZE_T_MAX - 9) / 10) {
+            decoderError("bytes length overflow, index {}", index);
         }
         len = len * 10 + (buf[i] - '0');
     }
@@ -162,7 +173,7 @@ static nb::bytes decodeBytes(const char *buf, Py_ssize_t &index, Py_ssize_t size
     return nb::bytes(s.data(), s.length());
 }
 
-nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_fast32_t depth) {
     index = index + 1;
 
     nb::list l = nb::list();
@@ -176,7 +187,7 @@ nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
             break;
         }
 
-        nb::object obj = decodeAny(buf, index, size);
+        nb::object obj = decodeAny(buf, index, size, depth);
 
         l.append(obj);
     }
@@ -186,7 +197,7 @@ nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     return l;
 }
 
-nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_fast32_t depth) {
     index = index + 1;
     std::optional<std::string_view> lastKey = std::nullopt;
 
@@ -207,7 +218,7 @@ nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
         }
 
         auto key = decodeAsView(buf, index, size);
-        auto obj = decodeAny(buf, index, size);
+        auto obj = decodeAny(buf, index, size, depth);
 
         // skip first key
         if (lastKey.has_value()) {
@@ -228,7 +239,10 @@ nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     return d;
 }
 
-nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
+nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_fast32_t depth) {
+    depth++;
+    checkDepth(depth);
+
     // int
     if (buf[index] == 'i') {
         return decodeInt(buf, index, size);
@@ -241,12 +255,12 @@ nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
 
     // list
     if (buf[index] == 'l') {
-        return decodeList(buf, index, size);
+        return decodeList(buf, index, size, depth);
     }
 
     // dict
     if (buf[index] == 'd') {
-        return decodeDict(buf, index, size);
+        return decodeDict(buf, index, size, depth);
     }
 
     decoderError("invalid bencode prefix '{:c}', index {}", buf[index], index);
@@ -275,7 +289,7 @@ nb::object bdecode(nb::object b) {
 
     nb::object o;
     try {
-        o = decodeAny(buf, index, size);
+        o = decodeAny(buf, index, size, 0);
     } catch (std::exception &e) {
         PyBuffer_Release(&view);
         throw e;

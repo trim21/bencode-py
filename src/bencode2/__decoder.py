@@ -13,6 +13,8 @@ char_9: Final = ord("9")
 char_dash: Final = ord("-")
 char_colon: Final = ord(":")
 
+_MAX_DECODE_DEPTH: Final = 4096
+
 
 class BencodeDecodeError(ValueError):
     """Bencode decode error."""
@@ -28,7 +30,7 @@ class Decoder:
     index: int
     size: int
 
-    __slots__ = ("value", "index", "size")
+    __slots__ = ("value", "index", "size", "_depth")
 
     def __init__(self, value: memoryview) -> None:
         self.size = len(value)
@@ -37,6 +39,7 @@ class Decoder:
 
         self.value = value
         self.index = 0
+        self._depth = 0
 
     def decode(self) -> object:
         data = self.__decode()
@@ -47,6 +50,10 @@ class Decoder:
         return data
 
     def __decode(self) -> object:
+        self._depth += 1
+        if self._depth > _MAX_DECODE_DEPTH:
+            raise BencodeDecodeError("exceeded maximum decode depth")
+
         if char_0 <= self.value[self.index] <= char_9:
             return self.__decode_bytes()
         if self.value[self.index] == char_i:
@@ -81,6 +88,10 @@ class Decoder:
         if self.value[self.index] == char_dash:
             n = -1
             offset = 1
+            if self.index + offset >= index_end:
+                raise BencodeDecodeError(
+                    f"invalid int, '-' with no digits at {self.index}"
+                )
 
         total: int = 0
         for c in self.value[self.index + offset : index_end]:
