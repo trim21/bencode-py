@@ -10,7 +10,7 @@ resolution-markers = [
 
 [[package]]
 name = "bencode2"
-version = "0.3.29"
+version = "0.3.30"
 source = { editable = "." }
 dependencies = [
     { name = "typing-extensions" },
