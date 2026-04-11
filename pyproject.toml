@@ -51,7 +51,7 @@ dev = [
   'meson-python==0.19.0; implementation_name == "cpython"',
   'meson[ninja]==1.10.2; implementation_name == "cpython"',
   'mypy==1.20.0; implementation_name == "cpython"',
-  'pytest==9.0.2',
+  'pytest==9.0.3',
   'pytest-codspeed==4.3.0; implementation_name == "cpython"',
   'pytest-cov==7.1.0',
   'pytest-github-actions-annotate-failures==0.4.0',
