@@ -37,7 +37,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.61.4'
+          tag: 'v0.62.0'
 
       - run: |
           rattler-build build \
@@ -94,7 +94,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.61.4'
+          tag: 'v0.62.0'
 
       - run: |
           rattler-build build \
