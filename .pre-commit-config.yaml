@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/trim21/pre-commit-mirror-meson
-    rev: 'v1.10.2'
+    rev: 'v1.11.0'
     hooks:
       - id: meson-fmt
         args: ['--inplace', '--editor-config']
