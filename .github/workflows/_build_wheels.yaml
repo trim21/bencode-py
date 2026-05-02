@@ -25,7 +25,7 @@ jobs:
           submodules: 'true'
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
 
       - uses: actions/setup-python@v6
         with:
@@ -73,7 +73,7 @@ jobs:
       - run: cat pyproject.toml
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
 
       - uses: actions/setup-python@v6
         with:
@@ -147,7 +147,7 @@ jobs:
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
 
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
@@ -217,7 +217,7 @@ jobs:
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
 
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
@@ -282,7 +282,7 @@ jobs:
           submodules: 'true'
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
 
       - uses: pypa/cibuildwheel@v3.4.1
         env:
