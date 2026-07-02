@@ -20,7 +20,7 @@ jobs:
           - runs_on: ubuntu-24.04-arm
             target: aarch64-linux-gnu.2.17
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: 'true'
 
@@ -62,7 +62,7 @@ jobs:
           - runs_on: ubuntu-24.04-arm
             target: aarch64-linux-gnu.2.17
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: 'true'
 
@@ -132,7 +132,7 @@ jobs:
             cibw_build: '*[13579]-*'
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: 'true'
 
@@ -194,7 +194,7 @@ jobs:
           # - os: windows-11-arm
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: 'true'
 
@@ -253,7 +253,7 @@ jobs:
     name: make sdist and wheel
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - run: pipx run build -w
         env:
@@ -277,7 +277,7 @@ jobs:
             runs_on: ubuntu-24.04-arm
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: 'true'
 
