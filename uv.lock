@@ -77,7 +77,7 @@ requires-dist = [{ name = "typing-extensions", specifier = ">=4.8.0" }]
 dev = [
     { name = "flit-core", specifier = "==3.12.0" },
     { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython'", specifier = "==1.11.1" },
-    { name = "meson-python", marker = "implementation_name == 'cpython'", specifier = "==0.19.0" },
+    { name = "meson-python", marker = "implementation_name == 'cpython'", specifier = "==0.20.0" },
     { name = "mypy", marker = "implementation_name == 'cpython'", specifier = "==2.1.0" },
     { name = "pytest", specifier = "==9.0.3" },
     { name = "pytest-codspeed", marker = "implementation_name == 'cpython'", specifier = "==4.5.0" },
@@ -430,7 +430,7 @@ ninja = [
 
 [[package]]
 name = "meson-python"
-version = "0.19.0"
+version = "0.20.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "meson" },
@@ -438,9 +438,9 @@ dependencies = [
     { name = "pyproject-metadata" },
     { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/32/98/7fe5d1bf741c03c6eea04b6245737dbd79657d4f9200e82fcbb4cc12637b/meson_python-0.19.0.tar.gz", hash = "sha256:9959d198aa69b57fcfd354a34518c6f795b781a73ed0656f4d01660160cc2553", size = 101504, upload-time = "2026-01-15T13:52:44.368Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/f0/d794d7ed8a843a8a8947768f3b329d1e8601222dc95d930f4a5f9706cd6c/meson_python-0.20.0.tar.gz", hash = "sha256:6d9726ae6cd37e22f210c74b364b30180a68c20442e97ff09f3c566a414af738", size = 102641, upload-time = "2026-06-10T19:42:52.132Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/7f/d1b0c65b267a1463d752b324f11d3470e30889daefc4b9ec83029bfa30b5/meson_python-0.19.0-py3-none-any.whl", hash = "sha256:67b5906c37404396d23c195e12c8825506074460d4a2e7083266b845d14f0298", size = 28946, upload-time = "2026-01-15T13:52:43.107Z" },
+    { url = "https://files.pythonhosted.org/packages/90/ad/77f9483e180cabab2772ac222aedd3dfab858e60d992f40414a3f08e7494/meson_python-0.20.0-py3-none-any.whl", hash = "sha256:6a744cf0c09e76ecbdc58cfa374b48c8902dac1b74479628238634efbf36aec9", size = 29386, upload-time = "2026-06-10T19:42:50.614Z" },
 ]
 
 [[package]]
