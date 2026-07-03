@@ -73,7 +73,6 @@ norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
 
 [tool.cibuildwheel]
 skip = '*musl*'
-enable = ['cpython-freethreading']
 environment = { 'UV_LINK_MODE' = 'copy' }
 
 manylinux-aarch64-image = "manylinux_2_28"
