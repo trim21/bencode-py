@@ -1,8 +1,8 @@
 [build-system]
 requires = [
   "flit-core==3.12.0",
-  'meson-python==0.19.0; implementation_name == "cpython"',
-  'meson[ninja]==1.10.2; implementation_name == "cpython"',
+  'meson-python==0.20.0; implementation_name == "cpython"',
+  'meson[ninja]==1.11.1; implementation_name == "cpython"',
 ]
 
 # conditional build c++ extension
@@ -48,13 +48,13 @@ Issues = "https://github.com/trim21/bencode-py/issues"
 [dependency-groups]
 dev = [
   'flit-core==3.12.0',
-  'meson-python==0.19.0; implementation_name == "cpython"',
-  'meson[ninja]==1.10.2; implementation_name == "cpython"',
-  'mypy==1.20.0; implementation_name == "cpython"',
-  'pytest==9.0.3',
-  'pytest-codspeed==4.3.0; implementation_name == "cpython"',
+  'meson-python==0.20.0; implementation_name == "cpython"',
+  'meson[ninja]==1.11.1; implementation_name == "cpython"',
+  'mypy==2.1.0; implementation_name == "cpython"',
+  'pytest==9.1.1',
+  'pytest-codspeed==5.0.3; implementation_name == "cpython"',
   'pytest-cov==7.1.0',
-  'pytest-github-actions-annotate-failures==0.4.0',
+  'pytest-github-actions-annotate-failures==0.4.2',
 ]
 
 [tool.meson-python.args]
@@ -73,7 +73,6 @@ norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
 
 [tool.cibuildwheel]
 skip = '*musl*'
-enable = ['cpython-freethreading']
 environment = { 'UV_LINK_MODE' = 'copy' }
 
 manylinux-aarch64-image = "manylinux_2_28"

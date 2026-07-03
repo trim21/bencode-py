@@ -20,7 +20,7 @@ jobs:
       RATTLER_BUILD_EXPERIMENTAL: 'true'
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: 'true'
 
@@ -31,7 +31,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.61.4'
+          tag: 'v0.67.0'
 
       - run: |
           rattler-build build \
@@ -63,7 +63,7 @@ jobs:
       RATTLER_BUILD_EXPERIMENTAL: 'true'
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: 'true'
 
@@ -77,7 +77,7 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: prefix-dev/rattler-build
-          tag: 'v0.61.4'
+          tag: 'v0.67.0'
 
       - run: |
           rattler-build build \

@@ -12,19 +12,19 @@ jobs:
   mypy:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
 
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v8.2.0
         with:
           activate-environment: 'true'
 
       - run: uv sync --dev --no-install-project
 
-      - uses: liskin/gh-problem-matcher-wrap@v3
+      - uses: liskin/gh-problem-matcher-wrap@v4
         with:
           action: add
           linters: mypy
@@ -33,6 +33,6 @@ jobs:
   pre-commit:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: trim21/actions/prek@master
