@@ -15,21 +15,31 @@ from bencode2 import COMPILED, BencodeDecodeError, bdecode
 class TestBufferRelease:
     """Ensure PyBuffer_Release is always called, even on decode errors."""
 
-    @pytest.mark.parametrize("use_memoryview", [False, True])
-    def test_bytearray_resize_after_decode_error(self, use_memoryview: bool) -> None:
+    def test_bytearray_resize_after_decode_error(self) -> None:
         ba = bytearray(b"invalid")
-        mv = memoryview(ba) if use_memoryview else ba
-
         with pytest.raises(BencodeDecodeError):
-            bdecode(mv)  # type: ignore[arg-type]
+            bdecode(ba)
+        ba.extend(b"ok")
 
-        ba.extend(b"ok")  # must not raise BufferError
+    def test_memoryview_of_bytearray(self) -> None:
+        """memoryview itself holds a buffer export on the underlying bytearray,
+        so it must be released before the bytearray can be resized."""
+        ba = bytearray(b"invalid")
+        with pytest.raises(BencodeDecodeError):
+            bdecode(memoryview(ba))
+        # memoryview already out of scope, bdecode's buffer should be released
+        ba.extend(b"ok")
 
-    @pytest.mark.parametrize("use_memoryview", [False, True])
-    def test_bytearray_resize_after_stress(self, use_memoryview: bool) -> None:
+    def test_bytearray_resize_after_stress(self) -> None:
         for _ in range(500):
             ba = bytearray(b"bad")
-            mv = memoryview(ba) if use_memoryview else ba
             with pytest.raises(BencodeDecodeError):
-                bdecode(mv)  # type: ignore[arg-type]
+                bdecode(ba)
+            ba.extend(b"x")
+
+    def test_memoryview_after_stress(self) -> None:
+        for _ in range(500):
+            ba = bytearray(b"bad")
+            with pytest.raises(BencodeDecodeError):
+                bdecode(memoryview(ba))
             ba.extend(b"x")
