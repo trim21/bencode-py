@@ -4,7 +4,7 @@ tasks:
   bump:
     vars:
       VERSION:
-        sh: tq 'project.version' -f pyproject.toml
+        sh: tq --raw 'project.version' -f pyproject.toml
     cmds:
       - cmd: uv sync --no-install-project
       - cmd: git add pyproject.toml uv.lock
