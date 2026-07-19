@@ -29,21 +29,21 @@
 
 #endif
 
-struct EncodeError {
+struct EncodeError : public std::exception {
 public:
     EncodeError(std::string msg) { s = msg; }
 
-    const char *what() const throw() { return s.c_str(); }
+    const char *what() const noexcept override { return s.c_str(); }
 
 private:
     std::string s;
 };
 
-struct DecodeError {
+struct DecodeError : public std::exception {
 public:
     DecodeError(std::string msg) { s = msg; }
 
-    const char *what() const throw() { return s.c_str(); }
+    const char *what() const noexcept override { return s.c_str(); }
 
 private:
     std::string s;
