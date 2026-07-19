@@ -14,7 +14,7 @@ jobs:
     needs: [wheels]
     permissions:
       id-token: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/download-artifact@v8
         with:
@@ -22,7 +22,9 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: astral-sh/setup-uv@v8.2.0
+
+      - run: uv publish
 
   conda:
     uses: ./.github/workflows/_build_conda.yaml
@@ -32,7 +34,7 @@ jobs:
     needs: [conda]
     permissions:
       id-token: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/download-artifact@v8
         with:
