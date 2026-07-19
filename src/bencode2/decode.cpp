@@ -131,7 +131,7 @@ __OverFlow:;
 
 // there is no bytes/Str in bencode, they only have 1 type for both of them.
 static std::string_view decodeAsView(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
-    Py_ssize_t index_sep = 0;
+    Py_ssize_t index_sep = -1;
     for (Py_ssize_t i = index; i < size; i++) {
         if (buf[i] == ':') {
             index_sep = i;
@@ -139,7 +139,7 @@ static std::string_view decodeAsView(const char *buf, Py_ssize_t &index, Py_ssiz
         }
     }
 
-    if (index_sep == 0) {
+    if (index_sep == -1) {
         decoderError("invalid string, missing length: index {}", index);
     }
 
