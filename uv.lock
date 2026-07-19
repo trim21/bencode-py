@@ -77,7 +77,7 @@ requires-dist = [{ name = "typing-extensions", specifier = ">=4.8.0" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "flit-core", specifier = "==3.12.0" },
-    { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython'", specifier = "==1.11.1" },
+    { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython'", specifier = "==1.11.2" },
     { name = "meson-python", marker = "implementation_name == 'cpython'", specifier = "==0.20.0" },
     { name = "mypy", marker = "implementation_name == 'cpython'", specifier = "==2.3.0" },
     { name = "pytest", specifier = "==9.1.1" },
@@ -338,10 +338,11 @@ wheels = [
 
 [[package]]
 name = "meson"
-version = "1.11.1"
+version = "1.11.2"
 source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/06/ce/c4d3d849d5cf8d9193b075acf435fb5dc0f4bdab35a3486f1204fd8265a7/meson-1.11.2.tar.gz", hash = "sha256:698feae069cef3ecd4d7aaf281d7df359bdfcf555a9a1564383d3b913fa8a736", size = 2463316, upload-time = "2026-07-11T07:19:44.863Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5e/cd/f3a881ff5e601d6bbeff63b38ee2362e1167c47d9cde03eddf8d71a4ffb0/meson-1.11.1-py3-none-any.whl", hash = "sha256:9b3a023657e393dbc5335b95c561337d49b7a458f5541e47ec44f2cc566e0d80", size = 1078534, upload-time = "2026-04-21T03:15:31.611Z" },
+    { url = "https://files.pythonhosted.org/packages/1d/c5/680527bdddf039807f22041882678b7f21d3380b4cdbc46abf2f24e2db6c/meson-1.11.2-py3-none-any.whl", hash = "sha256:7e4f6e83fec83e3eaac928e058b073c7557b282c35b6a2024cea143a39926a39", size = 1078911, upload-time = "2026-07-11T07:19:40.636Z" },
 ]
 
 [package.optional-dependencies]
