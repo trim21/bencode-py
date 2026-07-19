@@ -1,5 +1,4 @@
 #pragma once
-#include <exception>
 #include <string>
 
 #include <fmt/core.h>
@@ -32,21 +31,21 @@
 
 #endif
 
-struct EncodeError : public std::exception {
+struct EncodeError {
 public:
     EncodeError(std::string msg) { s = msg; }
 
-    const char *what() const noexcept override { return s.c_str(); }
+    const char *what() const noexcept { return s.c_str(); }
 
 private:
     std::string s;
 };
 
-struct DecodeError : public std::exception {
+struct DecodeError {
 public:
     DecodeError(std::string msg) { s = msg; }
 
-    const char *what() const noexcept override { return s.c_str(); }
+    const char *what() const noexcept { return s.c_str(); }
 
 private:
     std::string s;

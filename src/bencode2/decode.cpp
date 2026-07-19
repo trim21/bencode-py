@@ -290,9 +290,9 @@ nb::object bdecode(nb::object b) {
     nb::object o;
     try {
         o = decodeAny(buf, index, size, 0);
-    } catch (std::exception &e) {
+    } catch (...) {
         PyBuffer_Release(&view);
-        throw e;
+        throw;
     }
 
     PyBuffer_Release(&view);
