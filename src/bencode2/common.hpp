@@ -1,4 +1,7 @@
 #pragma once
+#include <exception>
+#include <string>
+
 #include <fmt/core.h>
 #include <gch/small_vector.hpp>
 
