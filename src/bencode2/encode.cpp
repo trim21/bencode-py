@@ -81,7 +81,7 @@ void encodeDict(EncodeContext *ctx, nb::handle obj) {
         }
     }
 
-    for (auto pair : vec) {
+    for (const auto &pair : vec) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
         ctx->write(pair.first);
@@ -120,7 +120,7 @@ void encodeDictLike(EncodeContext *ctx, nb::handle h) {
         }
     }
 
-    for (auto pair : vec) {
+    for (const auto &pair : vec) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
         ctx->write(pair.first);
@@ -150,7 +150,7 @@ void encodeDataclasses(EncodeContext *ctx, nb::handle h) {
 
     std::sort(vec.begin(), vec.end(), cmp);
 
-    for (auto pair : vec) {
+    for (const auto &pair : vec) {
         ctx->writeSize_t(pair.first.length());
         ctx->writeChar(':');
         ctx->write(pair.first);
@@ -222,7 +222,7 @@ void encodeTuple(EncodeContext *ctx, nb::handle obj) {
 
 template <typename Encode>
 void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
-    uintptr_t key = (uintptr_t)obj.ptr();
+    auto key = reinterpret_cast<uintptr_t>(obj.ptr());
     debug_print("put object {:x} to seen", key);
     debug_print("after put object {:x} to seen", key);
     ctx->stack_depth++;
