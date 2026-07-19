@@ -53,7 +53,7 @@ wheels = [
 
 [[package]]
 name = "bencode2"
-version = "0.3.30"
+version = "0.3.31"
 source = { editable = "." }
 dependencies = [
     { name = "typing-extensions" },
