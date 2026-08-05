@@ -1,6 +1,6 @@
 from .__bencode import bdecode, bencode
 
-__all__ = ["bencode", "bdecode", "BencodeDecodeError", "BencodeEncodeError", "COMPILED"]
+__all__ = ["COMPILED", "BencodeDecodeError", "BencodeEncodeError", "bdecode", "bencode"]
 
 class BencodeDecodeError(ValueError): ...
 class BencodeEncodeError(ValueError): ...

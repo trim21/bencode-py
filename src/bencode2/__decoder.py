@@ -30,7 +30,7 @@ class Decoder:
     index: int
     size: int
 
-    __slots__ = ("value", "index", "size", "_depth")
+    __slots__ = ("_depth", "index", "size", "value")
 
     def __init__(self, value: memoryview) -> None:
         self.size = len(value)
@@ -144,11 +144,10 @@ class Decoder:
                 f"invalid bytes, failed find expected char ':'. index {self.index}"
             )
 
-        if self.value[self.index] == char_0:
-            if index_colon != self.index + 1:
-                raise BencodeDecodeError(
-                    f"malformed str/bytes length with leading 0. index {self.index}"
-                )
+        if self.value[self.index] == char_0 and index_colon != self.index + 1:
+            raise BencodeDecodeError(
+                f"malformed str/bytes length with leading 0. index {self.index}"
+            )
 
         n: int = 0
         for c in self.value[self.index : index_colon]:

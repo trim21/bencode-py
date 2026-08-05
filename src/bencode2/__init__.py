@@ -9,9 +9,9 @@ except ModuleNotFoundError:
     COMPILED = False
 
 __all__ = (
+    "COMPILED",
     "BencodeDecodeError",
     "BencodeEncodeError",
-    "bencode",
     "bdecode",
-    "COMPILED",
+    "bencode",
 )
