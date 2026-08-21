@@ -16,6 +16,8 @@ build:
   script:
     - if: win
       then: |
+        :: conda-forge clang/compiler-rt sets clang-only -Wl flags in LDFLAGS
+        :: which break meson's sanity check with MSVC cl.exe (D8021)
         set "LDFLAGS="
         ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv . --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
         if errorlevel 1 exit /b 1
@@ -31,7 +33,6 @@ requirements:
       then:
         - c-compiler >=1.9.0
         - cxx-compiler >=1.9.0
-        - compilers
   host:
     - python
     - if: python_allow_limited_api == 'true'
