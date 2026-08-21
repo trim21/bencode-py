@@ -21,17 +21,23 @@ build:
         echo VSINSTALLDIR=%VSINSTALLDIR%
         echo NEWER_VS_WITH_OLDER_VC=%NEWER_VS_WITH_OLDER_VC%
         echo LATEST_VS=%LATEST_VS%
+        echo PREFIX=%PREFIX%
+        echo CONDA_PREFIX=%CONDA_PREFIX%
         echo INCLUDE=%INCLUDE%
         echo LIB=%LIB%
         if exist "%VSINSTALLDIR%\VC\Tools\MSVC" dir "%VSINSTALLDIR%\VC\Tools\MSVC"
+        dir "%VSINSTALLDIR%\VC\Tools\MSVC\14.44.35207\lib\x64" 2>nul | findstr /i "libcmt msvcrt"
+        where link
         echo int main(){return 0;} > %TEMP%\meson_probe.cpp
         cl /nologo /utf-8 /c %TEMP%\meson_probe.cpp /Fo%TEMP%\meson_probe.obj
         echo CL_COMPILE_EXIT=%ERRORLEVEL%
+        cl /nologo /utf-8 %TEMP%\meson_probe.cpp /Fe%TEMP%\meson_probe.exe
+        echo CL_LINK_EXIT=%ERRORLEVEL%
+        %PREFIX%\Scripts\meson.exe setup %SRC_DIR% %SRC_DIR%\dbg-meson -Dbuildtype=release -Db_ndebug=if-release -Db_vscrt=md --errorlogs -Dpython.allow_limited_api=false
+        echo MESON_SETUP_EXIT=%ERRORLEVEL%
+        type %SRC_DIR%\dbg-meson\meson-logs\meson-log.txt
         ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv . --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
-        if errorlevel 1 (
-          for /d %%d in ("%SRC_DIR%\.mesonpy-*") do type "%%d\meson-logs\meson-log.txt" 2>nul
-          exit /b 1
-        )
+        if errorlevel 1 exit /b 1
       else: >-
         ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
         --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
