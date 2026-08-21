@@ -16,7 +16,6 @@ build:
   script:
     - if: win
       then: |
-        echo LDFLAGS=%LDFLAGS%
         set "LDFLAGS="
         ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv . --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
         if errorlevel 1 exit /b 1
