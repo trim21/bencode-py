@@ -99,7 +99,7 @@ requires-dist = [{ name = "typing-extensions", specifier = ">=4.8.0" }]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "flit-core", specifier = "==3.12.0" },
+    { name = "flit-core", specifier = "==4.0.2" },
     { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython'", specifier = "==1.12.0" },
     { name = "meson-python", marker = "implementation_name == 'cpython'", specifier = "==0.20.0" },
     { name = "mypy", marker = "implementation_name == 'cpython'", specifier = "==2.3.0" },
@@ -265,11 +265,11 @@ wheels = [
 
 [[package]]
 name = "flit-core"
-version = "3.12.0"
+version = "4.0.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/69/59/b6fc2188dfc7ea4f936cd12b49d707f66a1cb7a1d2c16172963534db741b/flit_core-3.12.0.tar.gz", hash = "sha256:18f63100d6f94385c6ed57a72073443e1a71a4acb4339491615d0f16d6ff01b2", size = 53690, upload-time = "2025-03-25T08:03:23.969Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/46/ef/34533186e76c526d9ec17a1ad9a10c7354cbfb20f51583cc36dfe4bdccd0/flit_core-4.0.2.tar.gz", hash = "sha256:b6929defd93884b584d7c87829e0e7b5c26ed6be17b0b873979019314aa841c8", size = 53083, upload-time = "2026-08-04T20:15:41.935Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f2/65/b6ba90634c984a4fcc02c7e3afe523fef500c4980fec67cc27536ee50acf/flit_core-3.12.0-py3-none-any.whl", hash = "sha256:e7a0304069ea895172e3c7bb703292e992c5d1555dd1233ab7b5621b5b69e62c", size = 45594, upload-time = "2025-03-25T08:03:20.772Z" },
+    { url = "https://files.pythonhosted.org/packages/40/79/099ca4ec8c22b6462577ef933f90eed4c47cdcf6473d2cfcad275c3ce232/flit_core-4.0.2-py3-none-any.whl", hash = "sha256:8d80717e28d982b41594ed5b14d4e89fbc5bad55473fde27994a3101db18a94e", size = 44551, upload-time = "2026-08-04T20:15:39.525Z" },
 ]
 
 [[package]]
