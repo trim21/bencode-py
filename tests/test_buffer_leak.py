@@ -30,6 +30,18 @@ class TestBufferRelease:
         # memoryview already out of scope, bdecode's buffer should be released
         ba.extend(b"ok")
 
+    def test_bytearray_resize_after_empty_input(self) -> None:
+        ba = bytearray()
+        with pytest.raises(BencodeDecodeError):
+            bdecode(ba)
+        ba.extend(b"ok")
+
+    def test_memoryview_of_empty_bytearray(self) -> None:
+        ba = bytearray()
+        with pytest.raises(BencodeDecodeError):
+            bdecode(memoryview(ba))
+        ba.extend(b"ok")
+
     def test_bytearray_resize_after_stress(self) -> None:
         for _ in range(500):
             ba = bytearray(b"bad")

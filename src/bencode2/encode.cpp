@@ -1,6 +1,7 @@
 #include <Python.h>
 #include <algorithm> // std::sort
 #include <gch/small_vector.hpp>
+#include <memory>
 #include <nanobind/nanobind.h>
 
 #include "common.hpp"
@@ -388,7 +389,9 @@ void encodeAny(EncodeContext *ctx, const nb::handle obj) {
     throw nb::type_error(msg.c_str());
 }
 
-thread_local static std::vector<EncodeContext *> pool;
+// the pool owns its contexts, so a thread exit frees them instead of leaking
+// every context (and its buffer) it created.
+thread_local static std::vector<std::unique_ptr<EncodeContext>> pool;
 
 // 30 MiB. Most torrents is smaller than 20 mib,
 // we may alloc more size so set it bigger
@@ -408,7 +411,7 @@ public:
         debug_print("get Context from pool");
 
         // will there be any race problem here?
-        ctx = pool.back();
+        ctx = pool.back().release();
         pool.pop_back();
 
         return;
@@ -420,7 +423,7 @@ public:
                 debug_print("put Context back to pool");
 
                 ctx->reset();
-                pool.push_back(ctx);
+                pool.emplace_back(ctx);
                 return;
             }
         }

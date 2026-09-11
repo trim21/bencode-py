@@ -280,7 +280,8 @@ nb::object bdecode(nb::object b) {
 
     Py_ssize_t size = view.len;
     if (size == 0) {
-        throw DecodeError("can't decode empty bytes");
+        PyBuffer_Release(&view);
+        throw DecodeError("empty input");
     }
 
     const char *buf = (char *)view.buf;
