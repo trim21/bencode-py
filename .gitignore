@@ -282,3 +282,4 @@ output/
 
 .task/
 taskfile.yaml
+.pdm-build/
