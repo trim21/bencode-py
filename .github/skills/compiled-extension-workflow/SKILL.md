@@ -19,6 +19,7 @@ argument-hint: '[optional changed files or test target]'
 6. If the change affects encode or decode semantics, also run the pure-Python path and update the fallback implementation.
 
 ## Checks
+- `pdm_build.py` is the PEP 517 hook that compiles the extension into wheels; it is skipped for editable installs and sdists, and for `BENCODE2_PURE_PYTHON=1`.
 - After the copied binary exists in `src/bencode2`, `src/bencode2/__init__.py` should import from `.__bencode` and expose `COMPILED = True`.
 - If public signatures change, keep `src/bencode2/__bencode.pyi` and `src/bencode2/__init__.pyi` aligned.
 - Do not leave behavior changes native-only unless a test explicitly documents that difference.

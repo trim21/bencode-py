@@ -19,11 +19,11 @@ build:
         :: conda-forge clang/compiler-rt sets clang-only -Wl flags in LDFLAGS
         :: which break meson's sanity check with MSVC cl.exe (D8021)
         set "LDFLAGS="
-        ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv . --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
+        ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .${{ ' --config-settings=--py-limited-api=abi3' if python_allow_limited_api == 'true' else '' }}
         if errorlevel 1 exit /b 1
       else: >-
         ${{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
-        --config-settings=setup-args=-Dpython.allow_limited_api=${{ python_allow_limited_api }}
+        ${{ '--config-settings=--py-limited-api=abi3' if python_allow_limited_api == 'true' else '' }}
 
 requirements:
   build:
@@ -41,7 +41,7 @@ requirements:
     - pip
     - meson
     - ninja
-    - meson-python
+    - pdm-backend
   run:
     - if: python_allow_limited_api == 'true'
       then:
