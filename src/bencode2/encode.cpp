@@ -10,10 +10,10 @@
 namespace nb = nanobind;
 
 // dataclasses.fields
-extern nb::object dataclasses_fields;
+extern nb::object *dataclasses_fields;
 
 // dataclasses.is_dataclass
-extern nb::object is_dataclasses;
+extern nb::object *is_dataclasses;
 
 void encodeAny(EncodeContext *ctx, nb::handle obj);
 
@@ -135,7 +135,7 @@ void encodeDictLike(EncodeContext *ctx, nb::handle h) {
 
 void encodeDataclasses(EncodeContext *ctx, nb::handle h) {
     ctx->writeChar('d');
-    auto fields = dataclasses_fields(h);
+    auto fields = (*dataclasses_fields)(h);
     auto size = PyTuple_Size(fields.ptr());
 
     gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
@@ -376,7 +376,7 @@ void encodeAny(EncodeContext *ctx, const nb::handle obj) {
         return encodeComposeObject(ctx, obj, encodeDictLike);
     }
 
-    if (is_dataclasses(obj).ptr() == Py_True) {
+    if ((*is_dataclasses)(obj).ptr() == Py_True) {
         return encodeComposeObject(ctx, obj, encodeDataclasses);
     }
 

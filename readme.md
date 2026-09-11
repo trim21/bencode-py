@@ -117,7 +117,7 @@ For testing pure python library,
 make sure all so/pyd files in `src/bencode2` are removed, then run
 `PYTHONPATH=src pytest --assert-pkg-compiled=false`.
 
-For testing native extension, meson-python doesn't provide same function with
+For testing native extension, the build backend doesn't provide same function with
 `python setup.py build_ext --inplace`.
 
 So you will need to run command like this:
@@ -131,3 +131,7 @@ ninja -C build copy
 ninja will need to build so/pyd with meson and copy it to `src/bencode2`,
 
 then run tests with `PYTHONPATH=src pytest --assert-pkg-compiled=true`.
+
+To build a wheel with the native extension, run `uv build --wheel`. The extension
+is compiled by `pdm_build.py`, and is left out when `BENCODE2_PURE_PYTHON=1` is
+set. Pass `--config-setting=--py-limited-api=abi3` to build an abi3 wheel.
