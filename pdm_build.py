@@ -22,6 +22,13 @@ if TYPE_CHECKING:
 _EXTENSION_NAME = "__bencode"
 _LIMITED_API_SETTING = "--py-limited-api"
 _EXTENSION_SUFFIXES = (".so", ".pyd")
+# the same defaults meson-python used: without b_ndebug asserts stay enabled in
+# the release wheels and nanobind keeps its debug only reference count checks
+_MESON_SETUP_ARGS = (
+    "-Dbuildtype=release",
+    "-Db_ndebug=if-release",
+    "-Db_vscrt=md",
+)
 
 
 def _extension_enabled(context: Context) -> bool:
@@ -49,7 +56,7 @@ def pdm_build_update_files(context: Context, files: dict[str, Path]) -> None:
 def _compile_extension(context: Context) -> Path:
     build_dir = Path(tempfile.mkdtemp(prefix="bencode2-meson-"))
     try:
-        meson_args: list[str] = []
+        meson_args: list[str] = [*_MESON_SETUP_ARGS]
         if _LIMITED_API_SETTING in context.config_settings:
             # meson.build only builds for the limited API when this option is enabled
             meson_args.append("-Dpython.allow_limited_api=true")
