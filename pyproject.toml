@@ -1,13 +1,11 @@
 [build-system]
 requires = [
-  "flit-core==3.12.0",
-  'meson-python==0.20.0; implementation_name == "cpython"',
+  "pdm-backend==2.4.9",
   'meson[ninja]==1.12.0; implementation_name == "cpython"',
 ]
 
-# conditional build c++ extension
-build-backend = "bencode2_build:build_api"
-backend-path = ["build_backend"]
+# pdm_build.py compiles the c++ extension when possible
+build-backend = "pdm.backend"
 
 [project]
 name = "bencode2"
@@ -47,25 +45,22 @@ Issues = "https://github.com/trim21/bencode-py/issues"
 
 [dependency-groups]
 dev = [
-  'flit-core==3.12.0',
-  'meson-python==0.20.0; implementation_name == "cpython"',
+  'pdm-backend==2.4.9',
   'meson[ninja]==1.12.0; implementation_name == "cpython"',
-  'mypy==2.3.0; implementation_name == "cpython"',
+  'mypy==2.3.1; implementation_name == "cpython"',
   'pytest==9.1.1',
   'pytest-codspeed==5.0.3; implementation_name == "cpython"',
   'pytest-cov==7.1.0',
   'pytest-github-actions-annotate-failures==0.4.2',
 ]
 
-[tool.meson-python.args]
-setup = ['--errorlogs']
-dist = ['--verbose']
-compile = ['--verbose']
-install = [
-  '--verbose',
-  # exclude .lib file in windows
-  # https://github.com/mesonbuild/meson-python/issues/552#issuecomment-1863039032
-  '--tags=runtime,python-runtime',
+[tool.pdm.build]
+custom-hook = 'pdm_build.py'
+# pdm-backend collects everything under src/bencode2, but the c++ sources are
+# only needed to build the extension
+excludes = [
+  'src/bencode2/*.cpp',
+  'src/bencode2/*.hpp',
 ]
 
 [tool.pytest.ini_options]
@@ -116,9 +111,3 @@ ignore_missing_imports = true
 warn_return_any = false
 warn_unused_configs = true
 show_error_codes = true
-
-# we will append this to pyproject.toml in ci to build abi3 wheels
-#
-# [tool.meson-python]
-# limited-api = true
-#
