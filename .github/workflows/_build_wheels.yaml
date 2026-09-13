@@ -14,6 +14,7 @@ jobs:
           - '3.12'
           - '3.13'
           - '3.14'
+          - '3.14t'
         arch:
           - runs_on: ubuntu-24.04
             target: x86_64-linux-gnu.2.17
@@ -108,22 +109,22 @@ jobs:
             cibw_build: '*'
 
           - os: macos-15-intel
-            cibw_build: '*[02468]-*'
+            cibw_build: '*[02468]{,t}-*'
 
           - os: macos-15-intel
-            cibw_build: '*[13579]-*'
+            cibw_build: '*[13579]{,t}-*'
 
           - os: windows-latest
-            cibw_build: '*[02468]-*'
+            cibw_build: '*[02468]{,t}-*'
 
           - os: windows-latest
-            cibw_build: '*[13579]-*'
+            cibw_build: '*[13579]{,t}-*'
 
           - os: windows-11-arm
-            cibw_build: '*[02468]-*'
+            cibw_build: '*[02468]{,t}-*'
 
           - os: windows-11-arm
-            cibw_build: '*[13579]-*'
+            cibw_build: '*[13579]{,t}-*'
 
     steps:
       - uses: actions/checkout@v7
