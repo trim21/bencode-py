@@ -117,20 +117,24 @@ jobs:
             cibw_build: '*[13579]{,t}-*'
             cache_key: 'odd'
 
+          # Windows free-threaded wheels are skipped for now: nanobind 2.15.0
+          # includes <windows.h> without NOMINMAX under NB_FREE_THREADED, which
+          # breaks the build with MSVC error C2589. The parity patterns below
+          # match the version digits only, so they never select the *t* tags.
           - os: windows-latest
-            cibw_build: '*[02468]{,t}-*'
+            cibw_build: '*[02468]-*'
             cache_key: 'even'
 
           - os: windows-latest
-            cibw_build: '*[13579]{,t}-*'
+            cibw_build: '*[13579]-*'
             cache_key: 'odd'
 
           - os: windows-11-arm
-            cibw_build: '*[02468]{,t}-*'
+            cibw_build: '*[02468]-*'
             cache_key: 'even'
 
           - os: windows-11-arm
-            cibw_build: '*[13579]{,t}-*'
+            cibw_build: '*[13579]-*'
             cache_key: 'odd'
 
     steps:
