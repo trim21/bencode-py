@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/trim21/pre-commit-mirror-meson
-    rev: 'v1.12.0'
+    rev: 'v1.12.1'
     hooks:
       - id: meson-fmt
         args: ['--inplace', '--editor-config']
@@ -19,7 +19,7 @@ repos:
         language: python
         # Optional extra validations from SchemaStore:
         additional_dependencies:
-          - 'validate-pyproject-schema-store[all]==2026.9.11'
+          - 'validate-pyproject-schema-store[all]==2026.10.2'
         args:
           - --disable
           - ruff
@@ -48,14 +48,14 @@ repos:
         exclude: '.*\.bin'
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v23.1.1
+    rev: v23.1.2
     hooks:
       - id: clang-format
         types_or: [c++, c, cuda]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.16.7
+    rev: v0.16.10
     hooks:
       # Run the linter.
       - id: ruff
