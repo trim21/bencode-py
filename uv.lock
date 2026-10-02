@@ -96,7 +96,7 @@ requires-dist = [{ name = "typing-extensions", specifier = ">=4.8.0" }]
 dev = [
     { name = "meson", extras = ["ninja"], marker = "implementation_name == 'cpython'", specifier = "==1.12.1" },
     { name = "mypy", marker = "implementation_name == 'cpython'", specifier = "==2.3.1" },
-    { name = "pdm-backend", specifier = "==2.4.9" },
+    { name = "pdm-backend", specifier = "==2.5.0" },
     { name = "pytest", specifier = "==9.1.1" },
     { name = "pytest-codspeed", marker = "implementation_name == 'cpython'", specifier = "==5.0.3" },
     { name = "pytest-cov", specifier = "==7.1.0" },
@@ -553,11 +553,11 @@ wheels = [
 
 [[package]]
 name = "pdm-backend"
-version = "2.4.9"
+version = "2.5.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f1/b2/73898a92113f532fe9cecaae97f070a12ec4c786d66af377a6f81d38e208/pdm_backend-2.4.9.tar.gz", hash = "sha256:c41a852ccbf4b567b033db9b2ae78660d7a4ea49307719959ab88a01f0aabb2e", size = 119709, upload-time = "2026-06-05T08:07:58.08Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/d5/a82f533ed51f91a2183faf67a1fcb3b759615ffeca95d05b3e7648bf84bf/pdm_backend-2.5.0.tar.gz", hash = "sha256:7953b994563d3151755e3364b9d0cfe817ed0eaecdf27c8f777f412d26bcd98a", size = 199083, upload-time = "2026-09-30T13:35:35.98Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/55/30/c8bd9fab1f3811462451e4a41a36e2d85b361560416ec874131611cc7982/pdm_backend-2.4.9-py3-none-any.whl", hash = "sha256:8d1064751dadb0c40b1026b46826a448d85c8228a564985c62fb53d4aba538a1", size = 115770, upload-time = "2026-06-05T08:07:57.073Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/a6/c743c589188f9e45e1a7c8f3e2e725f9b5df5decd72779fbfc1695b45866/pdm_backend-2.5.0-py3-none-any.whl", hash = "sha256:5b8746b567a16a1fd506ce66ee28e89d46374526f52238aa1b96cc2c08245c63", size = 199650, upload-time = "2026-09-30T13:35:34.996Z" },
 ]
 
 [[package]]
