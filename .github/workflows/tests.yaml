@@ -33,7 +33,7 @@ jobs:
   twine-check:
     name: Check dist
     needs: [wheels]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/download-artifact@v8
         with:
@@ -51,7 +51,7 @@ jobs:
         python-version:
           - '3.12'
 
-    runs-on: 'ubuntu-24.04'
+    runs-on: 'ubuntu-26.04'
 
     steps:
       - uses: actions/checkout@v7
@@ -136,7 +136,7 @@ jobs:
           - '3.12'
           - '3.13'
 
-    runs-on: 'ubuntu-24.04'
+    runs-on: 'ubuntu-26.04'
 
     steps:
       - uses: actions/checkout@v7
@@ -273,13 +273,13 @@ jobs:
       - test-c-cov
       - twine-check
       - conda
-    runs-on: 'ubuntu-24.04'
+    runs-on: 'ubuntu-26.04'
     steps:
       - run: 'echo success'
 
   preview:
     continue-on-error: true
-    runs-on: 'ubuntu-24.04'
+    runs-on: 'ubuntu-26.04'
 
     steps:
       - uses: actions/checkout@v7
