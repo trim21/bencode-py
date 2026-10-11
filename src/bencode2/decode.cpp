@@ -6,6 +6,7 @@
 #include <string>
 
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 #include <nanobind/nanobind.h>
 
 #include "common.hpp"
@@ -67,9 +68,9 @@ nb::object decodeInt(const char *buf, Py_ssize_t &index, Py_ssize_t size) {
     }
 
     for (Py_ssize_t i = num_start; i < index_e; i++) {
-        char c = buf[i];
+        unsigned char c = static_cast<unsigned char>(buf[i]);
         if (c < '0' || c > '9') {
-            decoderError("invalid int, '{:c}' found at {}", c, i);
+            decoderError("invalid int, '\\x{:02x}' found at {}", c, i);
         }
     }
 
@@ -150,7 +151,8 @@ static std::string_view decodeAsView(const char *buf, Py_ssize_t &index, Py_ssiz
     Py_ssize_t len = 0;
     for (Py_ssize_t i = index; i < index_sep; i++) {
         if (buf[i] < '0' || buf[i] > '9') {
-            decoderError("invalid bytes length, found '{:c}' at {}", buf[i], i);
+            decoderError("invalid bytes length, '\\x{:02x}' found at {}",
+                         static_cast<unsigned char>(buf[i]), i);
         }
         if (len > (PY_SSIZE_T_MAX - 9) / 10) {
             decoderError("bytes length overflow, index {}", index);
@@ -213,11 +215,17 @@ nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_
         }
 
         if (buf[index] < '0' || buf[index] > '9') {
-            decoderError("expecting bytes when parsing dict key, found {} instead, index {}",
-                         buf[index], index);
+            decoderError(
+                "expecting bytes when parsing dict key, found '\\x{:02x}' instead, index {}",
+                static_cast<unsigned char>(buf[index]), index);
         }
 
         auto key = decodeAsView(buf, index, size);
+
+        if (index >= size) {
+            decoderError("buffer overflow when decoding dict, index {}", index);
+        }
+
         auto obj = decodeAny(buf, index, size, depth);
 
         // skip first key
@@ -226,7 +234,9 @@ nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_
                 decoderError("invalid dict, key not sorted. index {}", index);
             }
             if (key == lastKey.value()) {
-                decoderError("invalid dict, find duplicated keys {}. index {}", key, index);
+                decoderError("invalid dict, find duplicated keys '{}'. index {}",
+                             key.empty() ? "" : fmt::format("\\x{:02x}", fmt::join(key, "\\x")),
+                             index);
             }
         }
         lastKey = std::make_optional(key);
@@ -263,7 +273,8 @@ nb::object decodeAny(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_f
         return decodeDict(buf, index, size, depth);
     }
 
-    decoderError("invalid bencode prefix '{:c}', index {}", buf[index], index);
+    decoderError("invalid bencode prefix '\\x{:02x}', index {}",
+                 static_cast<unsigned char>(buf[index]), index);
 }
 
 nb::object bdecode(nb::object b) {

@@ -63,6 +63,25 @@ def test_bad_case(raw: bytes):
 
 
 @pytest.mark.parametrize(
+    "raw",
+    [
+        b"\xd9",  # invalid prefix
+        b"i\xd9e",  # non digit in int
+        b"1\xd9:ab",  # non digit in bytes length
+        b"d\xd9",  # non digit dict key
+        b"d1:\xd91:a1:\xd91:be",  # duplicated keys holding non utf-8 bytes
+        b"d1:a",  # dict value is missing
+    ],
+)
+def test_error_message_never_contains_raw_bytes(raw: bytes):
+    """The message becomes a python str, so input bytes are rendered as hex."""
+    with pytest.raises(BencodeDecodeError) as exc_info:
+        bdecode(raw)
+
+    assert str(exc_info.value).isascii()
+
+
+@pytest.mark.parametrize(
     ["raw", "expected"],
     [
         (memoryview(b"0:"), b""),

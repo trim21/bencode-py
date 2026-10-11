@@ -194,9 +194,13 @@ class Decoder:
                 raise BencodeDecodeError(
                     f"directory only allow str as keys, "
                     f"found unexpected char "
-                    f"'{self.value[self.index]:c}', index {self.index}"
+                    f"'\\x{self.value[self.index]:02x}', index {self.index}"
                 )
             k = self.__decode_bytes()
+            if self.index >= self.size:
+                raise BencodeDecodeError(
+                    f"buffer overflow when decoding dict, index {self.index}"
+                )
             v = self.__decode(depth)
             items.append((k, v))
 
