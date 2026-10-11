@@ -70,7 +70,7 @@ jobs:
       - run: rm C:/Strawberry/perl/bin -rf
         shell: bash
 
-      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: TheMrMilchmann/setup-msvc-dev@v4.1.0
         with:
           arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
 
