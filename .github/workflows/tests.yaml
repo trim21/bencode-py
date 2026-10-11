@@ -62,7 +62,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.0
         with:
           activate-environment: 'true'
 
@@ -106,7 +106,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.0
         with:
           activate-environment: 'true'
 
@@ -146,7 +146,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.0
         with:
           activate-environment: 'true'
 
@@ -205,7 +205,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.0
         with:
           activate-environment: 'true'
 
@@ -239,7 +239,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.2.0
+        uses: astral-sh/setup-uv@v10.3.0
         with:
           activate-environment: 'true'
       - run: uv sync --dev --no-install-project
