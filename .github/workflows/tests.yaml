@@ -79,7 +79,7 @@ jobs:
         uses: CodSpeedHQ/action@v5
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          mode: instrumentation
+          mode: simulation
           run: pytest tests/bench.py --assert-pkg-compiled=true --codspeed
 
   test-cp-py:
