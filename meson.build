@@ -33,6 +33,18 @@ nanobind_dep = dependency('nanobind', static: true)
 allow_limited_api = get_option('python.allow_limited_api')
 py_limited_api = allow_limited_api ? '3.12' : ''
 
+# nanobind 3.1.0 uses fprintf(stderr, ...) in its headers without including
+# <cstdio>, while Python.h stops providing <stdio.h> under Py_LIMITED_API.
+# Upstream added the include after v3.1.0; drop this once the wrapped nanobind
+# has it.
+if allow_limited_api
+    if meson.get_compiler('cpp').get_argument_syntax() == 'msvc'
+        add_project_arguments('/FI', 'stdio.h', language: 'cpp')
+    else
+        add_project_arguments('-include', 'stdio.h', language: 'cpp')
+    endif
+endif
+
 message('allow_limited_api', allow_limited_api)
 message('py_limited_api', py_limited_api)
 
