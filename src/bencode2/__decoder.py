@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import Any, Final
 
 from typing_extensions import Buffer
@@ -48,7 +49,10 @@ class Decoder:
         data = self.__decode(0)
 
         if self.index != self.size:  # pragma: no cover
-            raise BencodeDecodeError("invalid bencode value (data after valid prefix)")
+            raise BencodeDecodeError(
+                f"invalid bencode data, parse end at index {self.index}"
+                f" but total bytes length {self.size}"
+            )
 
         return data
 
@@ -67,20 +71,18 @@ class Decoder:
             return self.__decode_list(depth)
 
         raise BencodeDecodeError(
-            f"unexpected token {bytes(self.value[self.index : self.index + 1])}. "
-            f"index {self.index}"
+            f"invalid bencode prefix '\\x{self.value[self.index]:02x}', index {self.index}"
         )
 
     def __decode_int(self) -> int:
+        start_index = self.index
         self.index += 1
         value = self.value
         index_end = self.index
         while index_end < self.size and value[index_end] != char_e:
             index_end += 1
         if index_end == self.size:
-            raise BencodeDecodeError(
-                f"invalid int, failed to found end. index {self.index}"
-            )
+            raise BencodeDecodeError(f"invalid int, missing 'e': {start_index}")
 
         if index_end == self.index:
             raise BencodeDecodeError(f"invalid int, found 'ie': {self.index}")
@@ -88,35 +90,30 @@ class Decoder:
         n: int = 1
         offset: int = 0
 
-        if self.value[self.index] == char_dash:
+        if value[self.index] == char_dash:
             n = -1
             offset = 1
             if self.index + offset >= index_end:
                 raise BencodeDecodeError(
                     f"invalid int, '-' with no digits at {self.index}"
                 )
+            if value[self.index + offset] == char_0:
+                raise BencodeDecodeError(f"invalid int, '-0' found at {self.index}")
+        elif value[self.index] == char_0 and index_end != self.index + 1:
+            raise BencodeDecodeError(
+                f"invalid int, non-zero int should not start with '0'."
+                f" found at {self.index}"
+            )
 
         total: int = 0
-        for c in self.value[self.index + offset : index_end]:
+        for i in range(self.index + offset, index_end):
+            c = value[i]
             if not (char_0 <= c <= char_9):
-                raise BencodeDecodeError(
-                    f"malformed int {bytes(self.value[self.index : index_end])}. index {self.index}"
-                )
+                raise BencodeDecodeError(f"invalid int, '\\x{c:02x}' found at {i}")
             total = total * 10 + (c - char_0)
 
-        n = total * n
-
-        if self.value[self.index] == char_dash:
-            if self.value[self.index + 1] == char_0:
-                raise BencodeDecodeError(
-                    f"-0 is not allowed in bencoding. index: {self.index}"
-                )
-        elif self.value[self.index] == char_0 and index_end != self.index + 1:
-            raise BencodeDecodeError(
-                f"integer with leading zero is not allowed. index: {self.index}"
-            )
         self.index = index_end + 1
-        return n
+        return total * n
 
     def __decode_list(self, depth: int) -> list[Any]:
         r: list[Any] = []
@@ -125,7 +122,7 @@ class Decoder:
         while True:
             if self.index >= self.size:
                 raise BencodeDecodeError(
-                    f"buffer overflow when decoding array, index {self.index}"
+                    f"buffer overflow when decoding list, index {self.index}"
                 )
 
             if self.value[self.index] == char_e:
@@ -144,28 +141,30 @@ class Decoder:
             index_colon += 1
         if index_colon == self.size:
             raise BencodeDecodeError(
-                f"invalid bytes, failed find expected char ':'. index {self.index}"
+                f"invalid string, missing length: index {self.index}"
             )
 
-        if self.value[self.index] == char_0 and index_colon != self.index + 1:
+        if value[self.index] == char_0 and index_colon != self.index + 1:
             raise BencodeDecodeError(
-                f"malformed str/bytes length with leading 0. index {self.index}"
+                f"invalid bytes length, leading zero. index {self.index}"
             )
 
         n: int = 0
-        for c in self.value[self.index : index_colon]:
+        for i in range(self.index, index_colon):
+            c = value[i]
             if not (char_0 <= c <= char_9):
                 raise BencodeDecodeError(
-                    f"malformed str/bytes length {bytes(self.value[self.index : index_colon])!r}."
-                    f" index {self.index}"
+                    f"invalid bytes length, '\\x{c:02x}' found at {i}"
                 )
+            # the length is accumulated as Py_ssize_t in the c++ decoder, which
+            # has to bail out on overflow before reading the whole prefix
+            if n > (sys.maxsize - 9) // 10:
+                raise BencodeDecodeError(f"bytes length overflow, index {self.index}")
 
             n = n * 10 + (c - char_0)
 
         if index_colon + n >= self.size:
-            raise BencodeDecodeError(
-                f"malformed str/bytes length, buffer overflow. index {self.index}"
-            )
+            raise BencodeDecodeError(f"bytes length overflow, index {self.index}")
 
         index_colon += 1
 
@@ -180,21 +179,23 @@ class Decoder:
     def __decode_dict(self, depth: int) -> dict[str | bytes, Any]:
         start_index = self.index
         self.index += 1
+        value = self.value
 
         items: list[tuple[bytes, Any]] = []
+        last_key: bytes | None = None
 
         while True:
             if self.index >= self.size:
                 raise BencodeDecodeError(
-                    f"buffer overflow when decoding bytes, index {self.index}"
+                    f"buffer overflow when decoding dict, index {self.index}"
                 )
-            if self.value[self.index] == char_e:
+            if value[self.index] == char_e:
                 break
-            if not (char_0 <= self.value[self.index] <= char_9):
+            if not (char_0 <= value[self.index] <= char_9):
                 raise BencodeDecodeError(
-                    f"directory only allow str as keys, "
-                    f"found unexpected char "
-                    f"'\\x{self.value[self.index]:02x}', index {self.index}"
+                    f"expecting bytes when parsing dict key,"
+                    f" found '\\x{value[self.index]:02x}' instead,"
+                    f" index {self.index}"
                 )
             k = self.__decode_bytes()
             if self.index >= self.size:
@@ -202,24 +203,27 @@ class Decoder:
                     f"buffer overflow when decoding dict, index {self.index}"
                 )
             v = self.__decode(depth)
+            if last_key is not None:
+                if k < last_key:
+                    raise BencodeDecodeError(
+                        f"invalid dict, key not sorted. index {start_index}"
+                    )
+                if k == last_key:
+                    raise BencodeDecodeError(
+                        f"invalid dict, find duplicated keys"
+                        f" '{_hex(k)}'. index {start_index}"
+                    )
+            last_key = k
             items.append((k, v))
 
         if not items:
             self.index += 1
             return {}
 
-        _check_sorted(items, start_index)
-
         self.index += 1
 
         return dict(items)
 
 
-def _check_sorted(s: list[tuple[bytes, Any]], idx: int) -> None:
-    i = 1
-    while i < len(s):
-        if s[i][0] < s[i - 1][0]:
-            raise BencodeDecodeError(f"directory keys is not sorted, index {idx}")
-        if s[i][0] == s[i - 1][0]:
-            raise BencodeDecodeError(f"found duplicated keys in directory, index {idx}")
-        i += 1
+def _hex(value: bytes) -> str:
+    return "".join(f"\\x{byte:02x}" for byte in value)

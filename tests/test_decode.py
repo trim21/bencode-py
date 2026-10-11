@@ -63,22 +63,50 @@ def test_bad_case(raw: bytes):
 
 
 @pytest.mark.parametrize(
-    "raw",
+    ["raw", "message"],
     [
-        b"\xd9",  # invalid prefix
-        b"i\xd9e",  # non digit in int
-        b"1\xd9:ab",  # non digit in bytes length
-        b"d\xd9",  # non digit dict key
-        b"d1:\xd91:a1:\xd91:be",  # duplicated keys holding non utf-8 bytes
-        b"d1:a",  # dict value is missing
+        (b"", "empty input"),
+        (
+            b"1:aX",
+            "invalid bencode data, parse end at index 3 but total bytes length 4",
+        ),
+        (b"\xd9", "invalid bencode prefix '\\xd9', index 0"),
+        (b"i\xd9e", "invalid int, '\\xd9' found at 1"),
+        (b"i12x3e", "invalid int, '\\x78' found at 3"),
+        (b"i123", "invalid int, missing 'e': 0"),
+        (b"ie", "invalid int, found 'ie': 1"),
+        (b"i-e", "invalid int, '-' with no digits at 1"),
+        (b"i-0e", "invalid int, '-0' found at 1"),
+        (b"i01e", "invalid int, non-zero int should not start with '0'. found at 1"),
+        (b"i0x1e", "invalid int, non-zero int should not start with '0'. found at 1"),
+        (b"1", "invalid string, missing length: index 0"),
+        (b"01:q", "invalid bytes length, leading zero. index 0"),
+        (b"1 :", "invalid bytes length, '\\x20' found at 1"),
+        (b"1\xd9:ab", "invalid bytes length, '\\xd9' found at 1"),
+        (b"10:q", "bytes length overflow, index 0"),
+        (b"99999999999999999999:", "bytes length overflow, index 0"),
+        (b"l", "buffer overflow when decoding list, index 1"),
+        (b"d", "buffer overflow when decoding dict, index 1"),
+        (b"d1:a", "buffer overflow when decoding dict, index 4"),
+        (
+            b"d\xd9",
+            "expecting bytes when parsing dict key, found '\\xd9' instead, index 1",
+        ),
+        (b"d1:bi1e1:ai1ee", "invalid dict, key not sorted. index 0"),
+        (b"d1:ai1e1:ai2ee", "invalid dict, find duplicated keys '\\x61'. index 0"),
+        (b"d0:i1e0:i2ee", "invalid dict, find duplicated keys ''. index 0"),
+        (
+            b"d1:\xd91:a1:\xd91:be",
+            "invalid dict, find duplicated keys '\\xd9'. index 0",
+        ),
     ],
 )
-def test_error_message_never_contains_raw_bytes(raw: bytes):
-    """The message becomes a python str, so input bytes are rendered as hex."""
+def test_error_message(raw: bytes, message: str):
+    """The compiled and the pure python decoder report the exact same message."""
     with pytest.raises(BencodeDecodeError) as exc_info:
         bdecode(raw)
 
-    assert str(exc_info.value).isascii()
+    assert str(exc_info.value) == message
 
 
 @pytest.mark.parametrize(

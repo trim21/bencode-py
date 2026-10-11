@@ -6,7 +6,6 @@
 #include <string>
 
 #include <fmt/core.h>
-#include <fmt/ranges.h>
 #include <nanobind/nanobind.h>
 
 #include "common.hpp"
@@ -145,7 +144,7 @@ static std::string_view decodeAsView(const char *buf, Py_ssize_t &index, Py_ssiz
     }
 
     if (buf[index] == '0' && index + 1 != index_sep) {
-        decoderError("invalid bytes length, found at {}", index);
+        decoderError("invalid bytes length, leading zero. index {}", index);
     }
 
     Py_ssize_t len = 0;
@@ -200,6 +199,7 @@ nb::object decodeList(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_
 }
 
 nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_fast32_t depth) {
+    Py_ssize_t start_index = index;
     index = index + 1;
     std::optional<std::string_view> lastKey = std::nullopt;
 
@@ -231,12 +231,11 @@ nb::object decodeDict(const char *buf, Py_ssize_t &index, Py_ssize_t size, uint_
         // skip first key
         if (lastKey.has_value()) {
             if (key < lastKey.value()) {
-                decoderError("invalid dict, key not sorted. index {}", index);
+                decoderError("invalid dict, key not sorted. index {}", start_index);
             }
             if (key == lastKey.value()) {
-                decoderError("invalid dict, find duplicated keys '{}'. index {}",
-                             key.empty() ? "" : fmt::format("\\x{:02x}", fmt::join(key, "\\x")),
-                             index);
+                decoderError("invalid dict, find duplicated keys '{}'. index {}", hexBytes(key),
+                             start_index);
             }
         }
         lastKey = std::make_optional(key);

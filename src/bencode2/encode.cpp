@@ -231,7 +231,8 @@ void encodeComposeObject(EncodeContext *ctx, nb::handle obj, Encode encode) {
     if (enableCheck) {
         if (ctx->seen.find(key) != ctx->seen.end()) {
             debug_print("circular reference found");
-            throw EncodeError("circular reference found");
+            nb::str repr = nb::repr(obj);
+            throw EncodeError(fmt::format("circular reference found {}", repr.c_str()));
         }
         ctx->seen.insert(key);
     }

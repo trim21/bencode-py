@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
+#include <string_view>
 
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 #include <gch/small_vector.hpp>
 
 #include <Python.h>
@@ -59,3 +61,14 @@ public:
 
     ~AutoFree() { Py_DecRef(ptr); }
 };
+
+// error messages are turned into python str by nanobind, which decodes them as
+// utf-8, so bytes from the input are rendered as hex escapes instead of being
+// copied verbatim
+inline std::string hexBytes(std::string_view bytes) {
+    if (bytes.empty()) {
+        return "";
+    }
+
+    return fmt::format("\\x{:02x}", fmt::join(bytes, "\\x"));
+}
