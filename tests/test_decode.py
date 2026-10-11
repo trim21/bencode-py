@@ -104,6 +104,18 @@ def test_decode_depth_limit():
         bdecode(deep)
 
 
+def test_decode_wide_list():
+    """The depth limit counts nesting, not the total number of decoded values."""
+    assert bdecode(b"l" + b"i1e" * 10000 + b"e") == [1] * 10000
+
+
+def test_decode_wide_dict():
+    """Sibling dictionary entries do not add up towards the depth limit either."""
+    keys = [b"%05d" % i for i in range(10000)]
+    raw = b"d" + b"".join(b"5:" + k + b"i1e" for k in keys) + b"e"
+    assert bdecode(raw) == {k: 1 for k in keys}
+
+
 def test_bytes_length_overflow():
     """A crafted length prefix that would overflow Py_ssize_t should be rejected."""
     # 20-digit number that exceeds PY_SSIZE_T_MAX

@@ -30,7 +30,7 @@ class Decoder:
     index: int
     size: int
 
-    __slots__ = ("_depth", "index", "size", "value")
+    __slots__ = ("index", "size", "value")
 
     def __init__(self, value: memoryview) -> None:
         self.size = len(value)
@@ -39,19 +39,18 @@ class Decoder:
 
         self.value = value
         self.index = 0
-        self._depth = 0
 
     def decode(self) -> object:
-        data = self.__decode()
+        data = self.__decode(0)
 
         if self.index != self.size:  # pragma: no cover
             raise BencodeDecodeError("invalid bencode value (data after valid prefix)")
 
         return data
 
-    def __decode(self) -> object:
-        self._depth += 1
-        if self._depth > _MAX_DECODE_DEPTH:
+    def __decode(self, depth: int) -> object:
+        depth += 1
+        if depth > _MAX_DECODE_DEPTH:
             raise BencodeDecodeError("exceeded maximum decode depth")
 
         if char_0 <= self.value[self.index] <= char_9:
@@ -59,9 +58,9 @@ class Decoder:
         if self.value[self.index] == char_i:
             return self.__decode_int()
         if self.value[self.index] == char_d:
-            return self.__decode_dict()
+            return self.__decode_dict(depth)
         if self.value[self.index] == char_l:
-            return self.__decode_list()
+            return self.__decode_list(depth)
 
         raise BencodeDecodeError(
             f"unexpected token {self.value[self.index:self.index + 1].tobytes()}. "
@@ -115,7 +114,7 @@ class Decoder:
         self.index = index_end + 1
         return n
 
-    def __decode_list(self) -> list[Any]:
+    def __decode_list(self, depth: int) -> list[Any]:
         r: list[Any] = []
         self.index += 1
 
@@ -128,7 +127,7 @@ class Decoder:
             if self.value[self.index] == char_e:
                 break
 
-            v = self.__decode()
+            v = self.__decode(depth)
             r.append(v)
 
         self.index += 1
@@ -172,7 +171,7 @@ class Decoder:
 
         return s.tobytes()
 
-    def __decode_dict(self) -> dict[str | bytes, Any]:
+    def __decode_dict(self, depth: int) -> dict[str | bytes, Any]:
         start_index = self.index
         self.index += 1
 
@@ -192,7 +191,7 @@ class Decoder:
                     f"'{self.value[self.index]:c}', index {self.index}"
                 )
             k = self.__decode_bytes()
-            v = self.__decode()
+            v = self.__decode(depth)
             items.append((k, v))
 
         if not items:
