@@ -22,22 +22,26 @@ class BencodeDecodeError(ValueError):
 
 def bdecode(value: Buffer, /) -> Any:
     """Decode bencode formatted bytes to python value."""
-    return Decoder(memoryview(value).cast("B")).decode()
+    return Decoder(value).decode()
 
 
 class Decoder:
-    value: memoryview
+    value: memoryview | bytes
     index: int
     size: int
 
     __slots__ = ("index", "size", "value")
 
-    def __init__(self, value: memoryview) -> None:
-        self.size = len(value)
+    def __init__(self, value: Buffer) -> None:
+        view = memoryview(value)
+        self.size = view.nbytes
         if self.size == 0:
             raise BencodeDecodeError("empty input")
 
-        self.value = value
+        # Indexing into and slicing a bytes object is much cheaper than doing
+        # the same through a memoryview on interpreters where the latter is
+        # not optimized, PyPy being the notable one.
+        self.value = value if type(value) is bytes else view.cast("B")
         self.index = 0
 
     def decode(self) -> object:
@@ -63,17 +67,17 @@ class Decoder:
             return self.__decode_list(depth)
 
         raise BencodeDecodeError(
-            f"unexpected token {self.value[self.index:self.index + 1].tobytes()}. "
+            f"unexpected token {bytes(self.value[self.index : self.index + 1])}. "
             f"index {self.index}"
         )
 
     def __decode_int(self) -> int:
         self.index += 1
-        for i, c in enumerate(self.value[self.index :]):
-            if c == char_e:
-                index_end = i + self.index
-                break
-        else:
+        value = self.value
+        index_end = self.index
+        while index_end < self.size and value[index_end] != char_e:
+            index_end += 1
+        if index_end == self.size:
             raise BencodeDecodeError(
                 f"invalid int, failed to found end. index {self.index}"
             )
@@ -96,7 +100,7 @@ class Decoder:
         for c in self.value[self.index + offset : index_end]:
             if not (char_0 <= c <= char_9):
                 raise BencodeDecodeError(
-                    f"malformed int {self.value[self.index:index_end].tobytes()}. index {self.index}"
+                    f"malformed int {bytes(self.value[self.index : index_end])}. index {self.index}"
                 )
             total = total * 10 + (c - char_0)
 
@@ -134,11 +138,11 @@ class Decoder:
         return r
 
     def __decode_bytes(self) -> bytes:
-        for i, c in enumerate(self.value[self.index :]):
-            if c == char_colon:
-                index_colon = i + self.index
-                break
-        else:
+        value = self.value
+        index_colon = self.index
+        while index_colon < self.size and value[index_colon] != char_colon:
+            index_colon += 1
+        if index_colon == self.size:
             raise BencodeDecodeError(
                 f"invalid bytes, failed find expected char ':'. index {self.index}"
             )
@@ -152,7 +156,7 @@ class Decoder:
         for c in self.value[self.index : index_colon]:
             if not (char_0 <= c <= char_9):
                 raise BencodeDecodeError(
-                    f"malformed str/bytes length {self.value[self.index:index_colon].tobytes()!r}."
+                    f"malformed str/bytes length {bytes(self.value[self.index : index_colon])!r}."
                     f" index {self.index}"
                 )
 
@@ -169,7 +173,9 @@ class Decoder:
 
         self.index = index_colon + n
 
-        return s.tobytes()
+        if isinstance(s, memoryview):
+            return s.tobytes()
+        return s
 
     def __decode_dict(self, depth: int) -> dict[str | bytes, Any]:
         start_index = self.index

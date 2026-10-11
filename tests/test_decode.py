@@ -14,6 +14,17 @@ def test_non_bytes_input():
         bdecode(1)  # type: ignore
 
 
+def test_decode_bytes_like_input():
+    """Every supported buffer type decodes to the same value."""
+    raw = b"d4:spaml1:a1:bee"
+    expected = {b"spam": [b"a", b"b"]}
+
+    assert bdecode(raw) == expected
+    assert bdecode(bytearray(raw)) == expected
+    assert bdecode(memoryview(raw)) == expected
+    assert bdecode(b"3:\x00\xff\t") == b"\x00\xff\t"
+
+
 @pytest.mark.parametrize(
     "raw",
     [
