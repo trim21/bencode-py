@@ -46,6 +46,10 @@ jobs:
       - run: auditwheel show dist/*.whl
       - run: auditwheel repair dist/*.whl
 
+      - run: uv pip install --python .venv/bin/python wheelhouse/*.whl
+
+      - run: .venv/bin/pytest tests --assert-pkg-compiled=true
+
       - uses: actions/upload-artifact@v7
         with:
           name: 'wheels-${{ runner.os }}-${{ runner.arch }}-${{ matrix.py }}'
@@ -90,6 +94,10 @@ jobs:
 
       - run: uv tool install abi3audit
       - run: abi3audit -v wheelhouse/*.whl
+
+      - run: uv pip install --python .venv/bin/python wheelhouse/*.whl
+
+      - run: .venv/bin/pytest tests --assert-pkg-compiled=true
 
       - uses: actions/upload-artifact@v7
         with:

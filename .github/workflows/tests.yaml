@@ -87,12 +87,7 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        os:
-          - 'windows-latest'
-          - 'ubuntu-24.04'
-          - 'ubuntu-24.04-arm'
-          - 'macos-15'
-          - 'macos-15-intel'
+        # the pure-Python implementation has no platform-specific code
         python-version:
           - '3.10'
           - '3.11'
@@ -101,7 +96,7 @@ jobs:
           - '3.14'
           - '3.15'
 
-    runs-on: '${{ matrix.os }}'
+    runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v7
 
@@ -197,18 +192,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          #          - "windows-latest"
-          - 'ubuntu-24.04'
-    #          - "macos-15"
+        python-version:
+          - '3.14t'
+          - '3.15t'
 
-    runs-on: '${{ matrix.os }}'
+    runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.15t'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v10.2.0
@@ -230,15 +224,11 @@ jobs:
   test-pp:
     strategy:
       matrix:
-        os:
-          - 'windows-2022'
-          - 'ubuntu-24.04'
-          - 'macos-15'
         python-version:
           - 'pypy3.11'
           - 'pypy3.12'
 
-    runs-on: '${{ matrix.os }}'
+    runs-on: 'ubuntu-24.04'
 
     steps:
       - uses: actions/checkout@v7
