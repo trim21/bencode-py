@@ -26,7 +26,6 @@ jobs:
 
       - uses: liskin/gh-problem-matcher-wrap@v4
         with:
-          action: add
           linters: mypy
           run: mypy --show-column-numbers src/
 
