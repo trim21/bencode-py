@@ -39,7 +39,7 @@ from bencode2 import COMPILED, BencodeEncodeError, bencode
             types.MappingProxyType({b"cow": b"moo", b"spam": b"eggs"}),
             b"d3:cow3:moo4:spam4:eggse",
         ),
-        ({"你好": 0}, b"d" b"6:" + "你好".encode() + b"i0ee"),
+        ({"你好": 0}, b"d6:" + "你好".encode() + b"i0ee"),
         (types.MappingProxyType({b"spam": [b"a", b"b"]}), b"d4:spaml1:a1:bee"),
         (types.MappingProxyType({}), b"de"),
         (collections.OrderedDict(), b"de"),
@@ -98,6 +98,41 @@ def test_dict_int_keys():
         bencode({1: 2})
     with pytest.raises(TypeError):
         bencode(0.0)
+
+
+def test_dict_subclass_overridden_items():
+    """A dict subclass is encoded through items(), like the python encoder."""
+
+    class Sub(dict):
+        def items(self):
+            return {b"a": 1}.items()
+
+    assert bencode(Sub({b"z": 9})) == b"d1:ai1ee"
+
+    class Empty(dict):
+        def items(self):
+            return {}.items()
+
+    assert bencode(Empty({b"z": 9})) == b"de"
+
+
+def test_dict_subclass_overridden_len():
+    """len() is not used to decide that a dict is empty."""
+
+    class Sub(dict):
+        def __len__(self):
+            return 0
+
+    assert bencode(Sub({b"z": 9})) == b"d1:zi9ee"
+
+
+def test_dict_subclass_with_invalid_key():
+    class Sub(dict):
+        def items(self):
+            return {1: 2}.items()
+
+    with pytest.raises(TypeError):
+        bencode(Sub())
 
 
 def test_recursive_object():

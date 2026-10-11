@@ -94,24 +94,25 @@ void encodeDict(EncodeContext *ctx, nb::handle obj) {
     return;
 }
 
-// slow path for types.MappingProxyType
+// slow path for mappings that can override how their items are enumerated:
+// dict subclasses and types.MappingProxyType. Note that it neither calls
+// len() nor reads the hash table, so an overridden items() or __len__ is
+// honoured just like in the pure python encoder.
 void encodeDictLike(EncodeContext *ctx, nb::handle h) {
     ctx->writeChar('d');
-    auto l = PyObject_Size(h.ptr());
-    if (l == 0) {
-        ctx->writeChar('e');
-        return;
-    }
 
     gch::small_vector<std::pair<std::string_view, nb::handle>, 8> vec;
-
-    vec.reserve(l);
 
     for (auto keyValue : h.attr("items")()) {
         auto key = PyTuple_GetItem(keyValue.ptr(), 0);
         auto value = PyTuple_GetItem(keyValue.ptr(), 1);
 
         vec.push_back(std::make_pair(dict_key_view(nb::handle(key)), nb::handle(value)));
+    }
+
+    if (vec.empty()) {
+        ctx->writeChar('e');
+        return;
     }
 
     std::sort(vec.begin(), vec.end(), cmp);
@@ -329,7 +330,13 @@ void encodeAny(EncodeContext *ctx, const nb::handle obj) {
     }
 
     if (PyDict_Check(obj.ptr())) {
-        return encodeComposeObject(ctx, obj, encodeDict);
+        // an exact dict is the hash table itself, but a subclass may override
+        // items() and then has to go through the mapping protocol
+        if (PyDict_CheckExact(obj.ptr())) {
+            return encodeComposeObject(ctx, obj, encodeDict);
+        }
+
+        return encodeComposeObject(ctx, obj, encodeDictLike);
     }
 
     if (PyByteArray_Check(obj.ptr())) {
