@@ -87,20 +87,16 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        os:
-          - 'windows-latest'
-          - 'ubuntu-24.04'
-          - 'ubuntu-24.04-arm'
-          - 'macos-15'
-          - 'macos-15-intel'
+        # the pure-Python implementation has no platform-specific code
         python-version:
           - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
           - '3.14'
+          - '3.15'
 
-    runs-on: '${{ matrix.os }}'
+    runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v7
 
@@ -131,10 +127,11 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
+          - '3.14'
+          - '3.15'
 
     runs-on: 'ubuntu-26.04'
 
@@ -195,18 +192,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          #          - "windows-latest"
-          - 'ubuntu-24.04'
-    #          - "macos-15"
+        python-version:
+          - '3.14t'
+          - '3.15t'
 
-    runs-on: '${{ matrix.os }}'
+    runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.14t'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v10.3.0
@@ -228,15 +224,11 @@ jobs:
   test-pp:
     strategy:
       matrix:
-        os:
-          - 'windows-2022'
-          - 'ubuntu-24.04'
-          - 'macos-15'
         python-version:
-          - 'pypy3.10'
           - 'pypy3.11'
+          - 'pypy3.12'
 
-    runs-on: '${{ matrix.os }}'
+    runs-on: 'ubuntu-24.04'
 
     steps:
       - uses: actions/checkout@v7
@@ -276,32 +268,3 @@ jobs:
     runs-on: 'ubuntu-26.04'
     steps:
       - run: 'echo success'
-
-  preview:
-    continue-on-error: true
-    runs-on: 'ubuntu-26.04'
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: 'true'
-
-      - name: Set up latest Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.14-dev'
-
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.3.0
-        with:
-          activate-environment: 'true'
-      - run: uv sync --dev --no-install-project
-
-      - run: meson setup build
-
-      - run: meson compile -C build
-      - run: ninja -C build copy
-
-      - run: pytest --assert-pkg-compiled=true tests
-        env:
-          PYTHONPATH: src

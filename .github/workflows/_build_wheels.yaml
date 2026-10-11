@@ -9,12 +9,13 @@ jobs:
     strategy:
       matrix:
         py:
-          - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
           - '3.14'
           - '3.14t'
+          - '3.15'
+          - '3.15t'
         arch:
           - runs_on: ubuntu-24.04
             target: x86_64-linux-gnu.2.17
@@ -44,6 +45,10 @@ jobs:
       - run: uv tool install auditwheel
       - run: auditwheel show dist/*.whl
       - run: auditwheel repair dist/*.whl
+
+      - run: uv pip install --python .venv/bin/python wheelhouse/*.whl
+
+      - run: .venv/bin/pytest tests --assert-pkg-compiled=true
 
       - uses: actions/upload-artifact@v7
         with:
@@ -89,6 +94,10 @@ jobs:
 
       - run: uv tool install abi3audit
       - run: abi3audit -v wheelhouse/*.whl
+
+      - run: uv pip install --python .venv/bin/python wheelhouse/*.whl
+
+      - run: .venv/bin/pytest tests --assert-pkg-compiled=true
 
       - uses: actions/upload-artifact@v7
         with:
@@ -288,7 +297,7 @@ jobs:
           CIBW_PLATFORM: 'linux'
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_BUILD: 'cp3*-musllinux*'
-          CIBW_SKIP: ''
+          CIBW_SKIP: 'cp310-*'
           # CIBW_MANYLINUX_X86_64_IMAGE: "musllinux_1_2"
           # CIBW_MANYLINUX_AARCH64_IMAGE: "musllinux_1_2"
           CIBW_TEST_REQUIRES: pytest

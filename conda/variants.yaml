@@ -14,13 +14,13 @@ cxx_compiler:
 python:
   - if: target_platform == "win-arm64"
     then:
-      - '3.14'
+      - '3.15'
     else:
+      - '3.15'
       - '3.14'
       - '3.13'
       - '3.12'
       - '3.11'
-      - '3.10'
 
 python_allow_limited_api:
   - 'true'

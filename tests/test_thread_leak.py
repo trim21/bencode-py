@@ -24,9 +24,13 @@ pytestmark = [
 
 PAYLOAD = b"x" * (16 * 1024 * 1024)
 THREADS = 8
-# THREADS * len(PAYLOAD) would be leaked per round without the fix,
-# this leaves room for glibc arena and thread stack noise.
-MAX_GROWTH_KB = 64 * 1024
+ROUNDS = 8
+# glibc keeps the first round's per-thread arenas resident even after the
+# buffers are freed, and a free-threaded build really runs the threads in
+# parallel, so the noise floor is on the order of one payload per thread.
+# A leaked pool adds that much on every round, so a threshold above the noise
+# floor still catches it once ROUNDS is high enough.
+MAX_GROWTH_KB = 384 * 1024
 
 
 def rss_kb() -> int:
@@ -50,8 +54,10 @@ def test_thread_context_is_freed_on_thread_exit() -> None:
     gc.collect()
 
     before = rss_kb()
-    encode_in_threads()
+    for _ in range(ROUNDS):
+        encode_in_threads()
     gc.collect()
 
     growth = rss_kb() - before
-    assert growth < MAX_GROWTH_KB, f"RSS grew {growth} KiB over {THREADS} threads"
+    msg = f"RSS grew {growth} KiB over {ROUNDS} rounds of {THREADS} threads"
+    assert growth < MAX_GROWTH_KB, msg

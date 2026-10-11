@@ -67,7 +67,7 @@ excludes = [
 norecursedirs = ['vendor', '.venv', 'build', 'subprojects']
 
 [tool.cibuildwheel]
-skip = '*musl*'
+skip = ['*musl*', 'cp310-*']
 environment = { 'UV_LINK_MODE' = 'copy' }
 
 manylinux-aarch64-image = "manylinux_2_28"
