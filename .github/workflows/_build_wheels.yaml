@@ -27,7 +27,7 @@ jobs:
           submodules: 'true'
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.3.0
+        uses: astral-sh/setup-uv@v10.3.3
 
       - uses: actions/setup-python@v7
         with:
@@ -73,7 +73,7 @@ jobs:
           submodules: 'true'
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.3.0
+        uses: astral-sh/setup-uv@v10.3.3
 
       - uses: actions/setup-python@v7
         with:
@@ -162,7 +162,7 @@ jobs:
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
-        uses: astral-sh/setup-uv@v10.3.0
+        uses: astral-sh/setup-uv@v10.3.3
 
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
@@ -224,7 +224,7 @@ jobs:
 
       - name: Install the latest version of uv
         if: ${{ runner.os != 'Linux' }}
-        uses: astral-sh/setup-uv@v10.3.0
+        uses: astral-sh/setup-uv@v10.3.3
 
       - name: Restore cached Primes
         if: ${{ runner.os != 'Linux' }}
@@ -289,7 +289,7 @@ jobs:
           submodules: 'true'
 
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v10.3.0
+        uses: astral-sh/setup-uv@v10.3.3
 
       - uses: pypa/cibuildwheel@v4.3.5
         env:
